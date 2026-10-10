@@ -2,9 +2,9 @@
 
 Product name in all user-facing text (UI, reports, README): **AVA**. The Python package is still `dalil` (internal).
 
-Product: a reference-based visual QA station. A camera looks at a part; the operator stores 1–5 shots of a good part
-(the "golden reference"); every new frame is aligned to the reference and compared with PBP window signatures →
-verdict PASS / FAIL (+ defect zones) / RETAKE, logged in a hash-chained shift journal.
+Product: compare TWO photos — a reference photo of a good part and a photo of the part to check. The second photo is
+aligned to the reference and compared with PBP window signatures → verdict PASS / FAIL (+ defect zones) / RETAKE.
+No stations, no journals, no accounts: one screen, two photos, one result (shown next to plain reference subtraction).
 Differentiator to prove with numbers: robustness to (monotone) lighting drift without a light box, compared with
 plain reference subtraction (pixdiff), SSIM and Census on the same pipeline.
 
@@ -26,10 +26,10 @@ dalil/
   baselines.py   EXISTS: ssim/census/pixdiff features+distances, get_methods()
   synth.py       EXISTS (car-panel surfaces, defects, lighting); ADD: industrial parts + factory lighting drift
   pipeline.py    NEW: Reference (prepared golden set), prepare_reference(), inspect_frame(), result_to_json()
-  report.py      NEW (replaces act.py): hash-chained journal records, CSV export, shift report HTML
+  (report.py removed)
 server/
   app.py         FastAPI: API under /api, static web/ at /
-  store.py       on-disk station storage (DALIL_DATA_DIR, default ./_data) + in-memory reference cache
+  (store.py removed)
 web/             vanilla JS mobile-first UI (index.html, app.js, style.css, i18n.js, qr.js)
 eval/benchmark.py synthetic (+ VisA real, if downloaded) evaluation → eval/results/, eval/RESULTS.md
 tests/
@@ -112,67 +112,82 @@ Add, deterministic with rng, no external images:
   background-registered view (`alt_H`) and/or the frame as shot (camera-fixed view). `InspectResult.work_size` (w, h)
   is added for `bbox_norm`. Timing stages: resize, quality, align, mask, features, change, [extra_views], zones, render, total.
 
-## dalil/report.py (new)
-- `canonical_json(obj) -> str` (sort_keys, separators=(',',':'), ensure_ascii=False).
-- `record_hash(prev_hash: str, record: dict, blobs: list[bytes]) -> str` = sha256(prev_hash + canonical_json(record without
-  "hash"/"prev_hash"/"review") + sha256 of each blob). Genesis prev_hash = "0"*64. Reviews are appended as separate events
-  (their own chained records), so editing history is detectable. Docstring states exactly what is hashed.
-- `verify_chain(records: list[dict], blobs_for: callable) -> (ok: bool, first_bad_seq: int|None)`.
-- `journal_csv(station: dict, records: list[dict]) -> str` (seq, time_local, verdict, reason, n_zones, top_zone_bbox,
-  review, method, timing_ms_total, hash).
-- `render_shift_report(station: dict, records: list[dict], images: dict[str,str]) -> str` — standalone printable HTML (RU),
-  A4 print CSS, no external resources: header (station name, SKU, shift start/end in Asia/Tashkent + UTC), summary (total,
-  pass, fail, retake, operator-confirmed defects, operator-marked false alarms), table of records (thumbnail of overlay for
-  fail rows), chain head hash + "цепочка проверена/нарушена", method note: "Сравнение с эталоном методом PBP (псевдобулевы
-  полиномы, Chikake & Goldengorin). Решение подтверждает оператор." Escape all user text.
+## Removed (product simplified to "compare two photos")
+`dalil/report.py`, `server/store.py`, all `/api/stations/...` and `/api/files/...` routes, the station/viewer/journal
+screens and their tests are deleted. `pipeline.prepare_reference` keeps accepting a list but the UI sends one reference.
 
 ## HTTP API (server/app.py) — the frontend relies on this exactly
-JSON; errors `{"error": code, "message": text}` 4xx. Upload limit 15 MB; decode via PIL with `ImageOps.exif_transpose`
-then to BGR. CPU work in `run_in_threadpool`. Station ids: 6 chars `[A-Z2-9]` (easy to type; validate strictly).
-- `GET  /api/health` → `{"ok":true,"version":str,"params":{threshold, threshold_pixdiff, ...}}`
-- `POST /api/stations` body `{"name": str, "sku": str?}` → station JSON
-- `GET  /api/stations/{sid}` → station JSON
-- `POST /api/stations/{sid}/reference` multipart `file` → station JSON (adds a golden shot; max 5; returns capture report
-  for it in `last_capture`); `DELETE /api/stations/{sid}/reference` → station JSON (clears golden set and cache)
-- `POST /api/stations/{sid}/inspect?compare=1` multipart `file` → inspection record JSON (when compare=1, the record has
-  `baseline` = {method:"pixdiff", verdict, n_zones, overlay_url})
-- `GET  /api/stations/{sid}/inspections?after=<seq>&limit=50` → `{"items":[record...], "last_seq": int}` (newest last;
-  used by viewers polling every ~1.5 s)
-- `POST /api/stations/{sid}/inspections/{seq}/review` body `{"label":"defect"|"false_alarm"|"ok"}` → record JSON
-- `GET  /api/stations/{sid}/journal.csv` → text/csv; `GET /api/stations/{sid}/report` → text/html shift report
-- `GET  /api/files/{sid}/{name}` → stored images (strict regex whitelist, no traversal)
-- `POST /api/compare?methods=pbp,pixdiff` multipart `reference`, `frame` (stateless) → `{"results": {method: result_json},
-  "overlays": {method: base64 jpeg}}`
-Station JSON: `{"id","name","sku","created_at","references":[{"idx","url","at"}],"outline_url":str|null,
-"stats":{"total","pass","fail","retake","confirmed_defects","false_alarms"},"chain_head":str,"last_seq":int}`.
-Inspection record JSON: `{"seq","at","verdict","reason","zones":[...],"coverage","changed_frac","timing_ms","align",
-"method","frame_url","overlay_url","baseline":{...}|null,"review":null|label,"hash","prev_hash"}`.
-Also present (integration): `hints` (e.g. ["change_angle"]), `threshold`, `signature_sha256`, `work_size`; baseline also
-has `reason`, `threshold`. Hashed blobs per inspection: f_<seq>.jpg, o_<seq>.jpg (+ b_<seq>.jpg with a baseline).
-Review events `{"seq","at","type":"review","target_seq","label"}` share the hash chain but have their own seq counter
-(1, 2, ...); inspection seqs stay contiguous. `last_seq` = last inspection seq. The stored record keeps `review: null`
-(not hashed); API responses fill in the latest label. Error codes used by the server include: bad_station_id,
-station_not_found, no_reference, reference_mismatch (422: extra golden shot does not register to shot 1),
-too_many_references, inspection_not_found, bad_label, bad_image, image_too_small, too_large (413), too_many_pixels,
-file_required, multipart_required, bad_methods, name_required, bad_json, internal. Single uvicorn worker (in-process
-journal cache and per-station locks).
+JSON; errors `{"error": code, "message": text}` with 4xx/5xx. Upload limit 15 MB per file; decode via PIL with
+`ImageOps.exif_transpose`, then BGR. CPU work in a threadpool. No server-side storage of user photos (privacy): images
+live only in memory for the request. An in-memory LRU (≤ 4 entries) caches `prepare_reference` results keyed by
+sha256(reference bytes) so repeated checks against the same reference are faster.
+- `GET  /api/health` → `{"ok": true, "version": str, "params": {"threshold", "threshold_pixdiff", ...}}`
+- `POST /api/compare?methods=pbp,pixdiff` multipart fields `reference`, `frame` →
+  `{"results": {method: result_json}, "overlays": {method: base64 JPEG}, "reference_sha256": str, "frame_sha256": str}`
+  result_json = `pipeline.result_to_json` (verdict, reason, zones[{id,bbox,bbox_norm,n_cells,area_px,mean_score,
+  max_score,rank_score,hint}], coverage, changed_frac, timing_ms, align, method, threshold, signature_sha256, hints,
+  work_size).
 
 ## Frontend (web/) — vanilla JS, no CDNs, no build
-Mobile-first; iOS Safari + Android Chrome over HTTPS; RU default + EN toggle (i18n.js). Hash routing.
-1. Home: wordmark "Dalil QA", value line ("Контроль деталей по эталону — без обучения на дефектах, без светового бокса"),
-   buttons: "Новая станция", "Подключиться к станции" (enter 6-char code), "Сравнить два фото".
-2. Station setup (#/s/<sid>/setup): name/SKU; camera preview; "Снять эталон" (1–5 shots, thumbnails, clear); hint
-   "снимите годную деталь; можно 2–3 кадра с небольшим сдвигом"; button "Начать контроль".
-3. Operator (#/s/<sid>/run): live camera (getUserMedia rear, playsinline, object-fit contain) with the reference outline
-   overlay (outline_url, opacity slider) for positioning; big "Проверить" button + "Авто" toggle (capture every N s,
-   N selectable 2/3/5; skip if previous request still running); latest verdict banner: green "ГОДНА", red "БРАК — N зон",
-   grey "ПЕРЕСНЯТЬ: <reason>" (+ hint "смените угол на 15–30°" for glare); overlay image with zones; a "Сравнение с простым
-   вычитанием" toggle showing the baseline verdict + overlay side by side (this is the key demo moment); QR code (generated
-   locally by web/qr.js — implement a compact QR encoder (byte mode, ECC M, versions 1–10) or port a MIT one WITH attribution
-   header) linking to the viewer URL; station code shown large. Fallback without camera: file input (capture=environment).
-4. Viewer (#/s/<sid>/view): for judges' phones — polls inspections, shows the latest verdict big + overlay + baseline
-   comparison, the journal list, and review buttons "Дефект подтверждён" / "Ложная тревога".
-5. Journal (#/s/<sid>/journal): stats tiles, list with thumbnails, review labels, "Скачать CSV", "Отчёт смены" (opens report).
-6. Quick compare (#/compare): two file inputs → /api/compare → both methods' verdicts and overlays.
-Design: industrial, high contrast, large touch targets (≥48 px), readable in a bright shop; CSS variables, light + dark;
-system fonts; no horizontal scroll at 360 px; spinners/disabled states; toasts with server error messages.
+Mobile-first; iOS Safari + Android Chrome over HTTPS. **UI language: ENGLISH ONLY** — no Russian strings, no language toggle (the Russian labels quoted below are the meaning; render them in English: Reference / Check / Compare / PASS — no changes / FAIL — N zones / RETAKE: <reason> / Plain reference subtraction / New check / New reference).
+Product name everywhere: **AVA**. ONE main screen:
+1. Header: wordmark "AVA", one line: "Сравнение с эталоном: показываем только то, что изменилось. Без обучения на
+   дефектах, без светового бокса." Language toggle. Small privacy note: "Фото не сохраняются на сервере."
+2. Two slots side by side (stacked on narrow screens): **«Эталон»** (good part) and **«Проверка»** (part to check).
+   Each slot: "Камера" (opens full-screen live camera: getUserMedia rear, playsinline muted, object-fit contain; for
+   the «Проверка» slot the reference photo is overlaid at ~40 % opacity with a slider so the user matches the angle;
+   shutter grabs full-res frame → JPEG 0.9) and "Из галереи" (`<input type=file accept=image/*>`). Thumbnail preview,
+   "Заменить". Stop camera tracks when closing.
+3. Big button **«Сравнить»** (enabled when both photos exist) → POST /api/compare (methods=pbp,pixdiff) with spinner.
+4. Result: verdict banner — green «ГОДНА — изменений нет», red «БРАК — найдено зон: N», grey «ПЕРЕСНЯТЬ: <reason>»
+   (alignment → «не удалось совместить: снимите с того же ракурса»; glare → «блик: смените угол на 15–30°»;
+   blurry/dark → «размыто/темно»; mismatch → «не та деталь или деталь отсутствует»; low_coverage → «мало
+   проверенной площади»). Overlay image (pbp) with zones; tapping a zone in the list highlights it. Zone hints:
+   water_or_dirt → «похоже на загрязнение/каплю», something_removed → «отсутствует элемент?», something_added →
+   «лишний элемент/наплыв?». Small: processing ms, coverage %, short SHA-256 fingerprint (signature_sha256, full on tap).
+5. Side panel/collapsible «Простое вычитание из эталона» (pixdiff result + overlay) — the key demo moment. Display
+   rule for the BASELINE only: reason "mismatch" means plain subtraction saw almost the whole frame as changed — show it
+   as red «БРАК — изменился почти весь кадр» with a one-line explanation («так простое вычитание реагирует на смену
+   света»). Never call this panel "Cognex".
+6. After a result: buttons «Новая проверка» (keeps the reference, clears «Проверка» and reopens its camera) and
+   «Новый эталон». Keep a small in-page history (this session only, no server) of the last 10 results as chips
+   (verdict + time) — tap to view again.
+Design: industrial, high contrast, large touch targets (≥ 48 px), readable in bright light, light + dark via
+prefers-color-scheme, system fonts, no horizontal scroll at 360 px, toasts with server error messages.
+
+## Mode 1 — single-photo surface check: dalil/surface.py (new)
+The site offers TWO modes: (1) **Surface check** — one photo of a uniform surface (painted panel, plastic, sheet metal,
+glass), find local defects with no reference; (2) **Compare with reference** — two photos (sections above).
+Method (self-referenced PBP anomaly): the surface itself is the reference. Compute `window_signatures` of the photo;
+for every window, the anomaly score is the mean of the k smallest `pair`-type distances (same metric as
+`pbp.pair_distance`: 0.5·L1 of normalised coefficients, averaged over orientations; flat-vs-flat 0, flat-vs-nonflat 1)
+to a deterministic random sample of `params.surface_samples` windows of the SAME image, excluding samples within
+`params.surface_exclude_cells` cells of the window. Rationale: on a uniform surface normal windows have many look-alikes;
+a scratch/chip/stain/dent edge is rare. Signatures are invariant to monotone brightness changes, so uneven lighting does
+not create look-alike failures. Add a contrast term: windows whose contrast is far above the image's robust (median/MAD)
+contrast distribution score higher (gain-normalised, so global exposure does not matter). Smooth, glare-mask, border
+margin and zones exactly like the reference pipeline (reuse zones.extract_zones, quality.glare_mask, etc.).
+- `scan_surface(image_bgr, params) -> InspectResult` (reuse `dalil.pipeline.InspectResult`; `method="pbp_surface"`;
+  verdict pass / fail / retake with reasons glare / blurry / dark / low_coverage; `images["overlay"]` JPEG with zones;
+  `align` = {} ; `signature_sha256` = sha256(serialize_signatures(sig))). Must be deterministic (seeded sampling).
+- `surface_score_map(gray, params, method="pbp") -> float32[gh,gw]` (exposed for eval); baselines for eval:
+  `method="gradient"` (Sobel gradient magnitude per window, robust z-score vs image median/MAD) and `method="census"`
+  (same kNN self-reference on census features).
+- Params (add): `surface_threshold`, `surface_samples` (≈768), `surface_k` (≈5), `surface_exclude_cells` (≈6),
+  `surface_contrast_weight`, `threshold_surface_gradient`, `threshold_surface_census`.
+- Target: ≤ 1.5 s per 1024-px photo on the laptop CPU.
+- Synthetic data (dalil/synth.py): `make_uniform_surface(rng, kind, h=720, w=1280)` kinds "painted" (smooth colour +
+  orange peel), "plastic" (fine grain), "brushed" (directional brushed metal), "glass_dark" (dark glossy with faint
+  reflections) filling the WHOLE frame; defects reuse add_scratch / add_dent / add_stain / add_burr / add_sticker + a
+  new `add_chip` (small paint chip exposing primer); lighting via apply_factory_lighting.
+- Eval: eval/benchmark_surface.py — calib/test split on disjoint seeds; per method (pbp, census, gradient) and per
+  lighting kind: recall, false-alarm rate on defect-free photos, false zones per photo, ms per photo; writes
+  eval/results/surface_*.json and eval/RESULTS_SURFACE.md (generated, labelled synthetic, Wilson 95 % CIs).
+- Known limitations to state: the photo must show only the surface (part edges, holes, logos and background are
+  "rare" too → false zones); strong regular patterns are fine, unique features are not.
+
+## HTTP API addition for Mode 1
+- `POST /api/scan` multipart field `image` → `{"result": result_json, "overlay": base64 JPEG, "image_sha256": str}`.
+UI: a mode switch at the top — "Surface check (1 photo)" | "Compare with reference (2 photos)". Surface mode: one
+slot "Photo of the surface" (camera/gallery) + hint "Fill the frame with the surface only", button "Check surface",
+same verdict banner / overlay / zone list / timing / SHA as compare mode (no subtraction panel).
