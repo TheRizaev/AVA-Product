@@ -350,7 +350,10 @@ def serialize_signatures(sig: Signatures) -> bytes:
         "<IIIIIIIdd", _SERIAL_VERSION, int(sig.shape[0]), int(sig.shape[1]),
         int(gh), int(gw), int(sig.win), int(sig.step),
         float(sig.eps), float(sig.flat_floor))
-    q = np.clip(np.rint(np.asarray(sig.coeffs, np.float32) * 255.0), 0, 255).astype(np.uint8)
+    # round(255 * c) saturated to uint8 (coeffs are >= 0, so the "abs" is a no-op); OpenCV
+    # rounds half-to-even like np.rint and is bit-identical to it, but ~6x faster here.
+    c = np.ascontiguousarray(sig.coeffs, np.float32)
+    q = cv2.convertScaleAbs(c.reshape(-1, NBINS), alpha=255.0) if c.size else c.astype(np.uint8)
     con = np.clip(np.rint(np.asarray(sig.contrast, np.float32)), 0, 255).astype(np.uint8)
     deg = np.asarray(sig.degree, np.int8)
     flat = np.packbits(np.asarray(sig.flat, bool).ravel())
