@@ -199,6 +199,19 @@
       err_too_large: 'Файл слишком большой (максимум 15 МБ).',
       err_no_frame: 'Камера ещё не готова — попробуйте снова.',
       err_bad_code: 'Код станции — 6 символов: латинские буквы и цифры 2–9.',
+      // server error codes ({"error": code}) shown instead of the English server message
+      api_no_reference: 'Сначала снимите эталон (годную деталь).',
+      api_reference_mismatch: 'Кадр не совпадает с первым эталоном: та же деталь, та же позиция камеры.',
+      api_too_many_references: 'Эталонов уже 5 — очистите и снимите заново.',
+      api_station_not_found: 'Станция не найдена. Проверьте код.',
+      api_bad_station_id: 'Код станции — 6 символов: латинские буквы и цифры 2–9.',
+      api_inspection_not_found: 'Проверка не найдена.',
+      api_bad_image: 'Не удалось прочитать изображение (нужен JPEG или PNG).',
+      api_image_too_small: 'Изображение слишком маленькое.',
+      api_too_large: 'Файл слишком большой (максимум 15 МБ).',
+      api_too_many_pixels: 'Слишком большое разрешение изображения.',
+      api_name_required: 'Введите название станции.',
+      api_internal: 'Внутренняя ошибка сервера. Попробуйте ещё раз.',
     },
 
     en: {
@@ -379,6 +392,18 @@
       err_too_large: 'File is too large (15 MB max).',
       err_no_frame: 'Camera is not ready yet — try again.',
       err_bad_code: 'Station code is 6 characters: Latin letters and digits 2–9.',
+      api_no_reference: 'Shoot the reference (a good part) first.',
+      api_reference_mismatch: 'This shot does not match the first reference: same part, same camera position.',
+      api_too_many_references: 'Already 5 reference shots — clear them and shoot again.',
+      api_station_not_found: 'Station not found. Check the code.',
+      api_bad_station_id: 'Station code is 6 characters: Latin letters and digits 2–9.',
+      api_inspection_not_found: 'Inspection not found.',
+      api_bad_image: 'Could not read the image (JPEG or PNG expected).',
+      api_image_too_small: 'The image is too small.',
+      api_too_large: 'File is too large (15 MB max).',
+      api_too_many_pixels: 'Image resolution is too large.',
+      api_name_required: 'Enter a station name.',
+      api_internal: 'Internal server error. Please try again.',
     },
   };
 

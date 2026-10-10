@@ -274,6 +274,11 @@
   }
 
   function errorMessage(data, res) {
+    if (data && typeof data.error === 'string') {
+      const key = `api_${data.error}`;
+      const known = t(key);
+      if (known !== key) return known; // localised text for a known server error code
+    }
     if (data && typeof data.message === 'string' && data.message) return data.message;
     if (data && typeof data.detail === 'string') return data.detail;
     if (data && Array.isArray(data.detail)) {
