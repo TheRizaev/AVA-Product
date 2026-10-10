@@ -1,0 +1,16 @@
+# Only dalil/, server/, web/ and requirements.txt are copied; keep the build context small.
+.git
+.gitattributes
+.gitignore
+.venv
+.pytest_cache
+**/__pycache__
+**/*.pyc
+*.pdf
+*.html
+!web/*.html
+_data
+data
+eval/results
+tests
+docs
