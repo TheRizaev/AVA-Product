@@ -1,0 +1,162 @@
+{
+ "command": "python -m eval.benchmark --n 4 --seed 0 --workers 8 --visa-note A download of VisA_20220922.tar (about 1.8 GB) was attempted on 2026-10-10; measured speed was 40-50 KB/s (about 10 hours), so it was abandoned.",
+ "date": "2026-10-10 17:15 UTC",
+ "env": {
+  "cpu": "13th Gen Intel(R) Core(TM) i5-13450HX",
+  "logical_cores": 16,
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "numpy": "2.2.6",
+  "opencv": "4.12.0",
+  "git": "26c853e + uncommitted changes in dalil/eval/server",
+  "workers": 8
+ },
+ "seed": 0,
+ "n": 4,
+ "size": [
+  720,
+  1280
+ ],
+ "grid": {
+  "parts": [
+   "stamped",
+   "painted",
+   "molded",
+   "machined"
+  ],
+  "lightings": [
+   "none",
+   "drift_gain",
+   "gamma",
+   "window_gradient",
+   "lamp_aging",
+   "auto_exposure",
+   "specular",
+   "hand_shadow"
+  ],
+  "motions": [
+   "jitter",
+   "shift"
+  ],
+  "defects": [
+   "none",
+   "scratch",
+   "tape",
+   "missing_hole",
+   "burr",
+   "dent",
+   "stain"
+  ]
+ },
+ "methods": [
+  "pbp",
+  "census",
+  "ssim",
+  "pixdiff"
+ ],
+ "target": 0.05,
+ "n_pairs": 1792,
+ "wall_s": 939.902540399984,
+ "params": {
+  "work_max_side": 1024,
+  "blur_sigma": 1.5,
+  "win": 8,
+  "step": 4,
+  "eps": 0.05,
+  "flat_floor": 6.0,
+  "tolerance": 1,
+  "threshold": 0.45,
+  "threshold_pixdiff": 0.08,
+  "threshold_ssim": 0.25,
+  "threshold_census": 0.25,
+  "mismatch_frac": 0.15,
+  "min_zone_cells": 4,
+  "contrast_floor": 10.0,
+  "score_smooth": 3,
+  "merge_gap_px": 12,
+  "max_zones": 12,
+  "blob_min_count": 6,
+  "water_blob_max_cells": 40,
+  "water_min_roundness": 0.45,
+  "removed_ratio": 0.6,
+  "added_ratio": 1.6,
+  "orb_features": 3000,
+  "ratio_test": 0.75,
+  "ransac_thresh": 4.0,
+  "min_inliers": 40,
+  "min_inlier_ratio": 0.25,
+  "max_persp_distortion": 0.25,
+  "align_erode_px": 4,
+  "fixed_cam_ncc": 0.97,
+  "fixed_cam_max_shift": 0.25,
+  "ecc_min_corr": 0.85,
+  "max_references": 5,
+  "static_background": true,
+  "static_bg_min_shift": 3.0,
+  "part_roi_margin_px": 8,
+  "part_min_inliers": 15,
+  "part_ncc_margin": 0.05,
+  "glare_v": 250,
+  "glare_s": 40,
+  "glare_dilate_px": 9,
+  "max_glare_frac": 0.35,
+  "min_blur": 30.0,
+  "blur_ratio": 0.15,
+  "dark_mean": 35.0,
+  "min_coverage": 0.5,
+  "border_margin_px": 12,
+  "surface_threshold": 0.5,
+  "surface_samples": 768,
+  "surface_k": 5,
+  "surface_exclude_cells": 6,
+  "surface_candidates": 8,
+  "surface_seed": 20261011,
+  "surface_noise_floor": 6.0,
+  "surface_noise_full": 14.0,
+  "surface_rel_floor": 2.5,
+  "surface_rel_full": 5.0,
+  "surface_contrast_weight": 0.6,
+  "surface_contrast_z": 3.5,
+  "surface_contrast_span": 4.0,
+  "surface_glare_dilate_px": 24,
+  "threshold_surface_gradient": 0.5,
+  "threshold_surface_census": 0.5
+ },
+ "thresholds": {
+  "pbp": 0.60976,
+  "census": 0.39137,
+  "ssim": 0.13503,
+  "pixdiff": 0.2512
+ },
+ "calibration": {
+  "pbp": {
+   "threshold": 0.60976,
+   "reached": true,
+   "false_events_per_good": 0.041666666666666664,
+   "fa_rate": 0.020833333333333332,
+   "n_good_pairs": 192
+  },
+  "census": {
+   "threshold": 0.39137,
+   "reached": true,
+   "false_events_per_good": 0.020833333333333332,
+   "fa_rate": 0.015625,
+   "n_good_pairs": 192
+  },
+  "ssim": {
+   "threshold": 0.13503,
+   "reached": true,
+   "false_events_per_good": 0.046875,
+   "fa_rate": 0.026041666666666668,
+   "n_good_pairs": 192
+  },
+  "pixdiff": {
+   "threshold": 0.2512,
+   "reached": true,
+   "false_events_per_good": 0.041666666666666664,
+   "fa_rate": 0.020833333333333332,
+   "n_good_pairs": 192
+  }
+ },
+ "consistency_failures": 0
+}
