@@ -1,3 +1,3 @@
-"""Dalil: before/after vehicle inspection by pseudo-Boolean polynomial (PBP) change detection."""
+"""Dalil QA: reference-based visual inspection of parts with pseudo-Boolean polynomial (PBP) signatures."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
