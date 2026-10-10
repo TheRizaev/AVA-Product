@@ -1,15 +1,17 @@
-"""Dalil QA HTTP API (docs/SPEC.md "HTTP API") + the static web UI at "/".
+"""AVA HTTP API (docs/SPEC.md "HTTP API") + the static web UI at "/".
 
-Run: ``uvicorn server.app:app --host 0.0.0.0 --port 7860``. Data lives in
-``DALIL_DATA_DIR`` (default ``./_data``). Errors are JSON ``{"error": code, "message": text}``.
+Run: ``uvicorn server.app:app --host 0.0.0.0 --port 7860``. Errors are JSON
+``{"error": code, "message": text}``. User photos live only in memory for the request;
+prepared references are kept in a small in-memory LRU (never on disk).
 """
 
 from __future__ import annotations
 
 import base64
+import hashlib
 import io
-import json
 import threading
+from collections import OrderedDict
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -17,37 +19,67 @@ import cv2
 import numpy as np
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps, UnidentifiedImageError
 from starlette.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.formparsers import MultiPartParser
 
-from dalil import __version__, baselines, pipeline, report
+from dalil import __version__, baselines, pipeline
 from dalil.align import align
 from dalil.config import Params
-
-from .store import SID_RE, Store, StoreError
 
 MAX_UPLOAD = 15 * 1024 * 1024          # bytes per uploaded image
 MAX_BODY = 2 * MAX_UPLOAD + 64 * 1024  # whole request (compare carries two images)
 MAX_PIXELS = 40_000_000                # decoded image size guard (decompression bombs)
 DECODE_SIDE = 2048                     # JPEGs are decoded at reduced scale down to about this
 CPU_SLOTS = 2                          # concurrent CPU-heavy requests (PBP itself is multi-threaded)
-THUMB_SIDE = 360                       # report thumbnails
+REF_CACHE_SIZE = 4                     # prepared references kept in memory
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
 PARAMS = Params()
 _cpu = threading.BoundedSemaphore(CPU_SLOTS)
-_store: Store | None = None
+
+# Keep multipart parts in memory: Starlette otherwise spools parts above 1 MB to a temp
+# file on disk (the attribute was renamed across Starlette versions).
+for _attr in ("max_file_size", "spool_max_size"):
+    if hasattr(MultiPartParser, _attr):
+        setattr(MultiPartParser, _attr, MAX_BODY)
 
 
-def get_store() -> Store:
-    """The process-wide store (created lazily so DALIL_DATA_DIR can be set before first use)."""
-    global _store
-    if _store is None:
-        _store = Store(params=PARAMS)
-    return _store
+class ReferenceCache:
+    """Thread-safe LRU of prepared references keyed by (sha256 of the upload, methods)."""
+
+    def __init__(self, size: int):
+        self.size = size
+        self._items: OrderedDict = OrderedDict()
+        self._lock = threading.Lock()
+
+    def get(self, key):
+        with self._lock:
+            ref = self._items.get(key)
+            if ref is not None:
+                self._items.move_to_end(key)
+            return ref
+
+    def put(self, key, ref) -> None:
+        with self._lock:
+            self._items[key] = ref
+            self._items.move_to_end(key)
+            while len(self._items) > self.size:
+                self._items.popitem(last=False)
+
+    def clear(self) -> None:
+        with self._lock:
+            self._items.clear()
+
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._items)
+
+
+ref_cache = ReferenceCache(REF_CACHE_SIZE)
 
 
 def _warm_up() -> None:
@@ -59,12 +91,11 @@ def _warm_up() -> None:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    get_store()
     await run_in_threadpool(_warm_up)
     yield
 
 
-app = FastAPI(title="Dalil QA", version=__version__, lifespan=lifespan,
+app = FastAPI(title="AVA", version=__version__, lifespan=lifespan,
               docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
 
 
@@ -86,8 +117,7 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
 
 
 @app.exception_handler(ApiError)
-@app.exception_handler(StoreError)
-async def _api_error(_req: Request, exc) -> JSONResponse:
+async def _api_error(_req: Request, exc: ApiError) -> JSONResponse:
     return _error(exc.status, exc.code, exc.message)
 
 
@@ -165,12 +195,6 @@ app.add_middleware(BodyLimit)
 
 # --------------------------------------------------------------------------- helpers
 
-def _sid(sid: str) -> str:
-    if not SID_RE.match(sid or ""):
-        raise ApiError(400, "bad_station_id", "Station code must be 6 characters A-Z / 2-9.")
-    return sid
-
-
 def decode_image(data: bytes) -> np.ndarray:
     """Uploaded bytes -> BGR uint8, EXIF orientation applied, very large JPEGs decoded downscaled."""
     if not data:
@@ -197,7 +221,7 @@ async def _form_files(request: Request, names: tuple[str, ...]) -> dict[str, byt
     """Read the named multipart file fields (each at most MAX_UPLOAD bytes)."""
     ctype = request.headers.get("content-type", "")
     if not ctype.startswith("multipart/form-data"):
-        raise ApiError(400, "multipart_required", "Send the image as multipart/form-data.")
+        raise ApiError(400, "multipart_required", "Send the images as multipart/form-data.")
     try:
         form = await request.form(max_files=len(names) + 1, max_fields=8)
     except StarletteHTTPException as exc:
@@ -217,14 +241,12 @@ async def _form_files(request: Request, names: tuple[str, ...]) -> dict[str, byt
     return out
 
 
-async def _json_body(request: Request) -> dict:
-    try:
-        body = json.loads(await request.body() or b"{}")
-    except (json.JSONDecodeError, UnicodeDecodeError):
-        raise ApiError(400, "bad_json", "Request body must be JSON.") from None
-    if not isinstance(body, dict):
-        raise ApiError(400, "bad_json", "Request body must be a JSON object.")
-    return body
+def _parse_methods(methods: str) -> tuple[str, ...]:
+    known = baselines.get_methods()
+    names = tuple(dict.fromkeys(m.strip() for m in methods.split(",") if m.strip()))
+    if not names or any(m not in known for m in names):
+        raise ApiError(400, "bad_methods", "methods must be a comma list of: " + ", ".join(known))
+    return names
 
 
 def _cpu_bound(fn, *args):
@@ -235,16 +257,25 @@ def _cpu_bound(fn, *args):
     return run_in_threadpool(run)
 
 
-def _thumb_data_uri(path: Path) -> str | None:
-    img = cv2.imread(str(path), cv2.IMREAD_COLOR)
-    if img is None:
-        return None
-    h, w = img.shape[:2]
-    s = min(1.0, THUMB_SIDE / max(h, w))
-    if s < 1.0:
-        img = cv2.resize(img, (max(1, round(w * s)), max(1, round(h * s))), interpolation=cv2.INTER_AREA)
-    ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 75])
-    return "data:image/jpeg;base64," + base64.b64encode(buf.tobytes()).decode("ascii") if ok else None
+def _compare(ref_data: bytes, frame_data: bytes, methods: tuple[str, ...]) -> dict:
+    ref_sha = hashlib.sha256(ref_data).hexdigest()
+    frame_sha = hashlib.sha256(frame_data).hexdigest()
+    frame_bgr = decode_image(frame_data)
+
+    key = (ref_sha, tuple(sorted(methods)))
+    ref = ref_cache.get(key)
+    if ref is None:
+        ref = pipeline.prepare_reference([decode_image(ref_data)], PARAMS, key[1])
+        ref_cache.put(key, ref)
+
+    results = pipeline.inspect_compare(ref, frame_bgr, PARAMS, methods)
+    return {
+        "results": {m: pipeline.result_to_json(r) for m, r in results.items()},
+        "overlays": {m: base64.b64encode(r.images.get("overlay", b"")).decode("ascii")
+                     for m, r in results.items()},
+        "reference_sha256": ref_sha,
+        "frame_sha256": frame_sha,
+    }
 
 
 # --------------------------------------------------------------------------- routes
@@ -254,110 +285,11 @@ async def health():
     return {"ok": True, "version": __version__, "params": PARAMS.to_dict()}
 
 
-@app.post("/api/stations")
-async def create_station(request: Request):
-    body = await _json_body(request)
-    name, sku = body.get("name"), body.get("sku")
-    if not isinstance(name, str) or (sku is not None and not isinstance(sku, str)):
-        raise ApiError(400, "invalid_request", "Body must be {\"name\": str, \"sku\": str?}.")
-    return await run_in_threadpool(get_store().create_station, name, sku)
-
-
-@app.get("/api/stations/{sid}")
-async def get_station(sid: str):
-    return await run_in_threadpool(get_store().station_json, _sid(sid))
-
-
-@app.post("/api/stations/{sid}/reference")
-async def add_reference(sid: str, request: Request):
-    _sid(sid)
-    data = (await _form_files(request, ("file",)))["file"]
-    bgr = await run_in_threadpool(decode_image, data)
-    return await _cpu_bound(get_store().add_reference, sid, bgr)
-
-
-@app.delete("/api/stations/{sid}/reference")
-async def clear_reference(sid: str):
-    return await run_in_threadpool(get_store().clear_references, _sid(sid))
-
-
-@app.post("/api/stations/{sid}/inspect")
-async def inspect(sid: str, request: Request, compare: int = 0):
-    _sid(sid)
-    data = (await _form_files(request, ("file",)))["file"]
-    bgr = await run_in_threadpool(decode_image, data)
-    return await _cpu_bound(get_store().inspect, sid, bgr, bool(compare))
-
-
-@app.get("/api/stations/{sid}/inspections")
-async def inspections(sid: str, after: int = 0, limit: int = 50):
-    if after < 0 or not 1 <= limit <= 200:
-        raise ApiError(400, "invalid_request", "after must be >= 0 and limit in 1..200.")
-    return await run_in_threadpool(get_store().inspections, _sid(sid), after, limit)
-
-
-@app.post("/api/stations/{sid}/inspections/{seq}/review")
-async def review(sid: str, seq: int, request: Request):
-    body = await _json_body(request)
-    label = body.get("label")
-    if label not in report.REVIEW_LABELS:
-        raise ApiError(400, "bad_label", "label must be one of: " + ", ".join(report.REVIEW_LABELS))
-    return await run_in_threadpool(get_store().review, _sid(sid), seq, label)
-
-
-@app.get("/api/stations/{sid}/journal.csv")
-async def journal_csv(sid: str):
-    station, records = await run_in_threadpool(get_store().records, _sid(sid))
-    text = report.journal_csv(station, records)
-    return Response(text.encode("utf-8"), media_type="text/csv; charset=utf-8",
-                    headers={"Content-Disposition": f'attachment; filename="dalil_{sid}_journal.csv"'})
-
-
-def _render_report(sid: str) -> str:
-    store = get_store()
-    station, records = store.records(sid)
-    images = {}
-    for rec in records:
-        if report.is_inspection(rec) and rec.get("verdict") == "fail":
-            uri = _thumb_data_uri(store.root / sid / f"o_{int(rec['seq'])}.jpg")
-            if uri:
-                images[str(rec["seq"])] = uri
-    return report.render_shift_report(station, records, images, blobs_for=store.blobs_for(sid))
-
-
-@app.get("/api/stations/{sid}/report")
-async def shift_report(sid: str):
-    html = await run_in_threadpool(_render_report, _sid(sid))
-    return HTMLResponse(html)
-
-
-@app.get("/api/files/{sid}/{name}")
-async def files(sid: str, name: str):
-    path = get_store().file_path(_sid(sid), name)
-    media = "image/png" if name.endswith(".png") else "image/jpeg"
-    return FileResponse(path, media_type=media)
-
-
-def _compare(ref_bgr: np.ndarray, frame_bgr: np.ndarray, methods: tuple) -> dict:
-    ref = pipeline.prepare_reference([ref_bgr], PARAMS, methods)
-    results = pipeline.inspect_compare(ref, frame_bgr, PARAMS, methods)
-    return {
-        "results": {m: pipeline.result_to_json(r) for m, r in results.items()},
-        "overlays": {m: base64.b64encode(r.images.get("overlay", b"")).decode("ascii")
-                     for m, r in results.items()},
-    }
-
-
 @app.post("/api/compare")
 async def compare(request: Request, methods: str = "pbp,pixdiff"):
-    known = baselines.get_methods()
-    names = tuple(dict.fromkeys(m.strip() for m in methods.split(",") if m.strip()))
-    if not names or len(names) > len(known) or any(m not in known for m in names):
-        raise ApiError(400, "bad_methods", "methods must be a comma list of: " + ", ".join(known))
+    names = _parse_methods(methods)
     files = await _form_files(request, ("reference", "frame"))
-    ref_bgr = await run_in_threadpool(decode_image, files["reference"])
-    frame_bgr = await run_in_threadpool(decode_image, files["frame"])
-    return await _cpu_bound(_compare, ref_bgr, frame_bgr, names)
+    return await _cpu_bound(_compare, files["reference"], files["frame"], names)
 
 
 # Static UI last, so it never shadows an API route.
