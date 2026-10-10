@@ -23,6 +23,8 @@ class Params:
     threshold_census: float = 0.25
     mismatch_frac: float = 0.4        # changed area above this fraction => "mismatch" (wrong / absent part)
     min_zone_cells: int = 4
+    contrast_floor: float = 10.0       # PBP: cells where ref and frame window contrast are both below => unchanged
+    score_smooth: int = 3              # box filter (cells) on the change map before zones; <= 1 disables
     merge_gap_px: int = 12
     max_zones: int = 12
     blob_min_count: int = 6
@@ -40,16 +42,19 @@ class Params:
     max_persp_distortion: float = 0.25  # max |h31|*W + |h32|*H of a normalised homography
     align_erode_px: int = 4             # erosion of the warped-after valid mask
     fixed_cam_ncc: float = 0.97         # NCC above this => frame already registered (identity fast path)
-    fixed_cam_max_shift: float = 1.0    # identity path also needs visible (RMS) motion <= this (px)
+    fixed_cam_max_shift: float = 0.5    # identity path also needs visible (RMS) motion <= this (px)
     ecc_min_corr: float = 0.85          # ECC fallback accepted above this correlation
     max_references: int = 5
+    static_background: bool = True      # part moved: also compare the unregistered frame, keep the lower score
+    static_bg_min_shift: float = 3.0    # ... only when the registration moves some image corner by more px
 
     # capture quality / glare
     glare_v: int = 250
     glare_s: int = 40
     glare_dilate_px: int = 9
     max_glare_frac: float = 0.35   # above => retake (glare)
-    min_blur: float = 30.0         # variance of Laplacian below => blurry
+    min_blur: float = 30.0         # contrast-normalised variance of Laplacian below => blurry ...
+    blur_ratio: float = 0.35       # ... and also below this fraction of the reference's score
     dark_mean: float = 35.0        # mean gray below => too dark
     min_coverage: float = 0.5      # below => retake (low_coverage)
 

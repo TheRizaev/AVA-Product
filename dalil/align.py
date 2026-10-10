@@ -11,6 +11,9 @@
    (see `_photonorm`), initialised by phase correlation, accepted only if the final
    correlation >= ``params.ecc_min_corr``.
 
+When ORB finds two independent motions (a part moved over a static belt), the
+non-identity one is taken as the part's (``H``) and the other is kept in ``alt_H``.
+
 The homography maps AFTER (frame) pixel coordinates into the BEFORE (reference)
 frame, so that the frame can be warped onto the reference and compared cell by cell.
 A failed quality gate yields `ok=False` with a machine-readable `reason`, which
@@ -62,6 +65,7 @@ class AlignResult:
     valid: np.ndarray | None         # bool HxW, before pixels covered by warped after
     method: str = "orb"   # "identity" | "orb" | "ecc"; "none" when every strategy failed
     score: float = 0.0    # identity: robust NCC; orb: inlier ratio; ecc: final ECC correlation
+    alt_H: np.ndarray | None = None  # orb only: a second, independent motion (see `align`)
 
 
 def resize_max_side(img: np.ndarray, max_side: int) -> tuple[np.ndarray, float]:
@@ -145,36 +149,70 @@ def _degenerate(H: np.ndarray, shape: tuple[int, int], params: Params) -> bool:
     return persp > params.max_persp_distortion
 
 
+def _fit(src: np.ndarray, dst: np.ndarray, params: Params):
+    """RANSAC homography + least-squares refit on its inliers. Returns (H, inlier mask) or (None, None)."""
+    if len(src) < 4:
+        return None, None
+    H, inl = cv2.findHomography(src, dst, cv2.RANSAC, params.ransac_thresh,
+                                maxIters=5000, confidence=0.999)
+    if H is None or inl is None:
+        return None, None
+    mask = inl.ravel().astype(bool)
+    # Plain least-squares refit on all RANSAC inliers: measurably more accurate
+    # at the image corners than the RANSAC estimate itself.
+    H_ls, _ = cv2.findHomography(src[mask], dst[mask], 0)
+    if H_ls is not None and np.all(np.isfinite(H_ls)):
+        H = H_ls
+    return H, mask
+
+
+def corner_shift(H: np.ndarray | None, shape: tuple[int, int]) -> float:
+    """Largest displacement (px) of the image corners under homography H (0 for None)."""
+    if H is None:
+        return 0.0
+    h, w = shape
+    c = np.array([[0, 0, 1], [w, 0, 1], [0, h, 1], [w, h, 1]], np.float64).T
+    m = H @ c
+    return float(np.abs(m[:2] / m[2] - c[:2]).max())
+
+
 def _align_orb(g_before: np.ndarray, g_after: np.ndarray, params: Params):
-    """ORB + RANSAC. Returns (H or None, reason or None, n_matches, n_inliers)."""
+    """ORB + RANSAC. Returns (H or None, reason or None, n_matches, n_inliers, alt_H or None).
+
+    `alt_H` is a second motion fitted on the outliers of the first one, when it has at
+    least params.min_inliers inliers and moves the image corners clearly differently
+    (e.g. the part was moved over a static belt: one motion is the part, one the background).
+    """
     kp_b, d_b = _detect(g_before, params.orb_features)
     kp_a, d_a = _detect(g_after, params.orb_features)
     if d_b is None or d_a is None or len(kp_b) < _MIN_KEYPOINTS or len(kp_a) < _MIN_KEYPOINTS:
-        return None, "too_few_features", 0, 0
+        return None, "too_few_features", 0, 0, None
 
     matches = _match(d_a, d_b, params.ratio_test)
     n_matches = len(matches)
     if n_matches < max(4, params.min_inliers):
-        return None, "too_few_inliers", n_matches, 0
+        return None, "too_few_inliers", n_matches, 0, None
 
     src = np.float32([kp_a[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
     dst = np.float32([kp_b[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
-    H, inl = cv2.findHomography(src, dst, cv2.RANSAC, params.ransac_thresh,
-                                maxIters=5000, confidence=0.999)
-    if H is None or inl is None:
-        return None, "too_few_inliers", n_matches, 0
-    n_inliers = int(inl.sum())
+    H, mask = _fit(src, dst, params)
+    if H is None:
+        return None, "too_few_inliers", n_matches, 0, None
+    n_inliers = int(mask.sum())
     if n_inliers < params.min_inliers or n_inliers / n_matches < params.min_inlier_ratio:
-        return None, "too_few_inliers", n_matches, n_inliers
-    # Plain least-squares refit on all RANSAC inliers: measurably more accurate
-    # at the image corners than the RANSAC estimate itself.
-    mask = inl.ravel().astype(bool)
-    H_ls, _ = cv2.findHomography(src[mask], dst[mask], 0)
-    if H_ls is not None and np.all(np.isfinite(H_ls)):
-        H = H_ls
+        return None, "too_few_inliers", n_matches, n_inliers, None
     if _degenerate(H, g_before.shape, params):
-        return None, "degenerate_homography", n_matches, n_inliers
-    return H / H[2, 2], None, n_matches, n_inliers
+        return None, "degenerate_homography", n_matches, n_inliers, None
+
+    alt = None
+    rest = ~mask
+    if rest.sum() >= params.min_inliers:
+        H2, mask2 = _fit(src[rest], dst[rest], params)
+        if (H2 is not None and mask2.sum() >= params.min_inliers
+                and not _degenerate(H2, g_before.shape, params)
+                and corner_shift(np.linalg.inv(H) @ H2, g_before.shape) > 2 * params.ransac_thresh):
+            alt = H2 / H2[2, 2]
+    return H / H[2, 2], None, n_matches, n_inliers, alt
 
 
 # ------------------------------------------------------- identity fast path / ECC
@@ -314,8 +352,10 @@ def _warp(after_bgr: np.ndarray, H: np.ndarray, shape: tuple[int, int],
           params: Params) -> tuple[np.ndarray, np.ndarray]:
     """Warp the frame into the reference frame; returns (warped, valid mask)."""
     h, w = shape
+    # Replicated (not black) border: a cover that reaches the image edge by a sub-pixel
+    # margin would otherwise blend black into the last valid row/column.
     warped = cv2.warpPerspective(after_bgr, H, (w, h), flags=cv2.INTER_LINEAR,
-                                 borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+                                 borderMode=cv2.BORDER_REPLICATE)
     ones = np.ones(after_bgr.shape[:2], np.uint8)
     cover = cv2.warpPerspective(ones, H, (w, h), flags=cv2.INTER_NEAREST,
                                 borderMode=cv2.BORDER_CONSTANT, borderValue=0)
@@ -350,12 +390,16 @@ def align(before_bgr: np.ndarray, after_bgr: np.ndarray, params: Params) -> Alig
         warped, valid = _warp(after_bgr, H, shape, params)
         return AlignResult(True, None, H, 0, 0, 0.0, warped, valid, method="identity", score=ncc)
 
-    H, reason, n_matches, n_inliers = _align_orb(g_before, g_after, params)
+    H, reason, n_matches, n_inliers, alt = _align_orb(g_before, g_after, params)
     if H is not None:
         ratio = n_inliers / n_matches
+        # Fixed camera: if the dominant motion is (near) identity, it is the static
+        # background and the second motion is the part - register on the part.
+        if alt is not None and corner_shift(H, shape) <= params.ransac_thresh < corner_shift(alt, shape):
+            H, alt = alt, H
         warped, valid = _warp(after_bgr, H, shape, params)
         return AlignResult(True, None, H, n_matches, n_inliers, ratio, warped, valid,
-                           method="orb", score=ratio)
+                           method="orb", score=ratio, alt_H=alt)
 
     if reason in _ECC_FALLBACK_REASONS:
         found = _ecc(g_before, g_after, params)
