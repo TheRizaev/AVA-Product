@@ -737,12 +737,13 @@ def _render_stamped(rng, h, w, k):
     fg = _screen(fg, bend_line, 0.35)
 
     # Embossed ribs (stiffeners) in the central band.
+    ribs = np.zeros((h, w), np.float32)
     for _ in range(int(rng.integers(1, 3))):
         rx = cx + rng.uniform(-0.15, 0.15) * hw
         ry = cy + rng.uniform(-0.35, 0.35) * hh
         rh = rng.uniform(8, 16) * k + 1
-        rib = _full(h, w, rx, ry, rng.uniform(0.35, 0.55) * hw, rh, rh)
-        fg = fg * (1.0 + 0.35 * _emboss(rib, 2.0 * k + 0.5))[..., None]
+        ribs = np.maximum(ribs, _full(h, w, rx, ry, rng.uniform(0.35, 0.55) * hw, rh, rh))
+    fg = fg * (1.0 + 0.35 * _emboss(ribs, 2.0 * k + 0.5))[..., None]
 
     # Punched holes near the corners / along the long edges, plus an optional slot.
     holes, hole_cov, rings = [], np.zeros((h, w), np.float32), np.zeros((h, w), np.float32)
@@ -845,15 +846,16 @@ def _render_molded(rng, h, w, k):
     # Bosses (cylinders) with a blind bore, in the right part.
     holes = []
     nb = int(rng.integers(2, 5))
-    for i in range(nb):
+    bosses, bores = np.zeros((h, w), np.float32), np.zeros((h, w), np.float32)
+    for i in range(nb):  # stacked vertically, so they never overlap
         bx = cx + rng.uniform(0.25, 0.75) * hw
         by = cy - 0.7 * hh + 1.4 * hh * (i + 0.5) / nb
         br = rng.uniform(16, 28) * k + 2
-        boss = _disk(h, w, bx, by, br)
-        fg = fg * (1.0 + 0.15 * boss[..., None]) + relief(boss, 50.0, 18.0)
-        bore = _disk(h, w, bx, by, 0.42 * br)
-        fg = fg * (1.0 - 0.6 * bore[..., None]) - relief(bore, 20.0, 0.0)
+        bosses = np.maximum(bosses, _disk(h, w, bx, by, br))
+        bores = np.maximum(bores, _disk(h, w, bx, by, 0.42 * br))
         holes.append((bx, by, 0.42 * br))
+    fg = fg * (1.0 + 0.15 * bosses[..., None]) + relief(bosses, 50.0, 18.0)
+    fg = fg * (1.0 - 0.6 * bores[..., None]) - relief(bores, 20.0, 0.0)
     # Faint ejector pin marks (thin circles).
     for _ in range(int(rng.integers(3, 7))):
         ex, ey = cx + rng.uniform(-0.9, 0.9) * hw, cy + rng.uniform(-0.9, 0.9) * hh
@@ -994,8 +996,10 @@ def compose_layers(layers: dict, fg=None, alpha=None, shadow=None) -> np.ndarray
     alpha = layers["alpha"] if alpha is None else alpha
     shadow = layers["shadow"] if shadow is None else shadow
     a = alpha[..., None]
-    img = layers["bg"] * (1.0 - shadow[..., None]) * (1.0 - a) + fg * a
-    return img * layers["vignette"][..., None]
+    img = layers["bg"] * ((1.0 - shadow) * (1.0 - alpha))[..., None]
+    img += fg * a
+    img *= layers["vignette"][..., None]
+    return img
 
 
 def make_part(rng: np.random.Generator, kind: str | None = None,
