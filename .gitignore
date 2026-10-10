@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+_data/
+*.pdf
+
+# datasets / large eval artefacts (never commit images)
+data/visa/
+data/pairs/**/*.jpg
+data/pairs/**/*.jpeg
+data/pairs/**/*.png
+eval/results/tmp/
+eval/results/**/*.jpg
+eval/results/**/*.png
+
+# saved web pages
+*.html
+!web/*.html
