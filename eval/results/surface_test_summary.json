@@ -1,0 +1,3207 @@
+{
+ "command": "python -m eval.benchmark_surface --n 4 --clean-mult 3 --seed 0 --workers 10",
+ "date": "2026-10-10 18:02 UTC",
+ "env": {
+  "cpu": "13th Gen Intel(R) Core(TM) i5-13450HX",
+  "logical_cores": 16,
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "numpy": "2.2.6",
+  "opencv": "4.12.0",
+  "git": "26c853e + uncommitted changes in dalil/eval",
+  "workers": 10
+ },
+ "seed": 0,
+ "n": 4,
+ "clean_mult": 3,
+ "size": [
+  720,
+  1280
+ ],
+ "grid": {
+  "kinds": [
+   "painted",
+   "plastic",
+   "brushed",
+   "glass_dark"
+  ],
+  "lightings": [
+   "none",
+   "drift_gain",
+   "gamma",
+   "window_gradient",
+   "lamp_aging",
+   "auto_exposure",
+   "specular",
+   "hand_shadow"
+  ],
+  "defects": [
+   "none",
+   "scratch",
+   "chip",
+   "stain",
+   "dent",
+   "burr",
+   "sticker"
+  ]
+ },
+ "methods": [
+  "pbp",
+  "census",
+  "gradient"
+ ],
+ "thresholds": {
+  "pbp": 0.23764,
+  "census": 0.14604,
+  "gradient": 0.53498
+ },
+ "params": {
+  "work_max_side": 1024,
+  "blur_sigma": 1.5,
+  "win": 8,
+  "step": 4,
+  "eps": 0.05,
+  "flat_floor": 6.0,
+  "tolerance": 1,
+  "threshold": 0.60976,
+  "threshold_pixdiff": 0.2512,
+  "threshold_ssim": 0.13503,
+  "threshold_census": 0.39137,
+  "mismatch_frac": 0.15,
+  "min_zone_cells": 4,
+  "contrast_floor": 10.0,
+  "score_smooth": 3,
+  "merge_gap_px": 12,
+  "max_zones": 12,
+  "blob_min_count": 6,
+  "water_blob_max_cells": 40,
+  "water_min_roundness": 0.45,
+  "removed_ratio": 0.6,
+  "added_ratio": 1.6,
+  "orb_features": 3000,
+  "ratio_test": 0.75,
+  "ransac_thresh": 4.0,
+  "min_inliers": 40,
+  "min_inlier_ratio": 0.25,
+  "max_persp_distortion": 0.25,
+  "align_erode_px": 4,
+  "fixed_cam_ncc": 0.97,
+  "fixed_cam_max_shift": 0.25,
+  "ecc_min_corr": 0.85,
+  "max_references": 5,
+  "static_background": true,
+  "static_bg_min_shift": 3.0,
+  "part_roi_margin_px": 8,
+  "part_min_inliers": 15,
+  "part_ncc_margin": 0.05,
+  "glare_v": 250,
+  "glare_s": 40,
+  "glare_dilate_px": 9,
+  "max_glare_frac": 0.35,
+  "min_blur": 30.0,
+  "blur_ratio": 0.15,
+  "dark_mean": 35.0,
+  "min_coverage": 0.5,
+  "border_margin_px": 12,
+  "surface_threshold": 0.23764,
+  "surface_samples": 768,
+  "surface_k": 5,
+  "surface_exclude_cells": 6,
+  "surface_candidates": 8,
+  "surface_seed": 20261011,
+  "surface_noise_floor": 6.0,
+  "surface_noise_full": 14.0,
+  "surface_rel_floor": 2.5,
+  "surface_rel_full": 5.0,
+  "surface_contrast_weight": 0.8,
+  "surface_contrast_z": 2.5,
+  "surface_contrast_span": 3.0,
+  "surface_smooth": 2,
+  "surface_glare_dilate_px": 12,
+  "surface_glare_halo_px": 320,
+  "surface_glare_elev": 5.0,
+  "threshold_surface_gradient": 0.53498,
+  "threshold_surface_census": 0.14604
+ },
+ "wall_s": 240.96785799995996,
+ "summary": {
+  "all": {
+   "pbp": {
+    "n_photos": 1152,
+    "n_defect": 768,
+    "n_good": 384,
+    "recall": 0.9596354166666666,
+    "recall_ci": [
+     0.9432755440257556,
+     0.9714199064397284
+    ],
+    "detected": 737,
+    "escape_rate": 0.03515625,
+    "escape_ci": [
+     0.024272120955723515,
+     0.050667607610344965
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 30,
+    "miss_scored": 1,
+    "fa_rate": 0.16927083333333334,
+    "fa_ci": [
+     0.13508254150167576,
+     0.21001091933388188
+    ],
+    "false_alarms": 65,
+    "false_zones_per_good": 0.18229166666666666,
+    "false_zones_per_photo": 0.1345486111111111,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.0033236388100237953
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9175845486111113,
+    "mean_ms_parallel": 352.26874999999995,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 1152,
+    "n_defect": 768,
+    "n_good": 384,
+    "recall": 0.9596354166666666,
+    "recall_ci": [
+     0.9432755440257556,
+     0.9714199064397284
+    ],
+    "detected": 737,
+    "escape_rate": 0.033854166666666664,
+    "escape_ci": [
+     0.02320595479302511,
+     0.04914256853093151
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 30,
+    "miss_scored": 1,
+    "fa_rate": 0.17447916666666666,
+    "fa_ci": [
+     0.13979456626181197,
+     0.21561238337948485
+    ],
+    "false_alarms": 67,
+    "false_zones_per_good": 0.1796875,
+    "false_zones_per_photo": 0.12760416666666666,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.0033236388100237953
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9175845486111113,
+    "mean_ms_parallel": 211.21128472222222,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 1152,
+    "n_defect": 768,
+    "n_good": 384,
+    "recall": 0.9596354166666666,
+    "recall_ci": [
+     0.9432755440257556,
+     0.9714199064397284
+    ],
+    "detected": 737,
+    "escape_rate": 0.03515625,
+    "escape_ci": [
+     0.024272120955723515,
+     0.050667607610344965
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 30,
+    "miss_scored": 1,
+    "fa_rate": 0.15625,
+    "fa_ci": [
+     0.12335834150412468,
+     0.19595139731708483
+    ],
+    "false_alarms": 60,
+    "false_zones_per_good": 0.15885416666666666,
+    "false_zones_per_photo": 0.11805555555555555,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.0033236388100237953
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9175845486111113,
+    "mean_ms_parallel": 122.25321180555557,
+    "retake_reasons": {}
+   }
+  },
+  "none+monotone": {
+   "pbp": {
+    "n_photos": 864,
+    "n_defect": 576,
+    "n_good": 288,
+    "recall": 0.9791666666666666,
+    "recall_ci": [
+     0.9639409745800624,
+     0.9880431534990544
+    ],
+    "detected": 564,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.011956846500945612,
+     0.03605902541993761
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 12,
+    "miss_scored": 0,
+    "fa_rate": 0.052083333333333336,
+    "fa_ci": [
+     0.03181368244310767,
+     0.08414511164245109
+    ],
+    "false_alarms": 15,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.056712962962962965,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     4.336808689942018e-19,
+     0.004426614257717076
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9353694444444443,
+    "mean_ms_parallel": 343.27534722222225,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 864,
+    "n_defect": 576,
+    "n_good": 288,
+    "recall": 0.9791666666666666,
+    "recall_ci": [
+     0.9639409745800624,
+     0.9880431534990544
+    ],
+    "detected": 564,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.011956846500945612,
+     0.03605902541993761
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 12,
+    "miss_scored": 0,
+    "fa_rate": 0.059027777777777776,
+    "fa_ci": [
+     0.03717686952117083,
+     0.09248798977236378
+    ],
+    "false_alarms": 17,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.046296296296296294,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     4.336808689942018e-19,
+     0.004426614257717076
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9353694444444443,
+    "mean_ms_parallel": 202.2371527777778,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 864,
+    "n_defect": 576,
+    "n_good": 288,
+    "recall": 0.9791666666666666,
+    "recall_ci": [
+     0.9639409745800624,
+     0.9880431534990544
+    ],
+    "detected": 564,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.011956846500945612,
+     0.03605902541993761
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 12,
+    "miss_scored": 0,
+    "fa_rate": 0.03125,
+    "fa_ci": [
+     0.016526015692297738,
+     0.0583145827693335
+    ],
+    "false_alarms": 9,
+    "false_zones_per_good": 0.03125,
+    "false_zones_per_photo": 0.034722222222222224,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     4.336808689942018e-19,
+     0.004426614257717076
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9353694444444443,
+    "mean_ms_parallel": 119.40879629629632,
+    "retake_reasons": {}
+   }
+  },
+  "none": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9895833333333334,
+    "recall_ci": [
+     0.9433324450728878,
+     0.9981588771815634
+    ],
+    "detected": 95,
+    "escape_rate": 0.010416666666666666,
+    "escape_ci": [
+     0.001841122818436635,
+     0.056667554927112326
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 1,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.020833333333333332,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354166666666668,
+    "mean_ms_parallel": 362.2340277777778,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9895833333333334,
+    "recall_ci": [
+     0.9433324450728878,
+     0.9981588771815634
+    ],
+    "detected": 95,
+    "escape_rate": 0.010416666666666666,
+    "escape_ci": [
+     0.001841122818436635,
+     0.056667554927112326
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 1,
+    "miss_scored": 0,
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_zones_per_good": 0.041666666666666664,
+    "false_zones_per_photo": 0.027777777777777776,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354166666666668,
+    "mean_ms_parallel": 205.61250000000004,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9895833333333334,
+    "recall_ci": [
+     0.9433324450728878,
+     0.9981588771815634
+    ],
+    "detected": 95,
+    "escape_rate": 0.010416666666666666,
+    "escape_ci": [
+     0.001841122818436635,
+     0.056667554927112326
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 1,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.013888888888888888,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354166666666668,
+    "mean_ms_parallel": 124.2888888888889,
+    "retake_reasons": {}
+   }
+  },
+  "monotone": {
+   "pbp": {
+    "n_photos": 720,
+    "n_defect": 480,
+    "n_good": 240,
+    "recall": 0.9770833333333333,
+    "recall_ci": [
+     0.9594342159747407,
+     0.9871565691086419
+    ],
+    "detected": 469,
+    "escape_rate": 0.022916666666666665,
+    "escape_ci": [
+     0.012843430891358075,
+     0.04056578402525926
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 11,
+    "miss_scored": 0,
+    "fa_rate": 0.0625,
+    "fa_ci": [
+     0.03823777547321912,
+     0.10054740310172462
+    ],
+    "false_alarms": 15,
+    "false_zones_per_good": 0.075,
+    "false_zones_per_photo": 0.06388888888888888,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.005307238489746928
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9353599999999999,
+    "mean_ms_parallel": 339.48361111111114,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 720,
+    "n_defect": 480,
+    "n_good": 240,
+    "recall": 0.9770833333333333,
+    "recall_ci": [
+     0.9594342159747407,
+     0.9871565691086419
+    ],
+    "detected": 469,
+    "escape_rate": 0.022916666666666665,
+    "escape_ci": [
+     0.012843430891358075,
+     0.04056578402525926
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 11,
+    "miss_scored": 0,
+    "fa_rate": 0.0625,
+    "fa_ci": [
+     0.03823777547321912,
+     0.10054740310172462
+    ],
+    "false_alarms": 15,
+    "false_zones_per_good": 0.06666666666666667,
+    "false_zones_per_photo": 0.05,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.005307238489746928
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9353599999999999,
+    "mean_ms_parallel": 201.5620833333333,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 720,
+    "n_defect": 480,
+    "n_good": 240,
+    "recall": 0.9770833333333333,
+    "recall_ci": [
+     0.9594342159747407,
+     0.9871565691086419
+    ],
+    "detected": 469,
+    "escape_rate": 0.022916666666666665,
+    "escape_ci": [
+     0.012843430891358075,
+     0.04056578402525926
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 11,
+    "miss_scored": 0,
+    "fa_rate": 0.0375,
+    "fa_ci": [
+     0.019851917405050365,
+     0.06972098565989014
+    ],
+    "false_alarms": 9,
+    "false_zones_per_good": 0.0375,
+    "false_zones_per_photo": 0.03888888888888889,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.005307238489746928
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9353599999999999,
+    "mean_ms_parallel": 118.43277777777779,
+    "retake_reasons": {}
+   }
+  },
+  "non_monotone": {
+   "pbp": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9010416666666666,
+    "recall_ci": [
+     0.8506196921810738,
+     0.9357300925429071
+    ],
+    "detected": 173,
+    "escape_rate": 0.078125,
+    "escape_ci": [
+     0.04791348285135001,
+     0.12488739295848812
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 18,
+    "miss_scored": 1,
+    "fa_rate": 0.5208333333333334,
+    "fa_ci": [
+     0.42203591721406514,
+     0.618027543307401
+    ],
+    "false_alarms": 50,
+    "false_zones_per_good": 0.5416666666666666,
+    "false_zones_per_photo": 0.3680555555555556,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.8642298611111112,
+    "mean_ms_parallel": 379.2489583333333,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9010416666666666,
+    "recall_ci": [
+     0.8506196921810738,
+     0.9357300925429071
+    ],
+    "detected": 173,
+    "escape_rate": 0.07291666666666667,
+    "escape_ci": [
+     0.04392834361238834,
+     0.1186601973309046
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 18,
+    "miss_scored": 1,
+    "fa_rate": 0.5208333333333334,
+    "fa_ci": [
+     0.42203591721406514,
+     0.618027543307401
+    ],
+    "false_alarms": 50,
+    "false_zones_per_good": 0.53125,
+    "false_zones_per_photo": 0.3715277777777778,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.8642298611111112,
+    "mean_ms_parallel": 238.13368055555554,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9010416666666666,
+    "recall_ci": [
+     0.8506196921810738,
+     0.9357300925429071
+    ],
+    "detected": 173,
+    "escape_rate": 0.078125,
+    "escape_ci": [
+     0.04791348285135001,
+     0.12488739295848812
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 18,
+    "miss_scored": 1,
+    "fa_rate": 0.53125,
+    "fa_ci": [
+     0.4321542477927087,
+     0.6279409429894902
+    ],
+    "false_alarms": 51,
+    "false_zones_per_good": 0.5416666666666666,
+    "false_zones_per_photo": 0.3680555555555556,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.8642298611111112,
+    "mean_ms_parallel": 130.78645833333334,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:drift_gain": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9479166666666666,
+    "recall_ci": [
+     0.8838136706327892,
+     0.97755073057873
+    ],
+    "detected": 91,
+    "escape_rate": 0.052083333333333336,
+    "escape_ci": [
+     0.022449269421270103,
+     0.11618632936721088
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 5,
+    "miss_scored": 0,
+    "fa_rate": 0.10416666666666667,
+    "fa_ci": [
+     0.045321050901178245,
+     0.2216768812614093
+    ],
+    "false_alarms": 5,
+    "false_zones_per_good": 0.10416666666666667,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9351944444444444,
+    "mean_ms_parallel": 340.2902777777778,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9479166666666666,
+    "recall_ci": [
+     0.8838136706327892,
+     0.97755073057873
+    ],
+    "detected": 91,
+    "escape_rate": 0.052083333333333336,
+    "escape_ci": [
+     0.022449269421270103,
+     0.11618632936721088
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 5,
+    "miss_scored": 0,
+    "fa_rate": 0.08333333333333333,
+    "fa_ci": [
+     0.03288322434995555,
+     0.19553565161066291
+    ],
+    "false_alarms": 4,
+    "false_zones_per_good": 0.08333333333333333,
+    "false_zones_per_photo": 0.04861111111111111,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9351944444444444,
+    "mean_ms_parallel": 196.02777777777777,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9479166666666666,
+    "recall_ci": [
+     0.8838136706327892,
+     0.97755073057873
+    ],
+    "detected": 91,
+    "escape_rate": 0.052083333333333336,
+    "escape_ci": [
+     0.022449269421270103,
+     0.11618632936721088
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 5,
+    "miss_scored": 0,
+    "fa_rate": 0.0625,
+    "fa_ci": [
+     0.021482843131227225,
+     0.1683569766274222
+    ],
+    "false_alarms": 3,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.034722222222222224,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9351944444444444,
+    "mean_ms_parallel": 119.8763888888889,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:gamma": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.04861111111111111,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 328.8013888888889,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_zones_per_good": 0.041666666666666664,
+    "false_zones_per_photo": 0.027777777777777776,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 194.92152777777778,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.020833333333333332,
+    "fa_ci": [
+     0.003687015979399688,
+     0.10899469137531158
+    ],
+    "false_alarms": 1,
+    "false_zones_per_good": 0.020833333333333332,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 116.1847222222222,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:window_gradient": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.08333333333333333,
+    "fa_ci": [
+     0.03288322434995555,
+     0.19553565161066291
+    ],
+    "false_alarms": 4,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.14583333333333334,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 349.7013888888889,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.14583333333333334,
+    "fa_ci": [
+     0.07248157413793963,
+     0.27167447042858606
+    ],
+    "false_alarms": 7,
+    "false_zones_per_good": 0.16666666666666666,
+    "false_zones_per_photo": 0.13194444444444445,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 207.29166666666666,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.10416666666666667,
+    "fa_ci": [
+     0.045321050901178245,
+     0.2216768812614093
+    ],
+    "false_alarms": 5,
+    "false_zones_per_good": 0.10416666666666667,
+    "false_zones_per_photo": 0.09027777777777778,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 119.31666666666668,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:lamp_aging": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.0625,
+    "fa_ci": [
+     0.021482843131227225,
+     0.1683569766274222
+    ],
+    "false_alarms": 3,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 336.0993055555556,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_zones_per_good": 0.041666666666666664,
+    "false_zones_per_photo": 0.013888888888888888,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 202.6673611111111,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.006944444444444444,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 117.60138888888888,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:auto_exposure": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8702889506383905,
+     0.9710437203123955
+    ],
+    "detected": 90,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.028956279687604516,
+     0.12971104936160943
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 0,
+    "fa_rate": 0.020833333333333332,
+    "fa_ci": [
+     0.003687015979399688,
+     0.10899469137531158
+    ],
+    "false_alarms": 1,
+    "false_zones_per_good": 0.020833333333333332,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9351055555555559,
+    "mean_ms_parallel": 342.52569444444447,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8702889506383905,
+     0.9710437203123955
+    ],
+    "detected": 90,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.028956279687604516,
+     0.12971104936160943
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.027777777777777776,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9351055555555559,
+    "mean_ms_parallel": 206.90208333333334,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8702889506383905,
+     0.9710437203123955
+    ],
+    "detected": 90,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.028956279687604516,
+     0.12971104936160943
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.020833333333333332,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9351055555555559,
+    "mean_ms_parallel": 119.1847222222222,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:specular": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.8020833333333334,
+    "recall_ci": [
+     0.7114464935801418,
+     0.8694736839811154
+    ],
+    "detected": 77,
+    "escape_rate": 0.15625,
+    "escape_ci": [
+     0.09703624472178266,
+     0.2419166566740283
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 18,
+    "miss_scored": 1,
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.04861111111111111,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.7929597222222222,
+    "mean_ms_parallel": 362.87222222222226,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.8020833333333334,
+    "recall_ci": [
+     0.7114464935801418,
+     0.8694736839811154
+    ],
+    "detected": 77,
+    "escape_rate": 0.14583333333333334,
+    "escape_ci": [
+     0.0889012461783118,
+     0.2300199249567662
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 18,
+    "miss_scored": 1,
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_zones_per_good": 0.041666666666666664,
+    "false_zones_per_photo": 0.05555555555555555,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.7929597222222222,
+    "mean_ms_parallel": 224.92291666666665,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 0.8020833333333334,
+    "recall_ci": [
+     0.7114464935801418,
+     0.8694736839811154
+    ],
+    "detected": 77,
+    "escape_rate": 0.15625,
+    "escape_ci": [
+     0.09703624472178266,
+     0.2419166566740283
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 18,
+    "miss_scored": 1,
+    "fa_rate": 0.0625,
+    "fa_ci": [
+     0.021482843131227225,
+     0.1683569766274222
+    ],
+    "false_alarms": 3,
+    "false_zones_per_good": 0.0625,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.7929597222222222,
+    "mean_ms_parallel": 145.00902777777776,
+    "retake_reasons": {}
+   }
+  },
+  "lighting:hand_shadow": {
+   "pbp": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 1.0,
+    "fa_ci": [
+     0.9258973488472576,
+     0.9999999999999999
+    ],
+    "false_alarms": 48,
+    "false_zones_per_good": 1.0208333333333333,
+    "false_zones_per_photo": 0.6875,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 395.62569444444443,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 1.0,
+    "fa_ci": [
+     0.9258973488472576,
+     0.9999999999999999
+    ],
+    "false_alarms": 48,
+    "false_zones_per_good": 1.0208333333333333,
+    "false_zones_per_photo": 0.6875,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 251.34444444444443,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 144,
+    "n_defect": 96,
+    "n_good": 48,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": 1.0,
+    "fa_ci": [
+     0.9258973488472576,
+     0.9999999999999999
+    ],
+    "false_alarms": 48,
+    "false_zones_per_good": 1.0208333333333333,
+    "false_zones_per_photo": 0.6944444444444444,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.025984567266588023
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9355000000000001,
+    "mean_ms_parallel": 116.56388888888887,
+    "retake_reasons": {}
+   }
+  },
+  "kind:painted": {
+   "pbp": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8939464188171837,
+     0.9638897099726136
+    ],
+    "detected": 180,
+    "escape_rate": 0.057291666666666664,
+    "escape_ci": [
+     0.0322881930436125,
+     0.09966334330004481
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 12,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.09375,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9176756944444446,
+    "mean_ms_parallel": 358.02743055555555,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8939464188171837,
+     0.9638897099726136
+    ],
+    "detected": 180,
+    "escape_rate": 0.057291666666666664,
+    "escape_ci": [
+     0.0322881930436125,
+     0.09966334330004481
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 12,
+    "miss_scored": 0,
+    "fa_rate": 0.13541666666666666,
+    "fa_ci": [
+     0.08087629796762788,
+     0.21801314290671706
+    ],
+    "false_alarms": 13,
+    "false_zones_per_good": 0.13541666666666666,
+    "false_zones_per_photo": 0.10069444444444445,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9176756944444446,
+    "mean_ms_parallel": 210.66180555555553,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8939464188171837,
+     0.9638897099726136
+    ],
+    "detected": 180,
+    "escape_rate": 0.057291666666666664,
+    "escape_ci": [
+     0.0322881930436125,
+     0.09966334330004481
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 12,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.09375,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9176756944444446,
+    "mean_ms_parallel": 122.11909722222224,
+    "retake_reasons": {}
+   }
+  },
+  "kind:plastic": {
+   "pbp": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9635416666666666,
+    "recall_ci": [
+     0.9266682232288456,
+     0.9822295798936779
+    ],
+    "detected": 185,
+    "escape_rate": 0.036458333333333336,
+    "escape_ci": [
+     0.0177704201063221,
+     0.07333177677115439
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 7,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.07291666666666667,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9174145833333335,
+    "mean_ms_parallel": 327.4399305555555,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9635416666666666,
+    "recall_ci": [
+     0.9266682232288456,
+     0.9822295798936779
+    ],
+    "detected": 185,
+    "escape_rate": 0.03125,
+    "escape_ci": [
+     0.014399085841634563,
+     0.06649077616929672
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 7,
+    "miss_scored": 0,
+    "fa_rate": 0.1875,
+    "fa_ci": [
+     0.12202372252361303,
+     0.2770243696543969
+    ],
+    "false_alarms": 18,
+    "false_zones_per_good": 0.1875,
+    "false_zones_per_photo": 0.1076388888888889,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9174145833333335,
+    "mean_ms_parallel": 196.0361111111111,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9635416666666666,
+    "recall_ci": [
+     0.9266682232288456,
+     0.9822295798936779
+    ],
+    "detected": 185,
+    "escape_rate": 0.036458333333333336,
+    "escape_ci": [
+     0.0177704201063221,
+     0.07333177677115439
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 7,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.07291666666666667,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9174145833333335,
+    "mean_ms_parallel": 119.53159722222222,
+    "retake_reasons": {}
+   }
+  },
+  "kind:brushed": {
+   "pbp": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9635416666666666,
+    "recall_ci": [
+     0.9266682232288456,
+     0.9822295798936779
+    ],
+    "detected": 185,
+    "escape_rate": 0.026041666666666668,
+    "escape_ci": [
+     0.01117344421564433,
+     0.059504082928741736
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 1,
+    "fa_rate": 0.3020833333333333,
+    "fa_ci": [
+     0.2193102457465474,
+     0.40008687929952563
+    ],
+    "false_alarms": 29,
+    "false_zones_per_good": 0.3541666666666667,
+    "false_zones_per_photo": 0.28125,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9186041666666667,
+    "mean_ms_parallel": 386.7767361111111,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9635416666666666,
+    "recall_ci": [
+     0.9266682232288456,
+     0.9822295798936779
+    ],
+    "detected": 185,
+    "escape_rate": 0.026041666666666668,
+    "escape_ci": [
+     0.01117344421564433,
+     0.059504082928741736
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 1,
+    "fa_rate": 0.25,
+    "fa_ci": [
+     0.17413849417796745,
+     0.3450999795644406
+    ],
+    "false_alarms": 24,
+    "false_zones_per_good": 0.2708333333333333,
+    "false_zones_per_photo": 0.21180555555555555,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9186041666666667,
+    "mean_ms_parallel": 240.6607638888889,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9635416666666666,
+    "recall_ci": [
+     0.9266682232288456,
+     0.9822295798936779
+    ],
+    "detected": 185,
+    "escape_rate": 0.026041666666666668,
+    "escape_ci": [
+     0.01117344421564433,
+     0.059504082928741736
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 1,
+    "fa_rate": 0.25,
+    "fa_ci": [
+     0.17413849417796745,
+     0.3450999795644406
+    ],
+    "false_alarms": 24,
+    "false_zones_per_good": 0.2604166666666667,
+    "false_zones_per_photo": 0.2152777777777778,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9186041666666667,
+    "mean_ms_parallel": 124.34097222222223,
+    "retake_reasons": {}
+   }
+  },
+  "kind:glass_dark": {
+   "pbp": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9739583333333334,
+    "recall_ci": [
+     0.9404959170712583,
+     0.9888265557843556
+    ],
+    "detected": 187,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.008130652411583922,
+     0.052334539866256934
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 5,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.09027777777777778,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9166437500000002,
+    "mean_ms_parallel": 336.8309027777778,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9739583333333334,
+    "recall_ci": [
+     0.9404959170712583,
+     0.9888265557843556
+    ],
+    "detected": 187,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.008130652411583922,
+     0.052334539866256934
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 5,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.09027777777777778,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9166437500000002,
+    "mean_ms_parallel": 197.48645833333336,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 288,
+    "n_defect": 192,
+    "n_good": 96,
+    "recall": 0.9739583333333334,
+    "recall_ci": [
+     0.9404959170712583,
+     0.9888265557843556
+    ],
+    "detected": 187,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.008130652411583922,
+     0.052334539866256934
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 5,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.07297128992395069,
+     0.2058864206896613
+    ],
+    "false_alarms": 12,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.09027777777777778,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01316330502573999
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9166437500000002,
+    "mean_ms_parallel": 123.02118055555555,
+    "retake_reasons": {}
+   }
+  }
+ },
+ "per_defect": {
+  "scratch": {
+   "pbp": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.08333333333333333,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9354999999999999,
+    "mean_ms_parallel": 339.36666666666673,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.052083333333333336,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9354999999999999,
+    "mean_ms_parallel": 201.14375000000004,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.07291666666666667,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9354999999999999,
+    "mean_ms_parallel": 120.659375,
+    "retake_reasons": {}
+   }
+  },
+  "chip": {
+   "pbp": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.96875,
+    "recall_ci": [
+     0.9121117385108631,
+     0.989316123222122
+    ],
+    "detected": 93,
+    "escape_rate": 0.03125,
+    "escape_ci": [
+     0.010683876777878007,
+     0.08788826148913696
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 3,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.0625,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9352906249999999,
+    "mean_ms_parallel": 334.6041666666667,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.96875,
+    "recall_ci": [
+     0.9121117385108631,
+     0.989316123222122
+    ],
+    "detected": 93,
+    "escape_rate": 0.03125,
+    "escape_ci": [
+     0.010683876777878007,
+     0.08788826148913696
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 3,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.0625,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9352906249999999,
+    "mean_ms_parallel": 206.65937500000004,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.96875,
+    "recall_ci": [
+     0.9121117385108631,
+     0.989316123222122
+    ],
+    "detected": 93,
+    "escape_rate": 0.03125,
+    "escape_ci": [
+     0.010683876777878007,
+     0.08788826148913696
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 3,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9352906249999999,
+    "mean_ms_parallel": 125.03749999999998,
+    "retake_reasons": {}
+   }
+  },
+  "stain": {
+   "pbp": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9354999999999999,
+    "mean_ms_parallel": 357.5677083333333,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.03125,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9354999999999999,
+    "mean_ms_parallel": 210.20104166666667,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 1.0,
+    "recall_ci": [
+     0.9615230525151842,
+     1.0
+    ],
+    "detected": 96,
+    "escape_rate": 0.0,
+    "escape_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 0,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9354999999999999,
+    "mean_ms_parallel": 121.31770833333333,
+    "retake_reasons": {}
+   }
+  },
+  "dent": {
+   "pbp": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9791666666666666,
+    "recall_ci": [
+     0.9271914417038554,
+     0.9942681502898627
+    ],
+    "detected": 94,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.005731849710137293,
+     0.07280855829614466
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.03125,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9353114583333332,
+    "mean_ms_parallel": 352.4177083333334,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9791666666666666,
+    "recall_ci": [
+     0.9271914417038554,
+     0.9942681502898627
+    ],
+    "detected": 94,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.005731849710137293,
+     0.07280855829614466
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.010416666666666666,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9353114583333332,
+    "mean_ms_parallel": 205.50625,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9791666666666666,
+    "recall_ci": [
+     0.9271914417038554,
+     0.9942681502898627
+    ],
+    "detected": 94,
+    "escape_rate": 0.020833333333333332,
+    "escape_ci": [
+     0.005731849710137293,
+     0.07280855829614466
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.03125,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9353114583333332,
+    "mean_ms_parallel": 118.14583333333333,
+    "retake_reasons": {}
+   }
+  },
+  "burr": {
+   "pbp": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8702889506383905,
+     0.9710437203123955
+    ],
+    "detected": 90,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.028956279687604516,
+     0.12971104936160943
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.052083333333333336,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9351166666666666,
+    "mean_ms_parallel": 338.10625,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8702889506383905,
+     0.9710437203123955
+    ],
+    "detected": 90,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.028956279687604516,
+     0.12971104936160943
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.020833333333333332,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9351166666666666,
+    "mean_ms_parallel": 194.43958333333333,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9375,
+    "recall_ci": [
+     0.8702889506383905,
+     0.9710437203123955
+    ],
+    "detected": 90,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.028956279687604516,
+     0.12971104936160943
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 6,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.041666666666666664,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9351166666666666,
+    "mean_ms_parallel": 117.18958333333332,
+    "retake_reasons": {}
+   }
+  },
+  "sticker": {
+   "pbp": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9895833333333334,
+    "recall_ci": [
+     0.9433324450728878,
+     0.9981588771815634
+    ],
+    "detected": 95,
+    "escape_rate": 0.010416666666666666,
+    "escape_ci": [
+     0.001841122818436635,
+     0.056667554927112326
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 1,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.052083333333333336,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9351062499999999,
+    "mean_ms_parallel": 339.25624999999997,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9895833333333334,
+    "recall_ci": [
+     0.9433324450728878,
+     0.9981588771815634
+    ],
+    "detected": 95,
+    "escape_rate": 0.010416666666666666,
+    "escape_ci": [
+     0.001841122818436635,
+     0.056667554927112326
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 1,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.052083333333333336,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9351062499999999,
+    "mean_ms_parallel": 201.7927083333333,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 96,
+    "n_defect": 96,
+    "n_good": 0,
+    "recall": 0.9895833333333334,
+    "recall_ci": [
+     0.9433324450728878,
+     0.9981588771815634
+    ],
+    "detected": 95,
+    "escape_rate": 0.010416666666666666,
+    "escape_ci": [
+     0.001841122818436635,
+     0.056667554927112326
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 1,
+    "miss_scored": 0,
+    "fa_rate": null,
+    "fa_ci": [
+     null,
+     null
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": null,
+    "false_zones_per_photo": 0.03125,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.03847694748481595
+    ],
+    "retake_rate_good": null,
+    "coverage": 0.9351062499999999,
+    "mean_ms_parallel": 119.23020833333334,
+    "retake_reasons": {}
+   }
+  }
+ },
+ "clean_by_kind": {
+  "painted": {
+   "pbp": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9722222222222222,
+    "recall_ci": [
+     0.9307574066136787,
+     0.9891460576345438
+    ],
+    "detected": 140,
+    "escape_rate": 0.027777777777777776,
+    "escape_ci": [
+     0.010853942365456264,
+     0.0692425933863213
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 4,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9352930555555554,
+    "mean_ms_parallel": 355.95601851851853,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9722222222222222,
+    "recall_ci": [
+     0.9307574066136787,
+     0.9891460576345438
+    ],
+    "detected": 140,
+    "escape_rate": 0.027777777777777776,
+    "escape_ci": [
+     0.010853942365456264,
+     0.0692425933863213
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 4,
+    "miss_scored": 0,
+    "fa_rate": 0.013888888888888888,
+    "fa_ci": [
+     0.002455888640432169,
+     0.07456780284286987
+    ],
+    "false_alarms": 1,
+    "false_zones_per_good": 0.013888888888888888,
+    "false_zones_per_photo": 0.009259259259259259,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9352930555555554,
+    "mean_ms_parallel": 201.7023148148148,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9722222222222222,
+    "recall_ci": [
+     0.9307574066136787,
+     0.9891460576345438
+    ],
+    "detected": 140,
+    "escape_rate": 0.027777777777777776,
+    "escape_ci": [
+     0.010853942365456264,
+     0.0692425933863213
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 4,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9352930555555554,
+    "mean_ms_parallel": 119.15972222222223,
+    "retake_reasons": {}
+   }
+  },
+  "plastic": {
+   "pbp": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9722222222222222,
+    "recall_ci": [
+     0.9307574066136787,
+     0.9891460576345438
+    ],
+    "detected": 140,
+    "escape_rate": 0.027777777777777776,
+    "escape_ci": [
+     0.010853942365456264,
+     0.0692425933863213
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 4,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9352953703703702,
+    "mean_ms_parallel": 317.50555555555553,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9722222222222222,
+    "recall_ci": [
+     0.9307574066136787,
+     0.9891460576345438
+    ],
+    "detected": 140,
+    "escape_rate": 0.027777777777777776,
+    "escape_ci": [
+     0.010853942365456264,
+     0.0692425933863213
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 4,
+    "miss_scored": 0,
+    "fa_rate": 0.06944444444444445,
+    "fa_ci": [
+     0.03002493884382272,
+     0.15248175932710195
+    ],
+    "false_alarms": 5,
+    "false_zones_per_good": 0.06944444444444445,
+    "false_zones_per_photo": 0.037037037037037035,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9352953703703702,
+    "mean_ms_parallel": 188.0828703703704,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9722222222222222,
+    "recall_ci": [
+     0.9307574066136787,
+     0.9891460576345438
+    ],
+    "detected": 140,
+    "escape_rate": 0.027777777777777776,
+    "escape_ci": [
+     0.010853942365456264,
+     0.0692425933863213
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 4,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9352953703703702,
+    "mean_ms_parallel": 116.21666666666667,
+    "retake_reasons": {}
+   }
+  },
+  "brushed": {
+   "pbp": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9861111111111112,
+    "recall_ci": [
+     0.9507765031823722,
+     0.9961829453084451
+    ],
+    "detected": 142,
+    "escape_rate": 0.013888888888888888,
+    "escape_ci": [
+     0.003817054691554883,
+     0.04922349681762791
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": 0.20833333333333334,
+    "fa_ci": [
+     0.1305194089904011,
+     0.3156948058995801
+    ],
+    "false_alarms": 15,
+    "false_zones_per_good": 0.25,
+    "false_zones_per_photo": 0.22685185185185186,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354504629629629,
+    "mean_ms_parallel": 371.93518518518516,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9861111111111112,
+    "recall_ci": [
+     0.9507765031823722,
+     0.9961829453084451
+    ],
+    "detected": 142,
+    "escape_rate": 0.013888888888888888,
+    "escape_ci": [
+     0.003817054691554883,
+     0.04922349681762791
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": 0.1527777777777778,
+    "fa_ci": [
+     0.08750619034775439,
+     0.25322501785460416
+    ],
+    "false_alarms": 11,
+    "false_zones_per_good": 0.16666666666666666,
+    "false_zones_per_photo": 0.1388888888888889,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354504629629629,
+    "mean_ms_parallel": 229.85092592592594,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9861111111111112,
+    "recall_ci": [
+     0.9507765031823722,
+     0.9961829453084451
+    ],
+    "detected": 142,
+    "escape_rate": 0.013888888888888888,
+    "escape_ci": [
+     0.003817054691554883,
+     0.04922349681762791
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.06717708293105555,
+     0.22081262192749168
+    ],
+    "false_alarms": 9,
+    "false_zones_per_good": 0.125,
+    "false_zones_per_photo": 0.1388888888888889,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354504629629629,
+    "mean_ms_parallel": 121.86157407407408,
+    "retake_reasons": {}
+   }
+  },
+  "glass_dark": {
+   "pbp": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9861111111111112,
+    "recall_ci": [
+     0.9507765031823722,
+     0.9961829453084451
+    ],
+    "detected": 142,
+    "escape_rate": 0.013888888888888888,
+    "escape_ci": [
+     0.003817054691554883,
+     0.04922349681762791
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354388888888887,
+    "mean_ms_parallel": 327.7046296296296,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9861111111111112,
+    "recall_ci": [
+     0.9507765031823722,
+     0.9961829453084451
+    ],
+    "detected": 142,
+    "escape_rate": 0.013888888888888888,
+    "escape_ci": [
+     0.003817054691554883,
+     0.04922349681762791
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354388888888887,
+    "mean_ms_parallel": 189.3125,
+    "retake_reasons": {}
+   },
+   "gradient": {
+    "n_photos": 216,
+    "n_defect": 144,
+    "n_good": 72,
+    "recall": 0.9861111111111112,
+    "recall_ci": [
+     0.9507765031823722,
+     0.9961829453084451
+    ],
+    "detected": 142,
+    "escape_rate": 0.013888888888888888,
+    "escape_ci": [
+     0.003817054691554883,
+     0.04922349681762791
+    ],
+    "retake_rate_defect": 0.0,
+    "miss_retake": 0,
+    "miss_masked": 2,
+    "miss_scored": 0,
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.05065293981139638
+    ],
+    "false_alarms": 0,
+    "false_zones_per_good": 0.0,
+    "false_zones_per_photo": 0.0,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     1.734723475976807e-18,
+     0.017474399749637923
+    ],
+    "retake_rate_good": 0.0,
+    "coverage": 0.9354388888888887,
+    "mean_ms_parallel": 120.39722222222224,
+    "retake_reasons": {}
+   }
+  }
+ },
+ "kind_defect_pbp": {
+  "painted": {
+   "scratch": "24/24",
+   "chip": "22/24",
+   "stain": "24/24",
+   "dent": "23/24",
+   "burr": "23/24",
+   "sticker": "24/24"
+  },
+  "plastic": {
+   "scratch": "24/24",
+   "chip": "24/24",
+   "stain": "24/24",
+   "dent": "24/24",
+   "burr": "21/24",
+   "sticker": "23/24"
+  },
+  "brushed": {
+   "scratch": "24/24",
+   "chip": "24/24",
+   "stain": "24/24",
+   "dent": "23/24",
+   "burr": "23/24",
+   "sticker": "24/24"
+  },
+  "glass_dark": {
+   "scratch": "24/24",
+   "chip": "23/24",
+   "stain": "24/24",
+   "dent": "24/24",
+   "burr": "23/24",
+   "sticker": "24/24"
+  }
+ },
+ "agreement": {
+  "n_defect": 768,
+  "same": 768,
+  "n_good": 384,
+  "same_good": 361
+ },
+ "auroc": {
+  "none+monotone": {
+   "pbp": {
+    "auroc": 0.9903187692901234,
+    "n_pos": 576,
+    "n_neg": 288,
+    "n_unscored": 0
+   },
+   "census": {
+    "auroc": 0.9914279513888888,
+    "n_pos": 576,
+    "n_neg": 288,
+    "n_unscored": 0
+   },
+   "gradient": {
+    "auroc": 0.9913013599537037,
+    "n_pos": 576,
+    "n_neg": 288,
+    "n_unscored": 0
+   }
+  },
+  "non_monotone": {
+   "pbp": {
+    "auroc": 0.7573513454861112,
+    "n_pos": 192,
+    "n_neg": 96,
+    "n_unscored": 0
+   },
+   "census": {
+    "auroc": 0.7633463541666666,
+    "n_pos": 192,
+    "n_neg": 96,
+    "n_unscored": 0
+   },
+   "gradient": {
+    "auroc": 0.7835828993055556,
+    "n_pos": 192,
+    "n_neg": 96,
+    "n_unscored": 0
+   }
+  },
+  "all": {
+   "pbp": {
+    "auroc": 0.9337514241536459,
+    "n_pos": 768,
+    "n_neg": 384,
+    "n_unscored": 0
+   },
+   "census": {
+    "auroc": 0.9390886094835069,
+    "n_pos": 768,
+    "n_neg": 384,
+    "n_unscored": 0
+   },
+   "gradient": {
+    "auroc": 0.9419148763020834,
+    "n_pos": 768,
+    "n_neg": 384,
+    "n_unscored": 0
+   }
+  }
+ },
+ "consistency_failures": 0,
+ "errors": [],
+ "timing": {
+  "pbp": {
+   "n": 12,
+   "mean_ms": 186.64166666666665,
+   "median_ms": 185.05,
+   "min_ms": 168.9,
+   "max_ms": 227.1
+  },
+  "census": {
+   "n": 12,
+   "mean_ms": 106.22500000000001,
+   "median_ms": 98.65,
+   "min_ms": 90.4,
+   "max_ms": 137.5
+  },
+  "gradient": {
+   "n": 12,
+   "mean_ms": 64.85000000000001,
+   "median_ms": 63.55,
+   "min_ms": 58.4,
+   "max_ms": 75.9
+  },
+  "_pbp_stage_median_ms": {
+   "resize": 1.3,
+   "quality": 7.9,
+   "mask": 28.05,
+   "score": 123.3,
+   "zones": 0.9,
+   "render": 19.0,
+   "total": 185.05
+  }
+ }
+}
