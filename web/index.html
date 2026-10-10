@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Dalil QA — контроль деталей по эталону без обучения на дефектах и без светового бокса.">
+  <meta name="description" content="AVA — сравнение фото детали с эталоном без обучения на дефектах и без светового бокса.">
   <meta name="theme-color" content="#15181b">
   <meta name="color-scheme" content="light dark">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Dalil QA">
+  <meta name="apple-mobile-web-app-title" content="AVA">
   <meta name="format-detection" content="telephone=no">
-  <title>Dalil QA</title>
+  <title>AVA</title>
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
   <link rel="stylesheet" href="style.css">
@@ -18,18 +18,12 @@
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <button id="backBtn" class="icon-btn" type="button" aria-label="Назад" hidden>
-        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-          <path d="M15 5l-7 7 7 7"/>
-        </svg>
-      </button>
-      <a id="brand" class="brand" href="#/" aria-label="Dalil QA">
-        <img src="icon.svg" width="30" height="30" alt="">
-        <span class="brand-name">Dalil</span><span class="brand-tag">QA</span>
-      </a>
-      <h1 id="screenTitle" class="topbar-title"></h1>
-      <div class="lang-toggle" role="group" aria-label="Language / Язык">
+      <div class="brand">
+        <img src="icon.svg" width="32" height="32" alt="">
+        <span class="wordmark">AVA</span>
+      </div>
+      <button id="qrBtn" class="top-btn" type="button" aria-haspopup="dialog" data-i18n-aria="qr_btn_label">QR</button>
+      <div class="lang-toggle" role="group" data-i18n-aria="lang_label">
         <button type="button" data-lang="ru" aria-pressed="true">RU</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
@@ -37,23 +31,83 @@
     <div class="hazard" aria-hidden="true"></div>
   </header>
 
-  <main id="app" class="container" tabindex="-1">
-    <div class="boot">
-      <div class="spinner"></div>
-      <p data-i18n="loading">Загрузка…</p>
+  <main id="app" class="container">
+    <section class="intro">
+      <p class="tagline" data-i18n="tagline">Сравнение с эталоном: показываем только то, что изменилось. Без обучения на дефектах, без светового бокса.</p>
+      <p class="privacy">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M6 11h12v9H6zM9 11V8a3 3 0 016 0v3"/>
+        </svg>
+        <span data-i18n="privacy">Фото не сохраняются на сервере.</span>
+      </p>
+      <p id="insecureNote" class="note" data-i18n="insecure_note" hidden></p>
+    </section>
+
+    <section id="slots" class="slots"></section>
+
+    <div class="run">
+      <button id="runBtn" class="btn btn-accent btn-xl" type="button" disabled></button>
+      <p id="runHint" class="help" data-i18n="compare_need"></p>
     </div>
+
+    <section id="result" class="result" hidden></section>
+    <section id="history" class="history" hidden></section>
   </main>
 
-  <noscript><p class="container" data-i18n="noscript">Для работы Dalil QA включите JavaScript.</p></noscript>
+  <noscript><p class="container" data-i18n="noscript">Для работы AVA включите JavaScript.</p></noscript>
 
-  <div id="toasts" class="toasts" aria-live="assertive"></div>
-
-  <div id="busy" class="busy" hidden>
-    <div class="busy-card" role="status" aria-live="polite">
-      <div class="spinner"></div>
-      <p id="busyText"></p>
+  <!-- Full-screen live camera (rear). For «Проверка» the reference is overlaid to match the angle. -->
+  <div id="camera" class="camera" role="dialog" aria-modal="true" aria-labelledby="camTitle" hidden>
+    <div class="cam-top">
+      <h2 id="camTitle" class="cam-title"></h2>
+      <button id="camClose" class="cam-icon-btn" type="button" data-i18n-aria="close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="cam-stage">
+      <video id="camVideo" class="cam-media" playsinline webkit-playsinline muted autoplay></video>
+      <img id="camGhost" class="cam-media cam-ghost" alt="" draggable="false" hidden>
+      <div id="camMsg" class="cam-msg"><div class="spinner spinner-light"></div><span data-i18n="cam_starting"></span></div>
+      <button id="camTap" class="btn btn-accent cam-tap" type="button" data-i18n="cam_tap" hidden></button>
+      <div id="camFlash" class="cam-flash"></div>
+    </div>
+    <div class="cam-bottom">
+      <div id="ghostRow" class="ghost-row" hidden>
+        <label for="ghostRange" data-i18n="ghost_opacity"></label>
+        <input id="ghostRange" type="range" min="0" max="100" step="5" value="40">
+        <output id="ghostValue" for="ghostRange">40%</output>
+      </div>
+      <div class="cam-controls">
+        <label class="cam-side-btn">
+          <input id="camGallery" type="file" accept="image/*" class="visually-hidden">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15.5 9.5h.01"/>
+          </svg>
+          <span data-i18n="btn_gallery"></span>
+        </label>
+        <button id="camShutter" class="shutter" type="button" data-i18n-aria="cam_shutter" disabled><span></span></button>
+        <span class="cam-side-btn cam-spacer" aria-hidden="true"></span>
+      </div>
     </div>
   </div>
+
+  <!-- QR code of this site, so a laptop can hand the link to phones. -->
+  <div id="qrModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+      <h2 id="qrTitle" class="modal-title" data-i18n="qr_title"></h2>
+      <div id="qrBox" class="qr-box"></div>
+      <p id="qrUrl" class="qr-url"></p>
+      <p class="help" data-i18n="qr_help"></p>
+      <p id="qrLocal" class="note" data-i18n="qr_local" hidden></p>
+      <button id="qrClose" class="btn btn-primary" type="button" data-i18n="close"></button>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="assertive"></div>
 
   <!-- QR encoder: qrcode-generator 1.4.4 (c) Kazuhiko Arase, MIT licence — see header of qrcode.js -->
   <script src="qrcode.js"></script>

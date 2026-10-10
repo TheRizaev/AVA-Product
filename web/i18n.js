@@ -1,6 +1,6 @@
 /*
- * Dalil QA — UI strings (RU default, EN) and a tiny t(key, vars) helper.
- * Exposes window.I18N = { t, plural, setLang, getLang, applyStatic, langs, dict }.
+ * AVA — UI strings (RU default, EN) and a tiny t(key, vars) helper.
+ * Exposes window.I18N = { t, setLang, getLang, applyStatic, langs, dict }.
  * The chosen language is persisted in localStorage (best effort, never throws).
  */
 (function (global) {
@@ -8,406 +8,227 @@
 
   const DICT = {
     ru: {
-      // chrome / common
-      back: 'Назад',
-      loading: 'Загрузка…',
-      noscript: 'Для работы Dalil QA включите JavaScript.',
-      optional: 'необязательно',
-      retry: 'Повторить',
-      refresh: 'Обновить',
-      to_home: 'На главную',
-      copied: 'Скопировано',
-      copy_failed: 'Не удалось скопировать',
-      copy_link: 'Копировать ссылку',
-      station: 'Станция',
-      station_code: 'Код станции',
-      station_name: 'Название станции',
-      sku: 'Артикул (SKU)',
-      image_missing: 'Изображение недоступно',
-      open_image: 'Открыть изображение',
-      zone_forms: 'зона|зоны|зон',
+      // header / intro
+      tagline: 'Сравнение с эталоном: показываем только то, что изменилось. Без обучения на дефектах, без светового бокса.',
+      privacy: 'Фото не сохраняются на сервере.',
+      noscript: 'Для работы AVA включите JavaScript.',
+      insecure_note: 'Живая камера доступна только по HTTPS — кнопка «Камера» откроет системную камеру.',
+      lang_label: 'Язык',
+      close: 'Закрыть',
 
-      // home
-      tagline: 'Контроль деталей по эталону — без обучения на дефектах, без светового бокса',
-      new_station: 'Новая станция',
-      continue_station: 'Продолжить: станция {code}',
-      join_title: 'Подключиться к станции',
-      join: 'Открыть',
-      quick_compare: 'Сравнить два фото',
-      step1_title: 'Эталон',
-      step1_text: 'Один раз снимите годную деталь (1–5 кадров).',
-      step2_title: 'Контроль',
-      step2_text: 'Каждую деталь Dalil совмещает с эталоном и сравнивает PBP-подписями: ГОДНА, БРАК с зоной или ПЕРЕСНЯТЬ.',
-      step3_title: 'Журнал смены',
-      step3_text: 'Хэш-цепочка записей, подтверждение оператора, CSV и отчёт смены.',
-      privacy_note: 'Снимайте только детали — без лиц и документов.',
-      server_ok: 'Сервер на связи · версия {v}',
-      server_down: 'Сервер недоступен',
+      // QR modal
+      qr_btn_label: 'Показать QR-код ссылки на этот сайт',
+      qr_title: 'Откройте AVA на телефоне',
+      qr_help: 'Наведите камеру телефона на код.',
+      qr_local: 'Это локальный адрес — с телефона он не откроется. Покажите публичную ссылку.',
+      qr_failed: 'Не удалось построить QR-код.',
 
-      // station nav
-      nav_setup: 'Эталон',
-      nav_run: 'Контроль',
-      nav_view: 'Наблюдатель',
-      nav_journal: 'Журнал',
+      // photo slots
+      slot_reference: 'Эталон',
+      slot_reference_sub: 'годная деталь',
+      slot_frame: 'Проверка',
+      slot_frame_sub: 'деталь, которую проверяем',
+      slot_empty: 'Нет фото',
+      btn_camera: 'Камера',
+      btn_gallery: 'Из галереи',
+      btn_retake: 'Переснять',
+      btn_replace: 'Заменить',
+      photo_size: '{w}×{h} px',
 
-      // new station
-      name_placeholder: 'Например, Участок штамповки №2',
-      sku_placeholder: 'Например, BRK-1042',
-      sku_help: 'Одна станция — одна деталь. Для новой детали создайте новую станцию.',
-      create_station: 'Создать станцию',
-      err_name_required: 'Введите название станции.',
-
-      // setup
-      setup_title: 'Эталон',
-      setup_hint: 'Снимите годную деталь; можно 2–3 кадра с небольшим сдвигом.',
-      shoot_reference: 'Снять эталон',
-      use_system_camera: 'Камера телефона',
-      from_gallery: 'Из галереи',
-      ref_count: 'Кадров эталона: {n} из {max}',
-      ref_none: 'пока нет',
-      ref_alt: 'Эталон {n}',
-      ref_ok: 'Кадр эталона сохранён, качество в порядке.',
-      ref_warn_title: 'Кадр сохранён, но есть замечания:',
-      ref_warn_hint: 'Лучше очистить эталон и переснять.',
-      warn_blurry: 'смазано — закрепите телефон',
-      warn_glare: 'блики — смените угол на 15–30°',
-      warn_dark: 'слишком темно — добавьте света',
-      clear_reference: 'Очистить эталон',
-      clear_confirm: 'Удалить все кадры эталона этой станции?',
-      start_control: 'Начать контроль',
-      need_reference: 'Сначала снимите эталон годной детали.',
-
-      // camera
-      camera_starting: 'Включаем камеру…',
-      camera_tap: 'Включить камеру',
-      outline_opacity: 'Контур эталона',
-      cam_fail_insecure: 'Камера в браузере работает только по HTTPS.',
-      cam_fail_denied: 'Доступ к камере запрещён.',
-      cam_fail_unavailable: 'Камера недоступна.',
-      cam_fallback: 'Сделайте снимок камерой телефона кнопкой ниже.',
-
-      // operator run
-      run_title: 'Контроль',
-      check: 'Проверить',
-      checking: 'Проверяем…',
-      auto: 'Авто',
-      auto_every: 'Интервал автопроверки',
-      every_s: '{n} с',
-      auto_on: 'Авто: проверка каждые {n} с',
-      auto_skip: 'Авто: предыдущая проверка ещё идёт — пропуск',
-      waiting_check: 'Положите деталь',
-      waiting_check_sub: 'Совместите с контуром эталона и нажмите «Проверить».',
-      qr_label: 'QR-код: экран наблюдателя',
-      qr_help: 'Наведите камеру телефона на QR — откроется экран наблюдателя с вердиктами.',
-      qr_unavailable: 'QR-код недоступен — введите код станции на главной.',
+      // compare
+      compare_run: 'Сравнить',
+      compare_busy: 'Сравниваем…',
+      compare_need: 'Добавьте оба фото: эталон и проверку.',
 
       // verdicts
-      v_pass: 'ГОДНА',
-      v_pass_detail: 'отличий нет',
-      v_fail: 'БРАК',
+      v_pass: 'ГОДНА — изменений нет',
+      v_fail: 'БРАК — найдено зон: {n}',
+      v_retake: 'ПЕРЕСНЯТЬ: {reason}',
+      v_pass_short: 'ГОДНА',
       v_fail_short: 'БРАК',
-      v_retake: 'ПЕРЕСНЯТЬ',
       v_retake_short: 'ПЕРЕСНЯТЬ',
-      rr_alignment: 'не совмещается с эталоном',
-      rr_glare: 'блик',
-      rr_blurry: 'смазанный кадр',
-      rr_dark: 'слишком темно',
-      rr_low_coverage: 'мало проверяемой площади',
+      rr_alignment: 'не удалось совместить: снимите с того же ракурса',
+      rr_glare: 'блик: смените угол на 15–30°',
+      rr_blurry: 'размыто',
+      rr_dark: 'темно',
       rr_mismatch: 'не та деталь или деталь отсутствует',
-      rr_unknown: 'кадр не подходит',
-      rh_alignment: 'Положите деталь так же, как на эталоне.',
-      rh_blurry: 'Держите камеру неподвижно.',
-      rh_dark: 'Добавьте света.',
-      rh_low_coverage: 'Деталь целиком в кадре, без бликов.',
-      hint_change_angle: 'Смените угол на 15–30°.',
+      rr_low_coverage: 'мало проверенной площади',
+      rr_unknown: 'снимок не подходит',
+      rh_alignment: 'Снимите деталь с того же ракурса и расстояния, что и эталон.',
+      rh_glare: 'Наклоните телефон, чтобы блик ушёл с детали.',
+      rh_blurry: 'Держите телефон неподвижно и коснитесь экрана для фокуса.',
+      rh_dark: 'Добавьте света или включите фонарик.',
+      rh_low_coverage: 'Деталь должна занимать большую часть кадра.',
+
+      // result
+      result_title: 'Результат AVA',
+      overlay_alt: 'Проверяемое фото, совмещённое с эталоном, с зонами изменений',
+      zones_title: 'Зоны',
+      zones_help: 'Нажмите на зону, чтобы выделить её на снимке.',
+      zone_name: 'Зона {n}',
+      zone_area: '{p} % кадра',
       zh_water_or_dirt: 'похоже на загрязнение/каплю',
       zh_something_removed: 'отсутствует элемент?',
       zh_something_added: 'лишний элемент/наплыв?',
-      coverage_pct: 'проверено {n} %',
-      ms: '{n} мс',
-      align_method: 'совмещение: {m}',
-      tab_zones: 'Зоны',
-      tab_frame: 'Кадр',
+      meta_ms: 'Обработка: {n} мс',
+      meta_coverage: 'Проверено: {n} %',
+      meta_sha: 'SHA-256',
+      sha_tap: 'Нажмите, чтобы показать отпечаток полностью',
 
-      // comparison with the baseline
-      cmp_toggle: 'Сравнение с простым вычитанием',
-      cmp_title: 'Сравнение на том же кадре',
-      cmp_dalil: 'Dalil (PBP)',
-      cmp_dalil_sub: 'структура мономов, устойчива к монотонному свету',
-      cmp_baseline: 'Простое вычитание из эталона',
-      cmp_baseline_sub: 'разность яркостей пикселей',
-      cmp_differ: 'Решения методов расходятся.',
-      cmp_none: 'Для этой проверки нет результата простого вычитания.',
-      cmp_after_check: 'Появится после следующей проверки.',
-      baseline_short: 'Вычитание',
+      // baseline (plain reference subtraction)
+      base_title: 'Простое вычитание из эталона',
+      base_sub: 'Тот же совмещённый кадр, попиксельная разница с эталоном.',
+      base_mismatch: 'БРАК — изменился почти весь кадр',
+      base_mismatch_why: 'Так простое вычитание реагирует на смену света.',
+      base_alt: 'Результат простого вычитания из эталона',
+      base_none: 'Нет результата простого вычитания.',
 
-      // review
-      review_defect: 'Дефект подтверждён',
-      review_false_alarm: 'Ложная тревога',
-      review_ok: 'Верно: годна',
-      review_missed: 'Пропущен дефект',
-      review_saved: 'Отметка оператора сохранена',
-      rv_defect: 'дефект подтверждён',
-      rv_false_alarm: 'ложная тревога',
-      rv_ok: 'подтверждено: годна',
+      // after a result
+      new_check: 'Новая проверка',
+      new_reference: 'Новый эталон',
+      history_title: 'История (только эта сессия)',
 
-      // viewer
-      view_title: 'Наблюдатель',
-      live_connecting: 'подключение…',
-      live_on: 'в эфире',
-      live_off: 'нет связи',
-      waiting_first: 'Ждём проверку…',
-      waiting_first_sub: 'Вердикт появится здесь сразу после проверки на станции.',
+      // camera
+      cam_title_reference: 'Эталон: снимите годную деталь',
+      cam_title_frame: 'Проверка: совместите с эталоном',
+      cam_starting: 'Включаем камеру…',
+      cam_tap: 'Нажмите, чтобы включить камеру',
+      cam_shutter: 'Снять',
+      ghost_opacity: 'Эталон',
+      cam_fail_insecure: 'Камера доступна только по HTTPS.',
+      cam_fail_denied: 'Нет доступа к камере.',
+      cam_fail_unavailable: 'Камера недоступна.',
+      cam_fallback: 'Выберите фото из галереи.',
 
-      // journal
-      journal_title: 'Журнал смены',
-      journal_empty: 'Проверок пока нет.',
-      st_total: 'всего',
-      st_pass: 'годна',
-      st_fail: 'брак',
-      st_retake: 'переснять',
-      st_confirmed: 'брак подтверждён',
-      st_false: 'ложные тревоги',
-      download_csv: 'Скачать CSV',
-      shift_report: 'Отчёт смены',
-      chain_head: 'Хэш-цепочка:',
-      filter: 'Фильтр',
-      filter_all: 'Все',
-      filter_fail: 'Брак',
-      filter_pass: 'Годна',
-      filter_retake: 'Переснять',
-
-      // quick compare
-      compare_help: 'Выберите фото годной детали (эталон) и проверяемой детали. Ничего не сохраняется.',
-      pick_reference: 'Эталон (годная деталь)',
-      pick_frame: 'Проверяемая деталь',
-      pick_photo: 'Выбрать фото',
-      photo_selected: 'Фото выбрано',
-      compare_run: 'Сравнить',
-
-      // busy / errors
-      busy_default: 'Подождите…',
-      busy_creating: 'Создаём станцию…',
-      busy_connecting: 'Подключаемся…',
-      busy_reference: 'Сохраняем эталон…',
-      busy_comparing: 'Сравниваем…',
-      err_title: 'Ошибка',
-      err_generic: 'Что-то пошло не так.',
-      err_network: 'Нет связи с сервером. Проверьте интернет.',
-      err_http: 'Ошибка сервера ({status}).',
-      err_not_found: 'Не найдено. Проверьте код станции.',
-      err_too_large: 'Файл слишком большой (максимум 15 МБ).',
+      // errors
+      err_decode: 'Не удалось открыть фото (нужен JPEG или PNG).',
       err_no_frame: 'Камера ещё не готова — попробуйте снова.',
-      err_bad_code: 'Код станции — 6 символов: латинские буквы и цифры 2–9.',
-      // server error codes ({"error": code}) shown instead of the English server message
-      api_no_reference: 'Сначала снимите эталон (годную деталь).',
-      api_reference_mismatch: 'Кадр не совпадает с первым эталоном: та же деталь, та же позиция камеры.',
-      api_too_many_references: 'Эталонов уже 5 — очистите и снимите заново.',
-      api_station_not_found: 'Станция не найдена. Проверьте код.',
-      api_bad_station_id: 'Код станции — 6 символов: латинские буквы и цифры 2–9.',
-      api_inspection_not_found: 'Проверка не найдена.',
-      api_bad_image: 'Не удалось прочитать изображение (нужен JPEG или PNG).',
-      api_image_too_small: 'Изображение слишком маленькое.',
+      err_network: 'Нет связи с сервером. Проверьте интернет.',
+      err_timeout: 'Сервер не ответил вовремя. Попробуйте ещё раз.',
+      err_http: 'Ошибка сервера ({status}).',
+      err_bad_response: 'Сервер вернул неожиданный ответ.',
+      err_generic: 'Что-то пошло не так.',
+      api_bad_image: 'Не удалось прочитать фото (нужен JPEG или PNG).',
+      api_empty_file: 'Пустой файл.',
+      api_image_too_small: 'Фото слишком маленькое.',
       api_too_large: 'Файл слишком большой (максимум 15 МБ).',
-      api_too_many_pixels: 'Слишком большое разрешение изображения.',
-      api_name_required: 'Введите название станции.',
+      api_too_many_pixels: 'Слишком большое разрешение фото.',
+      api_file_required: 'Нужны оба фото: эталон и проверка.',
       api_internal: 'Внутренняя ошибка сервера. Попробуйте ещё раз.',
     },
 
     en: {
-      back: 'Back',
-      loading: 'Loading…',
-      noscript: 'Please enable JavaScript to use Dalil QA.',
-      optional: 'optional',
-      retry: 'Retry',
-      refresh: 'Refresh',
-      to_home: 'Home',
-      copied: 'Copied',
-      copy_failed: 'Could not copy',
-      copy_link: 'Copy link',
-      station: 'Station',
-      station_code: 'Station code',
-      station_name: 'Station name',
-      sku: 'Part number (SKU)',
-      image_missing: 'Image unavailable',
-      open_image: 'Open image',
-      zone_forms: 'zone|zones',
+      // header / intro
+      tagline: 'Compare with a reference: we show only what has changed. No defect training, no light box.',
+      privacy: 'Photos are not stored on the server.',
+      noscript: 'Please enable JavaScript to use AVA.',
+      insecure_note: 'The live camera needs HTTPS — the "Camera" button will open the system camera.',
+      lang_label: 'Language',
+      close: 'Close',
 
-      tagline: 'Reference-based part inspection — no defect training data, no light box',
-      new_station: 'New station',
-      continue_station: 'Continue: station {code}',
-      join_title: 'Connect to a station',
-      join: 'Open',
-      quick_compare: 'Compare two photos',
-      step1_title: 'Reference',
-      step1_text: 'Shoot a good part once (1–5 frames).',
-      step2_title: 'Inspection',
-      step2_text: 'Dalil aligns every part to the reference and compares PBP signatures: PASS, FAIL with zones, or RETAKE.',
-      step3_title: 'Shift journal',
-      step3_text: 'Hash-chained records, operator confirmation, CSV and shift report.',
-      privacy_note: 'Photograph parts only — no faces or documents.',
-      server_ok: 'Server online · version {v}',
-      server_down: 'Server unavailable',
+      // QR modal
+      qr_btn_label: 'Show a QR code linking to this site',
+      qr_title: 'Open AVA on your phone',
+      qr_help: 'Point your phone camera at the code.',
+      qr_local: 'This is a local address — a phone cannot open it. Show the public link instead.',
+      qr_failed: 'Could not build the QR code.',
 
-      nav_setup: 'Reference',
-      nav_run: 'Inspect',
-      nav_view: 'Viewer',
-      nav_journal: 'Journal',
+      // photo slots
+      slot_reference: 'Reference',
+      slot_reference_sub: 'a good part',
+      slot_frame: 'Check',
+      slot_frame_sub: 'the part to inspect',
+      slot_empty: 'No photo',
+      btn_camera: 'Camera',
+      btn_gallery: 'From gallery',
+      btn_retake: 'Retake',
+      btn_replace: 'Replace',
+      photo_size: '{w}×{h} px',
 
-      name_placeholder: 'e.g. Stamping cell 2',
-      sku_placeholder: 'e.g. BRK-1042',
-      sku_help: 'One station — one part. Create a new station for a new part.',
-      create_station: 'Create station',
-      err_name_required: 'Enter a station name.',
+      // compare
+      compare_run: 'Compare',
+      compare_busy: 'Comparing…',
+      compare_need: 'Add both photos: the reference and the check.',
 
-      setup_title: 'Reference',
-      setup_hint: 'Shoot a good part; 2–3 frames with a small shift are fine.',
-      shoot_reference: 'Shoot reference',
-      use_system_camera: 'Phone camera',
-      from_gallery: 'From gallery',
-      ref_count: 'Reference frames: {n} of {max}',
-      ref_none: 'none yet',
-      ref_alt: 'Reference {n}',
-      ref_ok: 'Reference frame saved, quality is fine.',
-      ref_warn_title: 'Frame saved, but:',
-      ref_warn_hint: 'Better clear the reference and shoot again.',
-      warn_blurry: 'blurry — fix the phone in place',
-      warn_glare: 'glare — change the angle by 15–30°',
-      warn_dark: 'too dark — add light',
-      clear_reference: 'Clear reference',
-      clear_confirm: 'Delete all reference frames of this station?',
-      start_control: 'Start inspection',
-      need_reference: 'Shoot a reference of a good part first.',
-
-      camera_starting: 'Starting camera…',
-      camera_tap: 'Start camera',
-      outline_opacity: 'Reference outline',
-      cam_fail_insecure: 'The browser camera needs HTTPS.',
-      cam_fail_denied: 'Camera access denied.',
-      cam_fail_unavailable: 'Camera unavailable.',
-      cam_fallback: 'Use the phone camera button below.',
-
-      run_title: 'Inspect',
-      check: 'Check',
-      checking: 'Checking…',
-      auto: 'Auto',
-      auto_every: 'Auto-check interval',
-      every_s: '{n} s',
-      auto_on: 'Auto: checking every {n} s',
-      auto_skip: 'Auto: previous check still running — skipped',
-      waiting_check: 'Place the part',
-      waiting_check_sub: 'Match it to the reference outline and press “Check”.',
-      qr_label: 'QR code: viewer screen',
-      qr_help: 'Point a phone camera at the QR to open the live viewer.',
-      qr_unavailable: 'QR unavailable — enter the station code on the home screen.',
-
-      v_pass: 'PASS',
-      v_pass_detail: 'no differences',
-      v_fail: 'FAIL',
+      // verdicts
+      v_pass: 'PASS — no changes',
+      v_fail: 'FAIL — zones found: {n}',
+      v_retake: 'RETAKE: {reason}',
+      v_pass_short: 'PASS',
       v_fail_short: 'FAIL',
-      v_retake: 'RETAKE',
       v_retake_short: 'RETAKE',
-      rr_alignment: 'cannot align with the reference',
-      rr_glare: 'glare',
-      rr_blurry: 'blurry frame',
+      rr_alignment: 'could not align: shoot from the same angle',
+      rr_glare: 'glare: change the angle by 15–30°',
+      rr_blurry: 'blurry',
       rr_dark: 'too dark',
-      rr_low_coverage: 'too little checkable area',
-      rr_mismatch: 'wrong part or part missing',
-      rr_unknown: 'frame not usable',
-      rh_alignment: 'Place the part as in the reference.',
-      rh_blurry: 'Keep the camera still.',
-      rh_dark: 'Add light.',
-      rh_low_coverage: 'Whole part in frame, no glare.',
-      hint_change_angle: 'Change the angle by 15–30°.',
+      rr_mismatch: 'wrong part or the part is missing',
+      rr_low_coverage: 'too little area checked',
+      rr_unknown: 'the photo is not usable',
+      rh_alignment: 'Shoot the part from the same angle and distance as the reference.',
+      rh_glare: 'Tilt the phone so the glare leaves the part.',
+      rh_blurry: 'Hold the phone still and tap the screen to focus.',
+      rh_dark: 'Add light or turn on the flashlight.',
+      rh_low_coverage: 'The part should fill most of the frame.',
+
+      // result
+      result_title: 'AVA result',
+      overlay_alt: 'The checked photo aligned to the reference, with changed zones',
+      zones_title: 'Zones',
+      zones_help: 'Tap a zone to highlight it on the image.',
+      zone_name: 'Zone {n}',
+      zone_area: '{p} % of the frame',
       zh_water_or_dirt: 'looks like dirt / a drop',
       zh_something_removed: 'missing feature?',
-      zh_something_added: 'extra feature / flash?',
-      coverage_pct: '{n} % checked',
-      ms: '{n} ms',
-      align_method: 'alignment: {m}',
-      tab_zones: 'Zones',
-      tab_frame: 'Frame',
+      zh_something_added: 'extra feature / excess material?',
+      meta_ms: 'Processing: {n} ms',
+      meta_coverage: 'Checked: {n} %',
+      meta_sha: 'SHA-256',
+      sha_tap: 'Tap to show the full fingerprint',
 
-      cmp_toggle: 'Compare with plain subtraction',
-      cmp_title: 'Comparison on the same frame',
-      cmp_dalil: 'Dalil (PBP)',
-      cmp_dalil_sub: 'monomial structure, robust to monotone lighting',
-      cmp_baseline: 'Plain reference subtraction',
-      cmp_baseline_sub: 'pixel brightness difference',
-      cmp_differ: 'The methods disagree.',
-      cmp_none: 'No plain-subtraction result for this check.',
-      cmp_after_check: 'Appears after the next check.',
-      baseline_short: 'Subtraction',
+      // baseline (plain reference subtraction)
+      base_title: 'Plain reference subtraction',
+      base_sub: 'Same aligned frame, per-pixel difference from the reference.',
+      base_mismatch: 'FAIL — almost the whole frame changed',
+      base_mismatch_why: 'This is how plain subtraction reacts to a change of lighting.',
+      base_alt: 'Plain reference subtraction result',
+      base_none: 'No plain subtraction result.',
 
-      review_defect: 'Defect confirmed',
-      review_false_alarm: 'False alarm',
-      review_ok: 'Correct: pass',
-      review_missed: 'Missed defect',
-      review_saved: 'Operator label saved',
-      rv_defect: 'defect confirmed',
-      rv_false_alarm: 'false alarm',
-      rv_ok: 'confirmed: pass',
+      // after a result
+      new_check: 'New check',
+      new_reference: 'New reference',
+      history_title: 'History (this session only)',
 
-      view_title: 'Viewer',
-      live_connecting: 'connecting…',
-      live_on: 'live',
-      live_off: 'offline',
-      waiting_first: 'Waiting for a check…',
-      waiting_first_sub: 'The verdict appears here right after a check at the station.',
+      // camera
+      cam_title_reference: 'Reference: shoot a good part',
+      cam_title_frame: 'Check: match the reference',
+      cam_starting: 'Starting the camera…',
+      cam_tap: 'Tap to start the camera',
+      cam_shutter: 'Take photo',
+      ghost_opacity: 'Reference',
+      cam_fail_insecure: 'The camera works over HTTPS only.',
+      cam_fail_denied: 'Camera access was denied.',
+      cam_fail_unavailable: 'The camera is unavailable.',
+      cam_fallback: 'Pick a photo from the gallery.',
 
-      journal_title: 'Shift journal',
-      journal_empty: 'No checks yet.',
-      st_total: 'total',
-      st_pass: 'pass',
-      st_fail: 'fail',
-      st_retake: 'retake',
-      st_confirmed: 'confirmed defects',
-      st_false: 'false alarms',
-      download_csv: 'Download CSV',
-      shift_report: 'Shift report',
-      chain_head: 'Hash chain:',
-      filter: 'Filter',
-      filter_all: 'All',
-      filter_fail: 'Fail',
-      filter_pass: 'Pass',
-      filter_retake: 'Retake',
-
-      compare_help: 'Pick a photo of a good part (reference) and of the part to check. Nothing is stored.',
-      pick_reference: 'Reference (good part)',
-      pick_frame: 'Part to check',
-      pick_photo: 'Choose photo',
-      photo_selected: 'Photo selected',
-      compare_run: 'Compare',
-
-      busy_default: 'Please wait…',
-      busy_creating: 'Creating station…',
-      busy_connecting: 'Connecting…',
-      busy_reference: 'Saving reference…',
-      busy_comparing: 'Comparing…',
-      err_title: 'Error',
-      err_generic: 'Something went wrong.',
+      // errors
+      err_decode: 'Could not open the photo (JPEG or PNG expected).',
+      err_no_frame: 'The camera is not ready yet — try again.',
       err_network: 'Cannot reach the server. Check your connection.',
+      err_timeout: 'The server did not answer in time. Please try again.',
       err_http: 'Server error ({status}).',
-      err_not_found: 'Not found. Check the station code.',
-      err_too_large: 'File is too large (15 MB max).',
-      err_no_frame: 'Camera is not ready yet — try again.',
-      err_bad_code: 'Station code is 6 characters: Latin letters and digits 2–9.',
-      api_no_reference: 'Shoot the reference (a good part) first.',
-      api_reference_mismatch: 'This shot does not match the first reference: same part, same camera position.',
-      api_too_many_references: 'Already 5 reference shots — clear them and shoot again.',
-      api_station_not_found: 'Station not found. Check the code.',
-      api_bad_station_id: 'Station code is 6 characters: Latin letters and digits 2–9.',
-      api_inspection_not_found: 'Inspection not found.',
-      api_bad_image: 'Could not read the image (JPEG or PNG expected).',
-      api_image_too_small: 'The image is too small.',
-      api_too_large: 'File is too large (15 MB max).',
-      api_too_many_pixels: 'Image resolution is too large.',
-      api_name_required: 'Enter a station name.',
+      err_bad_response: 'Unexpected response from the server.',
+      err_generic: 'Something went wrong.',
+      api_bad_image: 'Could not read the photo (JPEG or PNG expected).',
+      api_empty_file: 'The file is empty.',
+      api_image_too_small: 'The photo is too small.',
+      api_too_large: 'The file is too large (15 MB max).',
+      api_too_many_pixels: 'The photo resolution is too large.',
+      api_file_required: 'Both photos are required: the reference and the check.',
       api_internal: 'Internal server error. Please try again.',
     },
   };
 
-  const STORAGE_KEY = 'dalil.lang';
+  const STORAGE_KEY = 'ava.lang';
   const LANGS = Object.keys(DICT);
   let lang = 'ru';
 
@@ -427,23 +248,6 @@
     return s;
   }
 
-  /** Plural form of a "one|few|many" (RU) or "one|other" (EN) dictionary entry for `n`. */
-  function plural(n, key) {
-    const forms = t(key).split('|');
-    const abs = Math.abs(Math.trunc(Number(n) || 0));
-    let idx;
-    if (lang === 'ru') {
-      const d10 = abs % 10;
-      const d100 = abs % 100;
-      if (d10 === 1 && d100 !== 11) idx = 0;
-      else if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) idx = 1;
-      else idx = 2;
-    } else {
-      idx = abs === 1 ? 0 : 1;
-    }
-    return forms[Math.min(idx, forms.length - 1)];
-  }
-
   function setLang(next) {
     if (!DICT[next]) return;
     lang = next;
@@ -451,16 +255,19 @@
     if (global.document) global.document.documentElement.lang = next;
   }
 
-  /** Fill elements marked with data-i18n="key" (static markup in index.html). */
+  /** Fill static markup: data-i18n="key" sets the text, data-i18n-aria="key" the aria-label. */
   function applyStatic(root) {
     const scope = root || global.document;
     if (!scope || !scope.querySelectorAll) return;
     scope.querySelectorAll('[data-i18n]').forEach((node) => {
       node.textContent = t(node.getAttribute('data-i18n'));
     });
+    scope.querySelectorAll('[data-i18n-aria]').forEach((node) => {
+      node.setAttribute('aria-label', t(node.getAttribute('data-i18n-aria')));
+    });
   }
 
   if (global.document) global.document.documentElement.lang = lang;
 
-  global.I18N = { t, plural, setLang, getLang: () => lang, applyStatic, langs: LANGS, dict: DICT };
+  global.I18N = { t, setLang, getLang: () => lang, applyStatic, langs: LANGS, dict: DICT };
 })(window);

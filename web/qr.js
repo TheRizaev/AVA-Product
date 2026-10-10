@@ -1,9 +1,9 @@
 /*
- * Dalil QA — QR code as inline SVG.
+ * AVA — QR code as inline SVG.
  *
  * Thin wrapper around the vendored "qrcode-generator" 1.4.4 by Kazuhiko Arase (MIT licence,
  * see the header of web/qrcode.js; https://github.com/kazuhikoarase/qrcode-generator).
- * Exposes window.DalilQR = { render(container, text, opts) }.
+ * Exposes window.AvaQR = { render(container, text, opts) }.
  */
 (function (global) {
   'use strict';
@@ -64,5 +64,5 @@
     return root;
   }
 
-  global.DalilQR = { render };
+  global.AvaQR = { render };
 })(window);
