@@ -66,6 +66,7 @@ class AlignResult:
     method: str = "orb"   # "identity" | "orb" | "ecc"; "none" when every strategy failed
     score: float = 0.0    # identity: robust NCC; orb: inlier ratio; ecc: final ECC correlation
     alt_H: np.ndarray | None = None  # orb only: a second, independent motion (see `align`)
+    inlier_pts: np.ndarray | None = None  # orb only: reference-frame points (N x 2) of H's inliers
 
 
 def resize_max_side(img: np.ndarray, max_side: int) -> tuple[np.ndarray, float]:
@@ -177,32 +178,34 @@ def corner_shift(H: np.ndarray | None, shape: tuple[int, int]) -> float:
 
 
 def _align_orb(g_before: np.ndarray, g_after: np.ndarray, params: Params):
-    """ORB + RANSAC. Returns (H or None, reason or None, n_matches, n_inliers, alt_H or None).
+    """ORB + RANSAC. Returns (H, reason, n_matches, n_inliers, pts, alt); H, pts, alt may be None.
 
-    `alt_H` is a second motion fitted on the outliers of the first one, when it has at
-    least params.min_inliers inliers and moves the image corners clearly differently
-    (e.g. the part was moved over a static belt: one motion is the part, one the background).
+    `pts` are the reference-frame points of H's inliers (N x 2).
+
+    `alt` = (H2, points of H2's inliers) when the outliers of H contain a second motion with at least
+    params.min_inliers inliers that moves the image corners clearly differently (e.g. the
+    part was moved over a static belt: one motion is the part, one the background).
     """
     kp_b, d_b = _detect(g_before, params.orb_features)
     kp_a, d_a = _detect(g_after, params.orb_features)
     if d_b is None or d_a is None or len(kp_b) < _MIN_KEYPOINTS or len(kp_a) < _MIN_KEYPOINTS:
-        return None, "too_few_features", 0, 0, None
+        return None, "too_few_features", 0, 0, None, None
 
     matches = _match(d_a, d_b, params.ratio_test)
     n_matches = len(matches)
     if n_matches < max(4, params.min_inliers):
-        return None, "too_few_inliers", n_matches, 0, None
+        return None, "too_few_inliers", n_matches, 0, None, None
 
     src = np.float32([kp_a[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
     dst = np.float32([kp_b[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
     H, mask = _fit(src, dst, params)
     if H is None:
-        return None, "too_few_inliers", n_matches, 0, None
+        return None, "too_few_inliers", n_matches, 0, None, None
     n_inliers = int(mask.sum())
     if n_inliers < params.min_inliers or n_inliers / n_matches < params.min_inlier_ratio:
-        return None, "too_few_inliers", n_matches, n_inliers, None
+        return None, "too_few_inliers", n_matches, n_inliers, None, None
     if _degenerate(H, g_before.shape, params):
-        return None, "degenerate_homography", n_matches, n_inliers, None
+        return None, "degenerate_homography", n_matches, n_inliers, None, None
 
     alt = None
     rest = ~mask
@@ -211,8 +214,8 @@ def _align_orb(g_before: np.ndarray, g_after: np.ndarray, params: Params):
         if (H2 is not None and mask2.sum() >= params.min_inliers
                 and not _degenerate(H2, g_before.shape, params)
                 and corner_shift(np.linalg.inv(H) @ H2, g_before.shape) > 2 * params.ransac_thresh):
-            alt = H2 / H2[2, 2]
-    return H / H[2, 2], None, n_matches, n_inliers, alt
+            alt = (H2 / H2[2, 2], dst[rest][mask2].reshape(-1, 2))
+    return H / H[2, 2], None, n_matches, n_inliers, dst[mask].reshape(-1, 2), alt
 
 
 # ------------------------------------------------------- identity fast path / ECC
@@ -390,16 +393,19 @@ def align(before_bgr: np.ndarray, after_bgr: np.ndarray, params: Params) -> Alig
         warped, valid = _warp(after_bgr, H, shape, params)
         return AlignResult(True, None, H, 0, 0, 0.0, warped, valid, method="identity", score=ncc)
 
-    H, reason, n_matches, n_inliers, alt = _align_orb(g_before, g_after, params)
+    H, reason, n_matches, n_inliers, pts, alt = _align_orb(g_before, g_after, params)
     if H is not None:
         ratio = n_inliers / n_matches
-        # Fixed camera: if the dominant motion is (near) identity, it is the static
-        # background and the second motion is the part - register on the part.
-        if alt is not None and corner_shift(H, shape) <= params.ransac_thresh < corner_shift(alt, shape):
-            H, alt = alt, H
+        alt_H = None
+        if alt is not None:
+            alt_H, alt_pts = alt
+            # Fixed camera: if the dominant motion is (near) identity, it is the static
+            # background and the second motion is the part - register on the part.
+            if corner_shift(H, shape) <= params.ransac_thresh < corner_shift(alt_H, shape):
+                H, alt_H, pts = alt_H, H, alt_pts
         warped, valid = _warp(after_bgr, H, shape, params)
         return AlignResult(True, None, H, n_matches, n_inliers, ratio, warped, valid,
-                           method="orb", score=ratio, alt_H=alt)
+                           method="orb", score=ratio, alt_H=alt_H, inlier_pts=pts)
 
     if reason in _ECC_FALLBACK_REASONS:
         found = _ecc(g_before, g_after, params)

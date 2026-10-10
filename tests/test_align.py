@@ -157,12 +157,16 @@ def test_fixed_camera_lighting_change_takes_identity_path(kind, smooth):
     assert res.valid.shape == SMOOTH_HW and res.valid.all()
 
 
-def test_identity_survives_small_defect():
+def test_small_defect_keeps_registration():
+    # A piece of tape on a static scene must not break registration. The identity
+    # fast path may hand over to ORB (its quick motion check is deliberately strict,
+    # fixed_cam_max_shift), but either way the result is (almost) no motion.
     base = textured(4, *SMOOTH_HW)
     frame = base.copy()
     cv2.rectangle(frame, (400, 200), (480, 240), (60, 180, 200), -1)  # a piece of tape
     res = align(noisy(base, 1), noisy(frame, 2), Params())
-    assert res.ok and res.method == "identity"
+    assert res.ok and res.method in ("identity", "orb")
+    assert corner_error(res.H, np.eye(3), *SMOOTH_HW) < 0.5
 
 
 def test_identity_can_be_disabled():
