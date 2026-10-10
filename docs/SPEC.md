@@ -1,4 +1,6 @@
-# Dalil QA — technical contract (authoritative)
+# AVA — technical contract (authoritative)
+
+Product name in all user-facing text (UI, reports, README): **AVA**. The Python package is still `dalil` (internal).
 
 Product: a reference-based visual QA station. A camera looks at a part; the operator stores 1–5 shots of a good part
 (the "golden reference"); every new frame is aligned to the reference and compared with PBP window signatures →
@@ -58,6 +60,11 @@ downscaled CLAHE-gray images ≥ params.fixed_cam_ncc), return identity with ok=
 (2) ORB+RANSAC as now (`method="orb"`); (3) fallback for low-texture parts: `cv2.findTransformECC` (MOTION_EUCLIDEAN, on
 pyramid-downscaled CLAHE-gray, gaussFiltSize 5) and/or phase correlation for pure translation (`method="ecc"`), accept only
 if the final ECC correlation ≥ params.ecc_min_corr. Add field `method: str` to AlignResult (default "orb").
+Also (integration): `score` (identity NCC / ORB inlier ratio / ECC corr); `inlier_pts` (ORB: reference-frame points of H's
+inliers); `alt_H` — a second motion fitted on ORB's outliers (part moved over a static belt: one motion is the part, one
+the background). If the dominant motion is ≈ identity and the second is not, the second is taken as `H` (fixed camera:
+the static thing is the background). `corner_shift(H, shape)` helper. The warp uses a replicated border (validity is
+defined by `valid` only).
 
 ## dalil/synth.py (exists; extend, keep existing API and tests)
 Add, deterministic with rng, no external images:
@@ -95,6 +102,15 @@ Add, deterministic with rng, no external images:
 - `inspect_compare(ref, frame_bgr, params, methods=("pbp","pixdiff")) -> dict[str, InspectResult]` — runs alignment ONCE
   and evaluates several methods on the same aligned frame (used by the UI side-by-side and by eval).
 - `result_to_json(res) -> dict` (no bytes; zones with `bbox`, `bbox_norm` 0..1).
+- Integration details (all tunables in Params): blur gate is relative too (`blur < min_blur` AND `< blur_ratio ×`
+  reference blur — a smooth part is "soft" in the reference as well); PBP low-contrast gate (cells whose reference and
+  gain-normalised frame contrast are both `< contrast_floor` count as unchanged — sensor noise sets the pixel order there);
+  `score_smooth`×`score_smooth` normalised box mean of the change map over checked cells before zones (all methods);
+  `border_margin_px` of the image border is not checked. When the registration moved the image by more than
+  `static_bg_min_shift` px (`static_background`): only the hull of H's ORB inliers (+`part_roi_margin_px`) is checked
+  (coverage is relative to it), and the change map is the per-cell MIN over the part-registered view, the
+  background-registered view (`alt_H`) and/or the frame as shot (camera-fixed view). `InspectResult.work_size` (w, h)
+  is added for `bbox_norm`. Timing stages: resize, quality, align, mask, features, change, [extra_views], zones, render, total.
 
 ## dalil/report.py (new)
 - `canonical_json(obj) -> str` (sort_keys, separators=(',',':'), ensure_ascii=False).
@@ -131,6 +147,15 @@ Station JSON: `{"id","name","sku","created_at","references":[{"idx","url","at"}]
 "stats":{"total","pass","fail","retake","confirmed_defects","false_alarms"},"chain_head":str,"last_seq":int}`.
 Inspection record JSON: `{"seq","at","verdict","reason","zones":[...],"coverage","changed_frac","timing_ms","align",
 "method","frame_url","overlay_url","baseline":{...}|null,"review":null|label,"hash","prev_hash"}`.
+Also present (integration): `hints` (e.g. ["change_angle"]), `threshold`, `signature_sha256`, `work_size`; baseline also
+has `reason`, `threshold`. Hashed blobs per inspection: f_<seq>.jpg, o_<seq>.jpg (+ b_<seq>.jpg with a baseline).
+Review events `{"seq","at","type":"review","target_seq","label"}` share the hash chain but have their own seq counter
+(1, 2, ...); inspection seqs stay contiguous. `last_seq` = last inspection seq. The stored record keeps `review: null`
+(not hashed); API responses fill in the latest label. Error codes used by the server include: bad_station_id,
+station_not_found, no_reference, reference_mismatch (422: extra golden shot does not register to shot 1),
+too_many_references, inspection_not_found, bad_label, bad_image, image_too_small, too_large (413), too_many_pixels,
+file_required, multipart_required, bad_methods, name_required, bad_json, internal. Single uvicorn worker (in-process
+journal cache and per-station locks).
 
 ## Frontend (web/) — vanilla JS, no CDNs, no build
 Mobile-first; iOS Safari + Android Chrome over HTTPS; RU default + EN toggle (i18n.js). Hash routing.
