@@ -1,6 +1,7 @@
 """HTTP API tests (docs/SPEC.md "HTTP API") with FastAPI's TestClient."""
 
 import base64
+import hashlib
 import io
 
 import cv2
@@ -34,6 +35,17 @@ def pairs():
         "bad": {"reference": jpeg(bad["reference"]), "frame": jpeg(bad["frame"]),
                 "mask": bad["mask_ref_frame"]},
     }
+
+
+@pytest.fixture(scope="module")
+def surfaces():
+    """Mode 1: a clean painted surface and the same surface with a paint chip + scratch."""
+    ok = synth.make_uniform_surface(np.random.default_rng(1), "painted", h=H, w=W)
+    region = np.zeros((H, W), bool)
+    region[100:260, 180:460] = True
+    bad, m1 = synth.add_chip(ok, np.random.default_rng(101), region=region)
+    bad, m2 = synth.add_scratch(bad, np.random.default_rng(201), region=region)
+    return {"ok": jpeg(ok), "bad": jpeg(bad), "mask": m1 | m2}
 
 
 @pytest.fixture(scope="module")
@@ -79,6 +91,7 @@ def test_health(client):
     assert body["ok"] is True and body["version"]
     assert body["params"]["threshold"] == app_module.PARAMS.threshold
     assert "threshold_pixdiff" in body["params"]
+    assert body["params"]["surface_threshold"] == app_module.PARAMS.surface_threshold
 
 
 def test_static_index(client):
@@ -155,6 +168,69 @@ def test_reference_cache_is_bounded_lru():
     assert cache.get("b") is None and cache.get("a") == 1 and cache.get("c") == 3
     assert len(cache) == 2
     assert app_module.REF_CACHE_SIZE <= 4
+
+
+def scan(client, image: bytes):
+    return client.post("/api/scan", files={"image": ("surface.jpg", image, "image/jpeg")})
+
+
+def test_scan_good_surface_passes(client, surfaces):
+    r = scan(client, surfaces["ok"])
+    assert r.status_code == 200, r.text
+    assert r.headers["cache-control"] == "no-store"
+    body = r.json()
+    assert set(body) == {"result", "overlay", "image_sha256"}
+    assert body["image_sha256"] == hashlib.sha256(surfaces["ok"]).hexdigest()
+    res = body["result"]
+    assert res["verdict"] == "pass" and res["zones"] == [] and res["reason"] is None, res
+    assert res["method"] == "pbp_surface" and res["work_size"] == [W, H]
+    assert res["align"] == {} and res["threshold"] == app_module.PARAMS.surface_threshold
+    assert {"coverage", "changed_frac", "timing_ms", "signature_sha256", "hints"} <= set(res)
+    assert len(res["signature_sha256"]) == 64 and res["timing_ms"]["total"] > 0
+    assert base64.b64decode(body["overlay"])[:2] == b"\xff\xd8"
+    assert len(app_module.ref_cache) == 0  # Mode 1 never touches the reference cache
+
+
+def test_scan_defect_surface_fails_on_the_defect(client, surfaces):
+    r = scan(client, surfaces["bad"])
+    assert r.status_code == 200, r.text
+    body = r.json()
+    res = body["result"]
+    assert res["verdict"] == "fail" and res["zones"], res
+    near = cv2.dilate(surfaces["mask"].astype(np.uint8), np.ones((17, 17), np.uint8)) > 0
+    hits = []
+    for z in res["zones"]:
+        x, y, w, h = z["bbox"]  # work size == upload size here
+        assert z["bbox_norm"][0] == pytest.approx(x / W, abs=1e-4)
+        hits.append(bool(near[y:y + h, x:x + w].any()))
+    assert any(hits), res["zones"]
+    assert base64.b64decode(body["overlay"])[:2] == b"\xff\xd8"
+    # Deterministic: the same photo gives the same answer and fingerprint.
+    again = scan(client, surfaces["bad"]).json()["result"]
+    assert again["signature_sha256"] == res["signature_sha256"]
+    assert [z["bbox"] for z in again["zones"]] == [z["bbox"] for z in res["zones"]]
+
+
+def test_scan_errors(client, surfaces):
+    # Missing / wrong field name.
+    r = client.post("/api/scan", files={"frame": ("f.jpg", surfaces["ok"], "image/jpeg")})
+    assert_error(r, 400, "file_required")
+    assert_error(client.post("/api/scan", data={"image": "text"}), 400)
+    assert_error(client.post("/api/scan", json={"image": "x"}), 400, "multipart_required")
+    # Not an image / empty.
+    assert_error(scan(client, b"this is not an image"), 400, "bad_image")
+    assert_error(scan(client, b"\x00" * 100), 400, "bad_image")
+    assert_error(scan(client, b""), 400)
+    # Too small to inspect.
+    assert_error(scan(client, jpeg(np.full((40, 40, 3), 128, np.uint8))), 400, "image_too_small")
+    # Oversize: one file over 15 MB, and a declared body over the limit.
+    assert_error(scan(client, b"\xff\xd8" + b"\x00" * (16 * 1024 * 1024)), 413, "too_large")
+    r = client.post("/api/scan", content=b"x",
+                    headers={"content-type": "multipart/form-data; boundary=x",
+                             "content-length": str(app_module.MAX_BODY + 1)})
+    assert_error(r, 413, "too_large")
+    r = client.get("/api/scan")  # POST only; the static mount answers other methods with a JSON 404
+    assert r.status_code in (404, 405) and set(r.json()) == {"error", "message"}
 
 
 # --------------------------------------------------------------------------- errors

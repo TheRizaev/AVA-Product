@@ -1,4 +1,7 @@
-"""AVA HTTP API (docs/SPEC.md "HTTP API") + the static web UI at "/".
+"""AVA HTTP API (docs/SPEC.md "HTTP API", "HTTP API addition for Mode 1") + the static web UI at "/".
+
+Routes: ``GET /api/health``, ``POST /api/compare`` (Mode 2: reference + frame),
+``POST /api/scan`` (Mode 1: one photo of a uniform surface).
 
 Run: ``uvicorn server.app:app --host 0.0.0.0 --port 7860``. Errors are JSON
 ``{"error": code, "message": text}``. User photos live only in memory for the request;
@@ -26,7 +29,7 @@ from starlette.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.formparsers import MultiPartParser
 
-from dalil import __version__, baselines, pipeline
+from dalil import __version__, baselines, pipeline, surface
 from dalil.align import align
 from dalil.config import Params
 
@@ -278,11 +281,23 @@ def _compare(ref_data: bytes, frame_data: bytes, methods: tuple[str, ...]) -> di
     }
 
 
+def _scan(image_data: bytes) -> dict:
+    image_sha = hashlib.sha256(image_data).hexdigest()
+    res = surface.scan_surface(decode_image(image_data), PARAMS)
+    return {
+        "result": pipeline.result_to_json(res),
+        "overlay": base64.b64encode(res.images.get("overlay", b"")).decode("ascii"),
+        "image_sha256": image_sha,
+    }
+
+
 # --------------------------------------------------------------------------- routes
 
 @app.get("/api/health")
 async def health():
-    return {"ok": True, "version": __version__, "params": PARAMS.to_dict()}
+    params = PARAMS.to_dict()
+    params["surface_threshold"] = surface.method_threshold("pbp", PARAMS)  # Mode 1 (always present)
+    return {"ok": True, "version": __version__, "params": params}
 
 
 @app.post("/api/compare")
@@ -290,6 +305,12 @@ async def compare(request: Request, methods: str = "pbp,pixdiff"):
     names = _parse_methods(methods)
     files = await _form_files(request, ("reference", "frame"))
     return await _cpu_bound(_compare, files["reference"], files["frame"], names)
+
+
+@app.post("/api/scan")
+async def scan(request: Request):
+    files = await _form_files(request, ("image",))
+    return await _cpu_bound(_scan, files["image"])
 
 
 # Static UI last, so it never shadows an API route.
