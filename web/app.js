@@ -1286,7 +1286,7 @@
         if (autoOn) scheduleAuto();
       },
     }, t('every_s', { n })));
-    const sysCamera = fileButton(t('use_system_camera'), 'camera', 'btn-secondary', { capture: 'environment' }, onFile);
+    const sysCamera = fileButton(t('use_system_camera'), 'camera', 'btn-ghost btn-sm', { capture: 'environment' }, onFile);
     const autoStatus = el('span', { class: 'auto-status muted small' });
 
     // --- result area ---
