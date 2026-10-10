@@ -69,7 +69,7 @@ def test_no_change_gives_no_zones():
 def test_two_far_blobs_ranked_by_area_times_score():
     score, checked = grid()
     paint(score, 2, 2, 3, 3, 0.95)      # 9 cells * 0.95 = 8.55
-    paint(score, 25, 40, 6, 6, 0.5)     # 36 cells * 0.5 = 18
+    paint(score, 25, 40, 6, 6, 0.7)     # 36 cells * 0.7 = 25.2
     zones = extract_zones(score, checked, Params())
     assert len(zones) == 2
     assert [z.id for z in zones] == [1, 2]
@@ -89,7 +89,7 @@ def test_tiny_blob_dropped():
 
 def test_below_threshold_ignored():
     score, checked = grid()
-    paint(score, 5, 5, 5, 5, 0.2)       # below default threshold 0.35
+    paint(score, 5, 5, 5, 5, 0.2)       # below the default threshold
     assert extract_zones(score, checked, Params()) == []
 
 
@@ -109,15 +109,15 @@ def test_unchecked_cells_excluded():
 
 def test_nearby_fragments_merged():
     score, checked = grid()
-    paint(score, 10, 10, 3, 3, 0.8)     # pixels x [40, 56)
-    paint(score, 10, 15, 3, 3, 0.6)     # pixels x [60, 76) -> gap 4 px < 12
+    paint(score, 10, 10, 3, 3, 0.9)     # pixels x [40, 56)
+    paint(score, 10, 15, 3, 3, 0.7)     # pixels x [60, 76) -> gap 4 px < 12
     zones = extract_zones(score, checked, Params())
     assert len(zones) == 1
     z = zones[0]
     assert z.n_cells == 18
     assert z.bbox == (40, 40, 36, 16)
-    assert z.mean_score == pytest.approx(0.7)
-    assert z.max_score == pytest.approx(0.8)
+    assert z.mean_score == pytest.approx(0.8)
+    assert z.max_score == pytest.approx(0.9)
 
     # with merging disabled they stay apart
     zones = extract_zones(score, checked, replace(Params(), merge_gap_px=0))

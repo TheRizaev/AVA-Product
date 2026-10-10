@@ -10,6 +10,9 @@ from dalil import baselines, change, pbp
 from dalil.config import Params
 
 P = Params()          # win=8, step=4, tolerance=1
+# A clear change in a raw (unsmoothed) PBP change map. The operating thresholds in Params are
+# calibrated on whole inspections by eval/benchmark.py; these unit tests check the maps.
+CLEAR = 0.45
 
 
 def _texture(h=96, w=128, seed=0):
@@ -76,11 +79,16 @@ def test_gamma_change_stays_below_threshold(gamma):
 
 
 def test_gain_change_breaks_plain_subtraction():
-    """Contrast for the demo: the same gain change is a large pixdiff score."""
+    """Contrast for the demo: the gain change that PBP ignores is a large pixdiff score.
+
+    It is of the order of the calibrated pixdiff threshold itself: plain subtraction must
+    choose between flagging lighting changes and missing defects (eval/RESULTS.md).
+    """
     g = _texture(seed=3)
     feat, dist = baselines.pixdiff_features, baselines.pixdiff_distance
     m = change.tolerant_change_map(dist, feat(g, P), feat(0.6 * g + 5.0, P), 1)
-    assert m.mean() > P.threshold_pixdiff
+    assert m.mean() > 0.5 * P.threshold_pixdiff
+    assert change.pbp_change_map(_sig(g), _sig(0.6 * g + 5.0), P).max() < 1e-3
 
 
 # --------------------------------------------------------------------------- #
@@ -103,11 +111,11 @@ def test_pasted_line_and_rectangle_detected():
         cv2.dilate((np.abs(frame - g) > 0).astype(np.uint8), np.ones((9, 9))) > 0,
         P.win, P.step, frac=0.0001)
 
-    assert np.median(m[line_cells]) > P.threshold
-    # Foreign texture vs texture: the patch as a whole is far above the threshold, while
-    # a single window of one random texture can resemble the other one somewhat.
-    assert np.median(m[rect_cells]) > P.threshold
-    assert m[rect_cells].min() > 0.8 * P.threshold
+    assert np.median(m[line_cells]) > CLEAR
+    # Foreign texture vs texture: the patch as a whole is a clear change, while a single
+    # window of one random texture can resemble the other one somewhat.
+    assert np.median(m[rect_cells]) > CLEAR
+    assert m[rect_cells].min() > 0.8 * CLEAR
     assert m[~touched].max() < 1e-3
 
 
@@ -122,8 +130,8 @@ def test_multi_reference_takes_the_best_reference():
     f = _sig(frame)
     single = change.tolerant_change_map(pbp.pair_distance, refs[0], f, 1)
     multi = change.multi_reference_change_map(pbp.pair_distance, refs, f, 1)
-    assert single.mean() > P.threshold
-    assert multi.mean() < 0.05 and multi.max() < 0.5 * P.threshold   # sensor noise only
+    assert single.mean() > CLEAR
+    assert multi.mean() < 0.05 and multi.max() < 0.5 * CLEAR   # sensor noise only
     np.testing.assert_array_equal(multi, np.minimum(
         single, change.tolerant_change_map(pbp.pair_distance, refs[1], f, 1)))
     np.testing.assert_array_equal(change.pbp_change_map(refs, f, P), multi)

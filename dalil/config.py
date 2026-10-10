@@ -17,11 +17,14 @@ class Params:
 
     # comparison / zones
     tolerance: int = 1         # +-cells searched when comparing signatures
-    threshold: float = 0.45    # PBP threshold; placeholder until eval/benchmark.py calibration
-    threshold_pixdiff: float = 0.08   # baseline thresholds (placeholders, calibrated by eval/benchmark.py)
-    threshold_ssim: float = 0.25
-    threshold_census: float = 0.25
-    mismatch_frac: float = 0.4        # changed area above this fraction => "mismatch" (wrong / absent part)
+    # Change-score thresholds, frozen by the CALIB split of eval/benchmark.py (eval/results/calib.json):
+    # smallest threshold with <= 0.05 false events per good pair under none + monotone lighting.
+    threshold: float = 0.60976          # PBP
+    threshold_pixdiff: float = 0.2512
+    threshold_ssim: float = 0.13503
+    threshold_census: float = 0.39137
+    mismatch_frac: float = 0.15       # changed area above this fraction => "mismatch" (wrong / absent /
+                                      # misregistered part); largest synthetic defect: 0.054 (eval/benchmark.py)
     min_zone_cells: int = 4
     contrast_floor: float = 10.0       # PBP: cells where ref and frame window contrast are both below => unchanged
     score_smooth: int = 3              # box filter (cells) on the change map before zones; <= 1 disables
@@ -48,6 +51,8 @@ class Params:
     static_background: bool = True      # part moved: also compare the unregistered frame, keep the lower score
     static_bg_min_shift: float = 3.0    # ... only when the registration moves some image corner by more px
     part_roi_margin_px: int = 8         # two motions found: check only the part (hull of its keypoints + margin)
+    part_min_inliers: int = 15          # static background dominant: min inliers of the part's similarity motion
+    part_ncc_margin: float = 0.05       # ... accepted only if it beats identity by this NCC margin on its region
 
     # capture quality / glare
     glare_v: int = 250
@@ -59,6 +64,29 @@ class Params:
     dark_mean: float = 35.0        # mean gray below => too dark
     min_coverage: float = 0.5      # below => retake (low_coverage)
     border_margin_px: int = 12     # cells this close to the image border are not checked
+
+    # Mode 1: single-photo surface check (dalil/surface.py). Thresholds frozen by the CALIB split of
+    # eval/benchmark_surface.py (eval/results/surface_calib.json): smallest threshold with a
+    # false-alarm rate <= 5 % on defect-free photos under none + monotone lighting.
+    surface_threshold: float = 0.23764    # PBP self-reference anomaly score threshold
+    surface_samples: int = 768            # windows sampled from the same image as "look-alike" pool
+    surface_k: int = 5                    # anomaly = mean of the k smallest distances
+    surface_exclude_cells: int = 6        # samples within this many cells of the window are skipped
+    surface_candidates: int = 8           # approximate (Hellinger) neighbours re-ranked exactly
+    surface_seed: int = 20261011          # fixed sampling seed (deterministic results)
+    surface_noise_floor: float = 6.0      # window contrast where structure starts to count ...
+    surface_noise_full: float = 14.0      # ... and where it fully counts (gray levels, after blur)
+    surface_rel_floor: float = 2.5        # ... or, if higher, these multiples of the image's 25th-
+    surface_rel_full: float = 5.0         # percentile window contrast (random micro-texture: gain-free)
+    surface_contrast_weight: float = 0.8  # weight of the robust contrast-outlier term
+    surface_contrast_z: float = 2.5       # robust z of log-contrast where the term starts ...
+    surface_contrast_span: float = 3.0    # ... and the z range over which it ramps to 1
+    surface_smooth: int = 2               # box mean (cells) of the score map; <= 1 disables
+    surface_glare_dilate_px: int = 12     # extra margin around the glare region (core + halo)
+    surface_glare_halo_px: int = 320      # halo: brighter-than-surroundings pixels connected to a
+    surface_glare_elev: float = 5.0       # highlight core, within this distance, >= this many levels
+    threshold_surface_gradient: float = 0.53498   # gradient baseline (robust z / 10)
+    threshold_surface_census: float = 0.14604     # census kNN baseline
 
     def to_dict(self) -> dict:
         return asdict(self)
