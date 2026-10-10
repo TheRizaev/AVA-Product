@@ -1461,3 +1461,124 @@ def make_reference_set(rng: np.random.Generator, base: np.ndarray, n: int,
             img = warp(base, H)
         shots.append(_add_noise(img, rng, rng.uniform(*noise_sigma)))
     return shots
+
+
+# --------------------------------------------------------------------------- #
+# Mode 1: uniform surfaces filling the whole frame (single-photo surface check)
+# --------------------------------------------------------------------------- #
+
+SURFACE_KINDS = ("painted", "plastic", "brushed", "glass_dark")
+SURFACE_CHECK_DEFECTS = ("scratch", "chip", "stain", "sticker", "dent", "burr")
+
+
+def _soft_falloff(rng, h, w, depth) -> np.ndarray:
+    """Smooth illumination gain in [1 - depth, 1]: off-centre radial fall-off + faint low-freq."""
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    cx, cy = rng.uniform(0.2, 0.8) * w, rng.uniform(0.2, 0.8) * h
+    r = np.hypot((xx - cx) / w, (yy - cy) / h)
+    r = r / max(float(r.max()), 1e-6)
+    gain = 1.0 - depth * r ** 2
+    gain = gain * (1.0 + 0.015 * _lowfreq(rng, h, w, 3, 4))
+    return np.clip(gain, 0.5, 1.05).astype(np.float32)
+
+
+def make_uniform_surface(rng: np.random.Generator, kind: str = "painted",
+                         h: int = 720, w: int = 1280) -> np.ndarray:
+    """Close-up photo of a uniform surface filling the WHOLE frame (BGR uint8).
+
+    Kinds (``SURFACE_KINDS``):
+    - ``"painted"``: smooth car paint colour + orange peel + fine metallic flake;
+    - ``"plastic"``: mid/dark moulded plastic with fine isotropic grain;
+    - ``"brushed"``: directional brushed metal (streaks along x or y);
+    - ``"glass_dark"``: dark glossy surface with faint broad reflections.
+    All include a mild, soft illumination fall-off (no light box) and sensor noise.
+    Deterministic for a given rng state.
+    """
+    if kind not in SURFACE_KINDS:
+        raise ValueError(f"unknown surface kind: {kind!r}")
+    k = _scale(h, w)
+    if kind == "painted":
+        base = np.asarray(_CAR_COLOURS_BGR[rng.integers(len(_CAR_COLOURS_BGR))], np.float32)
+        # Exposed for the paint: dark colours are lifted (luma >= ~100) and a white panel
+        # is shot so it does not clip (channels <= 175).
+        base = base * rng.uniform(0.94, 1.06, 3)
+        luma = float(base @ np.array([0.114, 0.587, 0.299]))
+        base = np.clip(base * max(1.0, 100.0 / max(luma, 1.0)), 20, 175).astype(np.float32)
+        img = np.broadcast_to(base, (h, w, 3)).astype(np.float32)
+        img = img * _soft_falloff(rng, h, w, rng.uniform(0.08, 0.18))[..., None]
+        img = img + _grain(rng, h, w, 1.6 * k + 0.4, rng.uniform(2.0, 3.5))[..., None]  # orange peel
+        img = img + _grain(rng, h, w, 0.5, rng.uniform(0.8, 1.5))[..., None]            # flake
+    elif kind == "plastic":
+        v = rng.uniform(85, 130)
+        tint = np.array([1.0, rng.uniform(0.97, 1.03), rng.uniform(0.96, 1.04)], np.float32)
+        img = np.full((h, w, 3), v, np.float32) * tint
+        img = img * _soft_falloff(rng, h, w, rng.uniform(0.08, 0.2))[..., None]
+        img = img + _grain(rng, h, w, 0.9 * k + 0.3, rng.uniform(4.0, 7.0))[..., None]
+    elif kind == "brushed":
+        v = rng.uniform(120, 175)
+        vertical = rng.random() < 0.5
+        hh, ww = (w, h) if vertical else (h, w)
+        tex = _brushed(rng, hh, ww, rng.uniform(40, 90) * k + 4, rng.uniform(6.0, 10.0))
+        tex = tex + _grain(rng, hh, ww, 0.6, 1.5)
+        if vertical:
+            tex = np.ascontiguousarray(tex.T)
+        img = np.full((h, w, 3), v, np.float32) * np.array([1.02, 1.0, 0.98], np.float32)
+        img = img * _soft_falloff(rng, h, w, rng.uniform(0.08, 0.2))[..., None] + tex[..., None]
+    else:  # glass_dark
+        v = rng.uniform(82, 96)
+        img = np.full((h, w, 3), v, np.float32) * np.array([1.04, 1.0, 0.97], np.float32)
+        img = img * _soft_falloff(rng, h, w, rng.uniform(0.06, 0.14))[..., None]
+        # Faint broad reflections (window / ceiling light): very soft bands.
+        refl = np.zeros((h, w), np.float32)
+        for _ in range(int(rng.integers(1, 3))):
+            band = _full(h, w, rng.uniform(0.2, 0.8) * w, rng.uniform(0.2, 0.8) * h,
+                         rng.uniform(0.3, 0.6) * w, rng.uniform(0.04, 0.1) * h, 1.0,
+                         rng.uniform(-30, 30))
+            refl += _smooth(band, rng.uniform(40, 70) * k + 2) * np.float32(rng.uniform(8, 16))
+        img = img + refl[..., None]
+        img = img + _grain(rng, h, w, 0.8, 0.8)[..., None]
+    img = img + np.float32(1.2) * rng.standard_normal((h, w, 3), np.float32)  # sensor noise
+    return _to_u8(img)
+
+
+def add_chip(img: np.ndarray, rng: np.random.Generator, region=None):
+    """Small paint chip: irregular flake of paint missing, exposing the layer below.
+
+    The exposed layer contrasts with the local surface (as a visible chip does): light
+    primer or bare metal on a dark/mid surface, dark e-coat on a light one. A thin
+    dark shadow rim sits on one side (the paint layer edge); 3-12 px radius at 720 px.
+    """
+    h, w = img.shape[:2]
+    k = _scale(h, w)
+    cx, cy = _pick_center_in(rng, h, w, region)
+    r0 = rng.uniform(4, 12) * k + 2
+    th = np.linspace(0, 2 * math.pi, 24, endpoint=False)
+    rad = np.ones_like(th)
+    for m in range(2, 7):
+        rad += rng.uniform(0, 0.18) * np.cos(m * th + rng.uniform(0, 2 * math.pi))
+    rad = np.clip(rad, 0.45, None)
+    pts = np.stack([cx + r0 * rad * np.cos(th), cy + r0 * rad * np.sin(th)], -1)
+    layer = np.zeros((h, w), np.uint8)
+    cv2.fillPoly(layer, [np.round(pts * 16).astype(np.int32)], 255, cv2.LINE_AA, 4)
+    a = cv2.GaussianBlur(layer.astype(np.float32) / 255.0, (0, 0), 0.6)
+    # Shadow rim: the coverage shifted towards a random side, minus the chip itself.
+    ang = rng.uniform(0, 2 * math.pi)
+    sx, sy = 1.5 * k * math.cos(ang) + 0.5, 1.5 * k * math.sin(ang) + 0.5
+    shifted = cv2.warpAffine(a, np.float32([[1, 0, sx], [0, 1, sy]]), (w, h))
+    rim = np.clip(shifted - a, 0, 1)
+    out = img.astype(np.float32)
+    local = float(_gray_u8(img)[_roi(h, w, cx, cy, 2 * r0 + 2)].mean())
+    if local < 125:
+        if rng.random() < 0.65:  # primer: light grey
+            colour = np.full(3, rng.uniform(max(170.0, local + 70), 225), np.float32)
+        else:  # bare metal: bright grey, slightly bluish
+            colour = rng.uniform(max(160.0, local + 60), 210) * np.array([1.05, 1.0, 0.96], np.float32)
+    else:  # dark e-coat / primer under a light paint
+        colour = np.full(3, rng.uniform(25, min(70.0, local - 60)), np.float32)
+    tex = cv2.GaussianBlur(rng.standard_normal((h, w), np.float32), (0, 0), 0.7) * np.float32(5.0)
+    out = out * (1.0 - a[..., None]) + (colour[None, None, :] + tex[..., None]) * a[..., None]
+    out = out * (1.0 - 0.45 * rim[..., None])
+    mask = (a >= 0.5) | (rim >= 0.5)
+    if not mask.any():
+        mask[int(np.clip(cy, 0, h - 1)), int(np.clip(cx, 0, w - 1))] = True
+    return _to_u8(out), mask

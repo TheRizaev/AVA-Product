@@ -360,3 +360,70 @@ def test_make_reference_set():
     for s in shots[1:]:
         assert not np.array_equal(s, shots[0])
         assert np.abs(s.astype(float) - base).mean() < 8.0
+
+
+# --------------------------------------------------------------------------- Mode 1 surfaces
+
+@pytest.mark.parametrize("kind", synth.SURFACE_KINDS)
+def test_uniform_surface_fills_frame_and_is_deterministic(kind):
+    a = synth.make_uniform_surface(_rng(40), kind, SH, SW)
+    b = synth.make_uniform_surface(_rng(40), kind, SH, SW)
+    c = synth.make_uniform_surface(_rng(41), kind, SH, SW)
+    assert a.shape == (SH, SW, 3) and a.dtype == np.uint8
+    assert np.array_equal(a, b) and not np.array_equal(a, c)
+    g = a.astype(np.float32).mean(axis=2)
+    # The whole frame is the surface: no background, no part edges (every 1/8 tile has a
+    # similar level), not clipped, exposed above the "dark" gate.
+    th, tw = SH // 4, SW // 8
+    tiles = np.array([g[i:i + th, j:j + tw].mean() for i in range(0, SH - th + 1, th)
+                      for j in range(0, SW - tw + 1, tw)])
+    assert tiles.min() > 0.7 * tiles.max()
+    assert 45 < g.mean() < 200 and (a == 255).mean() < 0.001 and (a == 0).mean() < 0.001
+    # Mild soft illumination fall-off: smooth large-scale variation present but bounded.
+    low = cv2.resize(g, (16, 9), interpolation=cv2.INTER_AREA)
+    assert 0.02 < (low.max() - low.min()) / low.mean() < 0.35
+    # Texture: fine detail exists (not a flat fill), amount depends on the kind.
+    hp = g - cv2.GaussianBlur(g, (0, 0), 4.0)
+    assert hp.std() > 0.8
+
+
+def test_uniform_surface_kinds_differ_and_validate():
+    stds = {}
+    for kind in synth.SURFACE_KINDS:
+        g = synth.make_uniform_surface(_rng(3), kind, SH, SW).astype(np.float32).mean(axis=2)
+        stds[kind] = float((g - cv2.GaussianBlur(g, (0, 0), 4.0)).std())
+    assert stds["glass_dark"] < stds["painted"] < stds["brushed"]
+    g = synth.make_uniform_surface(_rng(3), "brushed", SH, SW).astype(np.float32).mean(axis=2)
+    # Brushed metal is directional: much more variation across the streaks than along them.
+    dx = np.abs(np.diff(g, axis=1)).mean()
+    dy = np.abs(np.diff(g, axis=0)).mean()
+    assert max(dx, dy) > 1.5 * min(dx, dy)
+    with pytest.raises(ValueError):
+        synth.make_uniform_surface(_rng(0), "wood", SH, SW)
+
+
+@pytest.mark.parametrize("kind", synth.SURFACE_KINDS)
+def test_add_chip(kind):
+    base = synth.make_uniform_surface(_rng(12), kind, SH, SW)
+    before = base.copy()
+    out, mask = synth.add_chip(base, _rng(13))
+    again, mask2 = synth.add_chip(base, _rng(13))
+    assert np.array_equal(base, before)                      # input untouched
+    assert np.array_equal(out, again) and np.array_equal(mask, mask2)
+    assert out.shape == base.shape and out.dtype == np.uint8 and mask.dtype == bool
+    k = SH / 720.0
+    assert 3 <= mask.sum() <= np.pi * (12 * 1.5 * k + 5) ** 2 * 1.3   # small
+    d = np.abs(out.astype(np.float32) - base).sum(-1)
+    assert d[mask].mean() > 60                                # visible against the surface
+    far = ~cv2.dilate(mask.astype(np.uint8), np.ones((9, 9), np.uint8)).astype(bool)
+    assert d[far].max() == 0                                  # local change only
+
+
+def test_add_chip_region():
+    base = synth.make_uniform_surface(_rng(14), "painted", SH, SW)
+    region = np.zeros((SH, SW), bool)
+    region[20:50, 30:70] = True
+    _, mask = synth.add_chip(base, _rng(15), region=region)
+    ys, xs = np.nonzero(mask)
+    assert region[int(round(ys.mean())), int(round(xs.mean()))] or \
+        np.hypot(ys.mean() - 35, xs.mean() - 50) < 30
