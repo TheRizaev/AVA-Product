@@ -1,30 +1,53 @@
 /*
- * AVA — one-screen client: a reference photo (good part) + a photo to check → POST /api/compare → verdict.
+ * AVA — one-screen client with two modes:
+ *   Surface check (uniform texture, 1 photo)        → POST /api/scan     (field "image")
+ *   Compare with reference (complex parts, 2 photos) → POST /api/compare (fields "reference", "frame")
  * Vanilla JS, no build step. Photos are downscaled on the device (≤ 1600 px, EXIF-free JPEG) and live only
  * in this page; the result history is kept for this session only (nothing is stored on the server).
+ * Example buttons only load the example images into the slots; the verdict always comes from the real API.
  */
 (function () {
   'use strict';
 
-  const I18N = window.I18N;
-  const t = I18N.t;
+  const t = window.TEXT.t;
 
   // ---------------------------------------------------------------------------
   // Constants
   // ---------------------------------------------------------------------------
 
+  const SCAN_URL = '/api/scan';
   const COMPARE_URL = '/api/compare?methods=pbp,pixdiff';
-  const SLOTS = ['reference', 'frame'];
+  const EXAMPLES_DIR = '/examples/';
   const MAX_SIDE = 1600;               // longest side of an uploaded photo, px
   const JPEG_QUALITY = 0.9;
   const REQUEST_TIMEOUT_MS = 120000;
   const HISTORY_MAX = 10;
   const GHOST_DEFAULT = 40;            // % opacity of the reference over the live camera
   const LS_GHOST = 'ava.ghostOpacity';
+  const LS_MODE = 'ava.mode';
   const CAMERA_CONSTRAINTS = {
     audio: false,
     video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
   };
+
+  /** Per mode: photo slots, endpoint and the built-in examples (slot → file in web/examples/). */
+  const MODES = {
+    surface: {
+      slots: ['image'],
+      examples: [
+        { id: 'surface-defect', label: 'ex_defect', files: { image: 'surface_defect.jpg' } },
+        { id: 'surface-ok', label: 'ex_ok', files: { image: 'surface_ok.jpg' } },
+      ],
+    },
+    compare: {
+      slots: ['reference', 'frame'],
+      examples: [
+        { id: 'compare-defect', label: 'ex_defect', files: { reference: 'compare_reference.jpg', frame: 'compare_defect.jpg' } },
+        { id: 'compare-light', label: 'ex_light', files: { reference: 'compare_reference.jpg', frame: 'compare_light.jpg' } },
+      ],
+    },
+  };
+  const MODE_OF_SLOT = { image: 'surface', reference: 'compare', frame: 'compare' };
 
   // ---------------------------------------------------------------------------
   // Small utilities
@@ -87,7 +110,9 @@
     camera: 'M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1zM12 17a4 4 0 100-8 4 4 0 000 8z',
     image: 'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15.5 9.5h.01',
     compare: 'M4 6h7v12H4zM13 6h7v12h-7M7.5 3v18',
+    scan: 'M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M4 12h16',
     plus: 'M12 5v14M5 12h14',
+    play: 'M8 5v14l11-7z',
   };
 
   function icon(name, cls) {
@@ -104,13 +129,9 @@
   const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const scrollBehavior = () => (reducedMotion() ? 'auto' : 'smooth');
 
-  function locale() {
-    return I18N.getLang() === 'ru' ? 'ru-RU' : 'en-GB';
-  }
-
   function formatTime(date) {
     try {
-      return date.toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     } catch (e) {
       return date.toTimeString().slice(0, 8);
     }
@@ -118,7 +139,7 @@
 
   function formatNumber(x, digits) {
     try {
-      return x.toLocaleString(locale(), { maximumFractionDigits: digits });
+      return x.toLocaleString('en-GB', { maximumFractionDigits: digits });
     } catch (e) {
       return x.toFixed(digits);
     }
@@ -134,6 +155,7 @@
 
   const dom = {
     slots: $('slots'), runBtn: $('runBtn'), runHint: $('runHint'), result: $('result'), history: $('history'),
+    modeHint: $('modeHint'), examples: $('examples'), modeBtns: Array.from(document.querySelectorAll('[data-mode]')),
     toasts: $('toasts'), insecureNote: $('insecureNote'), qrBtn: $('qrBtn'),
     camera: $('camera'), camTitle: $('camTitle'), camClose: $('camClose'), camVideo: $('camVideo'),
     camGhost: $('camGhost'), camMsg: $('camMsg'), camTap: $('camTap'), camFlash: $('camFlash'),
@@ -142,13 +164,18 @@
     qrModal: $('qrModal'), qrBox: $('qrBox'), qrUrl: $('qrUrl'), qrLocal: $('qrLocal'), qrClose: $('qrClose'),
   };
 
+  const savedMode = store.get(LS_MODE);
   const state = {
-    photos: { reference: null, frame: null }, // { blob, url, w, h } per slot
-    shown: null,                              // history entry on screen
-    history: [],                              // newest first, at most HISTORY_MAX
+    mode: MODES[savedMode] ? savedMode : 'surface',
+    photos: { image: null, reference: null, frame: null }, // { blob, url, w, h, example } per slot
+    shown: { surface: null, compare: null },              // history entry on screen, per mode
+    history: [],                                          // newest first, at most HISTORY_MAX
     busy: false,
   };
   let historySeq = 0;
+
+  const slotsOf = (mode) => MODES[mode].slots;
+  const ready = (mode) => slotsOf(mode).every((s) => !!state.photos[s]);
 
   // ---------------------------------------------------------------------------
   // Toasts
@@ -170,7 +197,7 @@
   }
 
   function showError(err) {
-    console.error(err);
+    console.warn(err);
     toast((err && err.message) || t('err_generic'), 'error');
   }
 
@@ -216,10 +243,10 @@
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
     const blob = await canvasToBlob(canvas);
-    return { blob, url: URL.createObjectURL(blob), w: canvas.width, h: canvas.height };
+    return { blob, url: URL.createObjectURL(blob), w: canvas.width, h: canvas.height, example: false };
   }
 
-  /** Gallery file → photo record (browsers apply the EXIF orientation when drawing an <img>). */
+  /** Gallery file (or any image Blob) → photo record (browsers apply the EXIF orientation when drawing an <img>). */
   async function photoFromFile(file) {
     const url = URL.createObjectURL(file);
     try {
@@ -236,7 +263,8 @@
     const old = state.photos[slot];
     if (old) URL.revokeObjectURL(old.url);
     state.photos[slot] = photo;
-    state.shown = null; // the result on screen no longer matches the photos (it stays in the history)
+    // The result on screen no longer matches the photos (it stays in the history).
+    state.shown[MODE_OF_SLOT[slot]] = null;
     renderAll();
   }
 
@@ -250,9 +278,9 @@
     }
   }
 
-  /** Once both photos are there, bring «Сравнить» into view. */
+  /** Once all photos of the mode are there, bring the run button into view. */
   function afterPhoto() {
-    if (!(state.photos.reference && state.photos.frame)) return;
+    if (!ready(state.mode)) return;
     dom.runBtn.scrollIntoView({ block: 'center', behavior: scrollBehavior() });
     try { dom.runBtn.focus({ preventScroll: true }); } catch (e) { dom.runBtn.focus(); }
   }
@@ -268,8 +296,69 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Slots + run button
+  // Built-in examples: load the files into the slots exactly like a gallery pick, then run the real request
   // ---------------------------------------------------------------------------
+
+  async function fetchExample(file) {
+    let res;
+    try {
+      res = await fetch(EXAMPLES_DIR + file, { cache: 'no-cache', credentials: 'same-origin' });
+    } catch (e) {
+      throw new Error(t('err_network'));
+    }
+    if (!res.ok) throw new Error(t('ex_failed'));
+    const photo = await photoFromFile(await res.blob());
+    photo.example = true;
+    return photo;
+  }
+
+  async function runExample(mode, example) {
+    if (state.busy) return;
+    if (state.mode !== mode) setMode(mode);
+    setBusy(true);
+    let loaded = null;
+    try {
+      const slots = Object.keys(example.files);
+      const photos = await Promise.all(slots.map((s) => fetchExample(example.files[s])));
+      loaded = slots.map((s, i) => [s, photos[i]]);
+    } catch (err) {
+      showError(err);
+    }
+    setBusy(false);
+    if (!loaded) return;
+    loaded.forEach(([slot, photo]) => setPhoto(slot, photo));
+    await run();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Mode switch, examples row, slots, run button
+  // ---------------------------------------------------------------------------
+
+  function setMode(mode) {
+    if (!MODES[mode] || state.busy || mode === state.mode) return;
+    state.mode = mode;
+    store.set(LS_MODE, mode);
+    renderAll();
+  }
+
+  function renderModes() {
+    dom.modeBtns.forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === state.mode));
+      b.disabled = state.busy;
+    });
+    dom.modeHint.textContent = t(`mode_hint_${state.mode}`);
+    document.body.setAttribute('data-mode', state.mode);
+  }
+
+  function renderExamples() {
+    const mode = state.mode;
+    replaceContent(dom.examples,
+      el('span', { class: 'examples-label' }, t('examples_label')),
+      MODES[mode].examples.map((ex) => el('button', {
+        class: 'btn btn-example', type: 'button', disabled: state.busy, 'data-example': ex.id,
+        onclick: () => runExample(mode, ex),
+      }, icon('play', 'icon-sm'), el('span', null, t(ex.label)))));
+  }
 
   /** A <label> styled as a button around a file input (more reliable on iOS than input.click()). */
   function galleryButton(slot, textKey) {
@@ -283,16 +372,17 @@
       input, icon('image'), el('span', null, t(textKey)));
   }
 
-  function slotCard(slot, index) {
+  function slotCard(slot, index, single) {
     const photo = state.photos[slot];
     const preview = photo
       ? el('div', { class: 'slot-preview' },
         el('img', { src: photo.url, alt: t(`slot_${slot}`) }),
+        photo.example ? el('span', { class: 'slot-tag' }, t('ex_tag')) : null,
         el('span', { class: 'slot-size' }, t('photo_size', { w: photo.w, h: photo.h })))
       : el('div', { class: 'slot-preview slot-empty' }, icon('image', 'icon-xl'), el('span', null, t('slot_empty')));
-    return el('article', { class: `slot${photo ? ' slot-filled' : ''}`, 'aria-label': t(`slot_${slot}`) },
+    return el('article', { class: `slot${photo ? ' slot-filled' : ''}${single ? ' slot-single' : ''}`, 'aria-label': t(`slot_${slot}`), 'data-slot': slot },
       el('header', { class: 'slot-head' },
-        el('span', { class: 'slot-num', 'aria-hidden': 'true' }, String(index + 1)),
+        single ? null : el('span', { class: 'slot-num', 'aria-hidden': 'true' }, String(index + 1)),
         el('div', null,
           el('h2', { class: 'slot-title' }, t(`slot_${slot}`)),
           el('p', { class: 'slot-sub' }, t(`slot_${slot}_sub`)))),
@@ -304,20 +394,26 @@
   }
 
   function renderSlots() {
-    replaceContent(dom.slots, SLOTS.map((slot, i) => slotCard(slot, i)));
+    const slots = slotsOf(state.mode);
+    dom.slots.classList.toggle('slots-single', slots.length === 1);
+    replaceContent(dom.slots, slots.map((slot, i) => slotCard(slot, i, slots.length === 1)));
   }
 
   function renderRun() {
-    const ready = !!(state.photos.reference && state.photos.frame);
-    dom.runBtn.disabled = !ready || state.busy;
+    const mode = state.mode;
+    const ok = ready(mode);
+    dom.runBtn.disabled = !ok || state.busy;
     dom.runBtn.setAttribute('aria-busy', String(state.busy));
     replaceContent(dom.runBtn,
-      state.busy ? el('span', { class: 'spinner spinner-btn', 'aria-hidden': 'true' }) : icon('compare'),
-      el('span', null, t(state.busy ? 'compare_busy' : 'compare_run')));
-    dom.runHint.hidden = ready;
+      state.busy ? el('span', { class: 'spinner spinner-btn', 'aria-hidden': 'true' }) : icon(mode === 'surface' ? 'scan' : 'compare'),
+      el('span', null, t(state.busy ? `busy_${mode}` : `run_${mode}`)));
+    dom.runHint.textContent = t(`need_${mode}`);
+    dom.runHint.hidden = ok;
   }
 
   function renderAll() {
+    renderModes();
+    renderExamples();
     renderSlots();
     renderRun();
     renderResult();
@@ -326,6 +422,8 @@
 
   function setBusy(on) {
     state.busy = on;
+    renderModes();
+    renderExamples();
     renderSlots();
     renderRun();
     dom.result.querySelectorAll('button').forEach((b) => { b.disabled = on; });
@@ -338,7 +436,7 @@
 
   class ApiError extends Error {}
 
-  /** Localised text for a known server error code, else the server's own message. */
+  /** Friendly text for a known server error code, else the server's own message. */
   function errorMessage(data, status) {
     if (data && typeof data.error === 'string') {
       const key = `api_${data.error}`;
@@ -350,11 +448,12 @@
     return t('err_http', { status });
   }
 
-  async function postCompare(form) {
+  /** POST a multipart form, return the parsed JSON; `valid(data)` checks the response shape. */
+  async function postForm(url, form, valid) {
     const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     const timer = ctrl ? setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT_MS) : null;
     try {
-      const res = await fetch(COMPARE_URL, {
+      const res = await fetch(url, {
         method: 'POST', body: form, cache: 'no-store', credentials: 'same-origin',
         headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
       });
@@ -363,7 +462,7 @@
         try { data = await res.json(); } catch (e) { data = null; }
       }
       if (!res.ok) throw new ApiError(errorMessage(data, res.status));
-      if (!data || !data.results || !data.results.pbp) throw new ApiError(t('err_bad_response'));
+      if (!data || !valid(data)) throw new ApiError(t('err_bad_response'));
       return data;
     } catch (e) {
       if (e instanceof ApiError) throw e;
@@ -373,21 +472,40 @@
     }
   }
 
-  async function runCompare() {
-    const { reference, frame } = state.photos;
-    if (!reference || !frame || state.busy) return;
+  /** Surface check: one photo → /api/scan → { result, overlay, image_sha256 }. */
+  async function requestScan() {
+    const form = new FormData();
+    form.append('image', state.photos.image.blob, 'image.jpg');
+    const data = await postForm(SCAN_URL, form, (d) => !!d.result);
+    return { main: data.result, mainOverlay: data.overlay, base: null, baseOverlay: null };
+  }
+
+  /** Compare with reference: two photos → /api/compare → AVA (pbp) + plain subtraction (pixdiff). */
+  async function requestCompare() {
+    const form = new FormData();
+    form.append('reference', state.photos.reference.blob, 'reference.jpg');
+    form.append('frame', state.photos.frame.blob, 'frame.jpg');
+    const data = await postForm(COMPARE_URL, form, (d) => !!(d.results && d.results.pbp));
+    const overlays = data.overlays || {};
+    return {
+      main: data.results.pbp, mainOverlay: overlays.pbp,
+      base: data.results.pixdiff || null, baseOverlay: overlays.pixdiff,
+    };
+  }
+
+  async function run() {
+    const mode = state.mode;
+    if (!ready(mode) || state.busy) return;
+    const examples = slotsOf(mode).every((s) => state.photos[s].example);
     setBusy(true);
+    let entry = null;
     try {
-      const form = new FormData();
-      form.append('reference', reference.blob, 'reference.jpg');
-      form.append('frame', frame.blob, 'frame.jpg');
-      const data = await postCompare(form);
-      const entry = { id: ++historySeq, at: new Date(), data };
+      const out = await (mode === 'surface' ? requestScan() : requestCompare());
+      entry = Object.assign({ id: ++historySeq, at: new Date(), mode, example: examples }, out);
       state.history.unshift(entry);
       if (state.history.length > HISTORY_MAX) state.history.length = HISTORY_MAX;
-      state.shown = entry;
-      const v = verdictOf(data.results.pbp);
-      vibrate(v === 'fail' ? [80, 60, 80] : 40);
+      state.shown[mode] = entry;
+      vibrate(verdictOf(entry.main) === 'fail' ? [80, 60, 80] : 40);
     } catch (err) {
       showError(err);
     } finally {
@@ -395,7 +513,7 @@
       renderResult();
       renderHistory();
     }
-    if (state.shown) dom.result.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
+    if (entry && state.mode === mode) dom.result.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
   }
 
   // ---------------------------------------------------------------------------
@@ -418,9 +536,10 @@
   }
 
   /** Advice under a RETAKE verdict (glare → change the angle, etc.), or null. */
-  function retakeHint(rec) {
+  function retakeHint(rec, mode) {
     const hints = Array.isArray(rec.hints) ? rec.hints : [];
-    const key = hints.indexOf('change_angle') >= 0 ? 'rh_glare' : `rh_${rec.reason}`;
+    let key = hints.indexOf('change_angle') >= 0 ? 'rh_glare' : `rh_${rec.reason}`;
+    if (rec.reason === 'low_coverage') key = `rh_low_coverage_${mode}`;
     const s = t(key);
     return s === key ? null : s;
   }
@@ -431,25 +550,29 @@
     return s === key ? null : s;
   }
 
+  function failTitle(n) {
+    return n === 1 ? t('v_fail_one') : t('v_fail_many', { n });
+  }
+
   /** Baseline display rule: plain subtraction's "mismatch" means it saw almost the whole frame as changed. */
   const baselineMismatch = (rec) => !!rec && rec.reason === 'mismatch';
 
   const ICON_FOR = { pass: 'check', fail: 'cross', retake: 'retake' };
 
   function banner(v, title, sub, small) {
-    return el('div', { class: `verdict verdict-${v}${small ? ' verdict-small' : ''}`, role: 'status' },
+    return el('div', { class: `verdict verdict-${v}${small ? ' verdict-small' : ''}`, role: 'status', 'data-verdict': v },
       icon(ICON_FOR[v], 'verdict-icon'),
       el('div', { class: 'verdict-text' },
         el('strong', { class: 'verdict-title' }, title),
         sub ? el('span', { class: 'verdict-sub' }, sub) : null));
   }
 
-  /** ГОДНА — изменений нет / БРАК — найдено зон: N / ПЕРЕСНЯТЬ: reason. */
-  function verdictBanner(rec, small) {
+  /** PASS — no changes found / FAIL — N defect zones / RETAKE — reason. */
+  function verdictBanner(rec, mode, small) {
     const v = verdictOf(rec);
     if (v === 'pass') return banner(v, t('v_pass'), null, small);
-    if (v === 'fail') return banner(v, t('v_fail', { n: zonesOf(rec).length }), null, small);
-    return banner(v, t('v_retake', { reason: reasonText(rec.reason) }), retakeHint(rec), small);
+    if (v === 'fail') return banner(v, failTitle(zonesOf(rec).length), null, small);
+    return banner(v, t('v_retake', { reason: reasonText(rec.reason) }), retakeHint(rec, mode), small);
   }
 
   /** Short verdict for chips; `baseline` applies the baseline display rule. */
@@ -529,7 +652,7 @@
         el('span', { class: 'zone-body' },
           el('strong', null, t('zone_name', { n })),
           details ? el('span', { class: 'zone-meta' }, details) : null)));
-      if (fig) fig.rects[i].addEventListener('click', () => select(i));
+      if (fig && fig.rects[i]) fig.rects[i].addEventListener('click', () => select(i));
     });
 
     return el('div', { class: 'zones' },
@@ -560,17 +683,18 @@
       sha ? shaButton(sha) : null);
   }
 
-  function mainPanel(rec, overlay) {
-    const fig = zoneFigure(imgSrc(overlay), zonesOf(rec), t('overlay_alt'));
-    return el('section', { class: 'panel panel-main' },
-      el('h2', { class: 'panel-title' }, t('result_title')),
-      verdictBanner(rec, false),
+  function mainPanel(entry) {
+    const rec = entry.main;
+    const fig = zoneFigure(imgSrc(entry.mainOverlay), zonesOf(rec), t('overlay_alt'));
+    return el('section', { class: 'panel panel-main', 'data-panel': 'main' },
+      el('h2', { class: 'panel-title' }, t(`result_title_${entry.mode}`)),
+      verdictBanner(rec, entry.mode, false),
       fig ? fig.node : null,
       zoneList(rec, fig),
       metaLine(rec));
   }
 
-  /** «Простое вычитание из эталона»: pixdiff on the same aligned frame (the key demo moment). */
+  /** Plain reference subtraction: pixdiff on the same aligned frame (the key demo moment). */
   function baselinePanel(rec, overlay) {
     let body;
     if (!rec) {
@@ -578,34 +702,38 @@
     } else {
       const src = imgSrc(overlay);
       body = [
-        baselineMismatch(rec) ? banner('fail', t('base_mismatch'), t('base_mismatch_why'), true) : verdictBanner(rec, true),
+        baselineMismatch(rec) ? banner('fail', t('base_mismatch'), t('base_mismatch_why'), true) : verdictBanner(rec, 'compare', true),
         src ? el('figure', { class: 'fig' }, el('div', { class: 'fig-box' }, el('img', { class: 'fig-img', src, alt: t('base_alt') }))) : null,
       ];
     }
-    return el('details', { class: 'panel panel-base', open: true },
+    return el('details', { class: 'panel panel-base', open: true, 'data-panel': 'baseline' },
       el('summary', { class: 'base-summary' }, el('span', { class: 'base-title' }, t('base_title')), rec ? chip(rec, true) : null),
       el('p', { class: 'help small' }, t('base_sub')),
       body);
   }
 
   function renderResult() {
-    const entry = state.shown;
+    const entry = state.shown[state.mode];
     dom.result.hidden = !entry;
     if (!entry) {
       clearNode(dom.result);
       return;
     }
-    const results = entry.data.results;
-    const overlays = entry.data.overlays || {};
-    replaceContent(dom.result,
-      el('div', { class: 'result-grid' },
-        mainPanel(results.pbp, overlays.pbp),
-        baselinePanel(results.pixdiff, overlays.pixdiff)),
-      el('div', { class: 'result-actions' },
+    const surface = entry.mode === 'surface';
+    const actions = surface
+      ? [el('button', { class: 'btn btn-accent btn-lg', type: 'button', disabled: state.busy, onclick: newPhoto },
+        icon('camera'), el('span', null, t('new_photo')))]
+      : [
         el('button', { class: 'btn btn-accent btn-lg', type: 'button', disabled: state.busy, onclick: newCheck },
           icon('camera'), el('span', null, t('new_check'))),
         el('button', { class: 'btn btn-secondary btn-lg', type: 'button', disabled: state.busy, onclick: newReference },
-          icon('plus'), el('span', null, t('new_reference')))));
+          icon('plus'), el('span', null, t('new_reference'))),
+      ];
+    replaceContent(dom.result,
+      el('div', { class: `result-grid${surface ? ' result-grid-single' : ''}` },
+        mainPanel(entry),
+        surface ? null : baselinePanel(entry.base, entry.baseOverlay)),
+      el('div', { class: `result-actions${surface ? ' result-actions-single' : ''}` }, actions));
   }
 
   function renderHistory() {
@@ -617,21 +745,25 @@
     replaceContent(dom.history,
       el('h2', { class: 'section-title' }, t('history_title')),
       el('div', { class: 'hchips' }, state.history.map((entry) => {
-        const s = shortVerdict(entry.data.results.pbp, false);
+        const s = shortVerdict(entry.main, false);
         return el('button', {
           class: `hchip hchip-${s.v}`, type: 'button', disabled: state.busy,
-          'aria-pressed': String(entry === state.shown),
+          'aria-pressed': String(entry === state.shown[state.mode]),
           onclick: () => {
-            state.shown = entry;
-            renderResult();
-            renderHistory();
+            if (state.busy) return;
+            state.shown[entry.mode] = entry;
+            if (entry.mode !== state.mode) setMode(entry.mode);
+            else { renderResult(); renderHistory(); }
             dom.result.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
           },
-        }, el('span', { class: 'hchip-v' }, s.text), el('span', { class: 'hchip-t' }, formatTime(entry.at)));
+        },
+        el('span', { class: 'hchip-m' }, t(`mode_${entry.mode}_short`)),
+        el('span', { class: 'hchip-v' }, s.text),
+        el('span', { class: 'hchip-t' }, formatTime(entry.at)));
       })));
   }
 
-  /** Keep the reference, clear «Проверка» and reopen its camera (runs inside the click: a user gesture). */
+  /** Compare: keep the reference, clear the Check photo and reopen its camera (inside the click: a user gesture). */
   function newCheck() {
     setPhoto('frame', null);
     openCamera('frame');
@@ -643,6 +775,12 @@
     window.scrollTo({ top: 0, behavior: scrollBehavior() });
   }
 
+  /** Surface: clear the photo and reopen the camera. */
+  function newPhoto() {
+    setPhoto('image', null);
+    openCamera('image');
+  }
+
   // ---------------------------------------------------------------------------
   // Camera (full-screen, rear). iOS Safari: playsinline + muted before srcObject, play() may need a tap.
   // ---------------------------------------------------------------------------
@@ -652,7 +790,7 @@
   const cameraSupported = () => !!(window.isSecureContext && navigator.mediaDevices
     && typeof navigator.mediaDevices.getUserMedia === 'function');
 
-  // Non-secure context (plain HTTP on a LAN): no getUserMedia, so «Камера» opens the system camera app.
+  // Non-secure context (plain HTTP on a LAN): no getUserMedia, so "Camera" opens the system camera app.
   const captureInput = el('input', {
     type: 'file', accept: 'image/*', capture: 'environment', class: 'visually-hidden', tabindex: '-1', 'aria-hidden': 'true',
   });
@@ -882,29 +1020,11 @@
   });
 
   // ---------------------------------------------------------------------------
-  // Language toggle + boot
+  // Boot
   // ---------------------------------------------------------------------------
 
-  function syncLang() {
-    const lang = I18N.getLang();
-    document.querySelectorAll('[data-lang]').forEach((b) => {
-      b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
-    });
-    I18N.applyStatic(document);
-    if (cam.slot) dom.camTitle.textContent = t(`cam_title_${cam.slot}`);
-    renderAll();
-  }
-
-  document.querySelectorAll('[data-lang]').forEach((b) => {
-    b.addEventListener('click', () => {
-      const lang = b.getAttribute('data-lang');
-      if (lang === I18N.getLang()) return;
-      I18N.setLang(lang);
-      syncLang();
-    });
-  });
-
-  dom.runBtn.addEventListener('click', runCompare);
+  dom.modeBtns.forEach((b) => b.addEventListener('click', () => setMode(b.getAttribute('data-mode'))));
+  dom.runBtn.addEventListener('click', run);
   dom.insecureNote.hidden = cameraSupported();
-  syncLang();
+  renderAll();
 })();

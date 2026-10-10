@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="AVA — сравнение фото детали с эталоном без обучения на дефектах и без светового бокса.">
+  <meta name="description" content="AVA — visual defect check without defect training data and without a light box.">
   <meta name="theme-color" content="#15181b">
   <meta name="color-scheme" content="light dark">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,48 +20,52 @@
     <div class="topbar-inner">
       <div class="brand">
         <img src="icon.svg" width="32" height="32" alt="">
-        <span class="wordmark">AVA</span>
+        <h1 class="wordmark">AVA</h1>
       </div>
-      <button id="qrBtn" class="top-btn" type="button" aria-haspopup="dialog" data-i18n-aria="qr_btn_label">QR</button>
-      <div class="lang-toggle" role="group" data-i18n-aria="lang_label">
-        <button type="button" data-lang="ru" aria-pressed="true">RU</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-      </div>
+      <button id="qrBtn" class="top-btn" type="button" aria-haspopup="dialog" aria-label="Show a QR code linking to this site">QR</button>
     </div>
     <div class="hazard" aria-hidden="true"></div>
   </header>
 
   <main id="app" class="container">
     <section class="intro">
-      <p class="tagline" data-i18n="tagline">Сравнение с эталоном: показываем только то, что изменилось. Без обучения на дефектах, без светового бокса.</p>
-      <p class="privacy">
-        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-          <path d="M6 11h12v9H6zM9 11V8a3 3 0 016 0v3"/>
-        </svg>
-        <span data-i18n="privacy">Фото не сохраняются на сервере.</span>
-      </p>
-      <p id="insecureNote" class="note" data-i18n="insecure_note" hidden></p>
+      <p class="tagline">Visual defect check without defect training data and without a light box. Photos are not stored.</p>
+      <p id="insecureNote" class="note" hidden>The live camera needs HTTPS — the "Camera" button will open the system camera.</p>
+    </section>
+
+    <section class="modes" aria-label="Inspection mode">
+      <div class="mode-switch" role="group" aria-label="Inspection mode">
+        <button type="button" class="mode-btn" data-mode="surface" aria-pressed="true">
+          <span class="mode-name">Surface check</span>
+          <span class="mode-sub">uniform texture · 1 photo</span>
+        </button>
+        <button type="button" class="mode-btn" data-mode="compare" aria-pressed="false">
+          <span class="mode-name">Compare with reference</span>
+          <span class="mode-sub">complex parts · 2 photos</span>
+        </button>
+      </div>
+      <p id="modeHint" class="mode-hint"></p>
+      <div id="examples" class="examples"></div>
     </section>
 
     <section id="slots" class="slots"></section>
 
     <div class="run">
       <button id="runBtn" class="btn btn-accent btn-xl" type="button" disabled></button>
-      <p id="runHint" class="help" data-i18n="compare_need"></p>
+      <p id="runHint" class="help"></p>
     </div>
 
     <section id="result" class="result" hidden></section>
     <section id="history" class="history" hidden></section>
   </main>
 
-  <noscript><p class="container" data-i18n="noscript">Для работы AVA включите JavaScript.</p></noscript>
+  <noscript><p class="container">Please enable JavaScript to use AVA.</p></noscript>
 
-  <!-- Full-screen live camera (rear). For «Проверка» the reference is overlaid to match the angle. -->
+  <!-- Full-screen live camera (rear). For the Check slot the reference is overlaid to match the angle. -->
   <div id="camera" class="camera" role="dialog" aria-modal="true" aria-labelledby="camTitle" hidden>
     <div class="cam-top">
       <h2 id="camTitle" class="cam-title"></h2>
-      <button id="camClose" class="cam-icon-btn" type="button" data-i18n-aria="close">
+      <button id="camClose" class="cam-icon-btn" type="button" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
              stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
@@ -69,13 +73,13 @@
     <div class="cam-stage">
       <video id="camVideo" class="cam-media" playsinline webkit-playsinline muted autoplay></video>
       <img id="camGhost" class="cam-media cam-ghost" alt="" draggable="false" hidden>
-      <div id="camMsg" class="cam-msg"><div class="spinner spinner-light"></div><span data-i18n="cam_starting"></span></div>
-      <button id="camTap" class="btn btn-accent cam-tap" type="button" data-i18n="cam_tap" hidden></button>
+      <div id="camMsg" class="cam-msg"><div class="spinner spinner-light"></div><span>Starting the camera…</span></div>
+      <button id="camTap" class="btn btn-accent cam-tap" type="button" hidden>Tap to start the camera</button>
       <div id="camFlash" class="cam-flash"></div>
     </div>
     <div class="cam-bottom">
       <div id="ghostRow" class="ghost-row" hidden>
-        <label for="ghostRange" data-i18n="ghost_opacity"></label>
+        <label for="ghostRange">Reference</label>
         <input id="ghostRange" type="range" min="0" max="100" step="5" value="40">
         <output id="ghostValue" for="ghostRange">40%</output>
       </div>
@@ -86,9 +90,9 @@
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <path d="M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15.5 9.5h.01"/>
           </svg>
-          <span data-i18n="btn_gallery"></span>
+          <span>Gallery</span>
         </label>
-        <button id="camShutter" class="shutter" type="button" data-i18n-aria="cam_shutter" disabled><span></span></button>
+        <button id="camShutter" class="shutter" type="button" aria-label="Take photo" disabled><span></span></button>
         <span class="cam-side-btn cam-spacer" aria-hidden="true"></span>
       </div>
     </div>
@@ -98,12 +102,12 @@
   <div id="qrModal" class="modal" hidden>
     <div class="modal-backdrop" data-close></div>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
-      <h2 id="qrTitle" class="modal-title" data-i18n="qr_title"></h2>
+      <h2 id="qrTitle" class="modal-title">Open AVA on your phone</h2>
       <div id="qrBox" class="qr-box"></div>
       <p id="qrUrl" class="qr-url"></p>
-      <p class="help" data-i18n="qr_help"></p>
-      <p id="qrLocal" class="note" data-i18n="qr_local" hidden></p>
-      <button id="qrClose" class="btn btn-primary" type="button" data-i18n="close"></button>
+      <p class="help">Point your phone camera at the code.</p>
+      <p id="qrLocal" class="note" hidden>This is a local address — a phone cannot open it. Show the public link instead.</p>
+      <button id="qrClose" class="btn btn-primary" type="button">Close</button>
     </div>
   </div>
 
