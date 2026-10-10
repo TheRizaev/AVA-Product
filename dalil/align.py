@@ -159,6 +159,8 @@ def _fit(src: np.ndarray, dst: np.ndarray, params: Params):
     if H is None or inl is None:
         return None, None
     mask = inl.ravel().astype(bool)
+    if mask.sum() < 4:  # degenerate consensus (OpenCV can return it): no motion found
+        return None, None
     # Plain least-squares refit on all RANSAC inliers: measurably more accurate
     # at the image corners than the RANSAC estimate itself.
     H_ls, _ = cv2.findHomography(src[mask], dst[mask], 0)
@@ -215,7 +217,48 @@ def _align_orb(g_before: np.ndarray, g_after: np.ndarray, params: Params):
                 and not _degenerate(H2, g_before.shape, params)
                 and corner_shift(np.linalg.inv(H) @ H2, g_before.shape) > 2 * params.ransac_thresh):
             alt = (H2 / H2[2, 2], dst[rest][mask2].reshape(-1, 2))
+    if alt is None and corner_shift(H, g_before.shape) <= params.ransac_thresh:
+        alt = _part_motion(src[rest].reshape(-1, 2), dst[rest].reshape(-1, 2), g_before, g_after, params)
     return H / H[2, 2], None, n_matches, n_inliers, dst[mask].reshape(-1, 2), alt
+
+
+def _part_motion(src: np.ndarray, dst: np.ndarray, g_before: np.ndarray, g_after: np.ndarray,
+                 params: Params):
+    """Second motion of a low-texture part moved over a static, textured background.
+
+    Called when the dominant ORB motion is (near) identity, i.e. the background. A smooth
+    part yields only a few dozen matches (holes, corners, seams), often fewer than
+    params.min_inliers, so a 4-DOF similarity is fitted on the outliers instead of a
+    homography, with params.part_min_inliers. Repetitive background texture can produce
+    a consistent false motion, so the candidate is accepted only if it explains the
+    region of its inliers clearly better than the identity: lighting-normalised robust
+    NCC higher by params.part_ncc_margin. Returns (H2, inlier points) or None.
+    """
+    if len(src) < max(3, params.part_min_inliers):
+        return None
+    M, inl = cv2.estimateAffinePartial2D(src, dst, method=cv2.RANSAC,
+                                         ransacReprojThreshold=params.ransac_thresh,
+                                         maxIters=5000, confidence=0.999)
+    if M is None or inl is None or int(inl.sum()) < params.part_min_inliers:
+        return None
+    H2 = np.vstack([M, [0.0, 0.0, 1.0]])
+    if corner_shift(H2, g_before.shape) <= 2 * params.ransac_thresh:
+        return None
+    pts = dst[inl.ravel().astype(bool)]
+    a = _photonorm(g_before, _ECC_FINE_SIDE)
+    b = _photonorm(g_after, _ECC_FINE_SIDE)
+    s = a.shape[1] / g_before.shape[1]
+    S = np.diag([s, s, 1.0])
+    region = np.zeros(a.shape, np.uint8)
+    cv2.fillConvexPoly(region, np.round(cv2.convexHull((pts * s).astype(np.float32))).astype(np.int32), 1)
+    region = region.astype(bool)
+    if region.sum() < 100:
+        return None
+    b_alt = cv2.warpPerspective(b, S @ H2 @ np.linalg.inv(S), a.shape[::-1], flags=cv2.INTER_LINEAR,
+                                borderMode=cv2.BORDER_REPLICATE)
+    if _robust_ncc(a[region], b_alt[region]) < _robust_ncc(a[region], b[region]) + params.part_ncc_margin:
+        return None
+    return H2, pts
 
 
 # ------------------------------------------------------- identity fast path / ECC

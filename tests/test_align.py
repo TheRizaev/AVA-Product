@@ -238,3 +238,24 @@ def test_small_rotation_is_not_identity():
     res = align(noisy(base, 1), noisy(make_after(base, H_true), 2), Params())
     assert res.ok and res.method == "orb"
     assert corner_error(res.H, H_true, *SMOOTH_HW) < 1.5
+
+
+def test_smooth_part_moved_on_textured_belt_follows_the_part():
+    """A painted (smooth) part moved over a textured belt has fewer ORB matches than
+    min_inliers; the similarity search on the outliers must still register the PART
+    (eval/benchmark.py CALIB pair that used to be registered on the belt)."""
+    from dalil import synth
+
+    rng = np.random.default_rng(np.random.SeedSequence([0, 1, 1, 0, 1, 0, 3]))
+    pair = synth.make_station_pair(rng, part_kind="painted", motion="shift")
+    P = Params()
+    ref, s = resize_max_side(pair["reference"], P.work_max_side)
+    frame, _ = resize_max_side(pair["frame"], P.work_max_side)
+    res = align(ref, frame, P)
+    assert res.ok and res.method == "orb"
+    S = np.diag([s, s, 1.0])
+    H_true = S @ pair["meta"]["H"] @ np.linalg.inv(S)          # reference -> frame (part)
+    ys, xs = np.nonzero(pair["meta"]["part_mask"])
+    c = np.float32([[xs.mean() * s, ys.mean() * s]]).reshape(-1, 1, 2)
+    back = cv2.perspectiveTransform(cv2.perspectiveTransform(c, H_true), res.H)
+    assert float(np.abs(back - c).max()) < 2.0
