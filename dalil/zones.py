@@ -86,9 +86,11 @@ def _cells_to_pixels(cells: np.ndarray, win: int, step: int) -> np.ndarray:
     # Each cell paints its first `min(step, win)` pixels, then a bottom-right dilation
     # extends every block to the full window size.
     base = min(step, win)
-    block = np.zeros((step, step), np.uint8)
-    block[:base, :base] = 1
-    painted = np.kron(cells.astype(np.uint8), block)[:h, :w]
+    painted = np.repeat(np.repeat(cells.astype(np.uint8), step, axis=0), step, axis=1)
+    if base < step:  # keep only the first `base` pixels of every step x step block
+        keep = (np.arange(painted.shape[0]) % step < base)[:, None] &                (np.arange(painted.shape[1]) % step < base)[None, :]
+        painted &= keep.astype(np.uint8)
+    painted = painted[:h, :w]
     out[: painted.shape[0], : painted.shape[1]] = painted
     extra = win - base
     if extra > 0:
@@ -98,9 +100,13 @@ def _cells_to_pixels(cells: np.ndarray, win: int, step: int) -> np.ndarray:
     return out
 
 
-def _contour(pix: np.ndarray) -> list[list[int]]:
-    """Simplified outer polygon of a pixel mask (convex hull if it has several pieces)."""
-    contours, _ = cv2.findContours(pix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+def _contour(pix: np.ndarray, offset: tuple[int, int] = (0, 0)) -> list[list[int]]:
+    """Simplified outer polygon of a pixel mask (convex hull if it has several pieces).
+
+    `offset` (x, y) is added to every point (for a mask cropped out of a larger image).
+    """
+    contours, _ = cv2.findContours(pix, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE,
+                                   offset=(int(offset[0]), int(offset[1])))
     if not contours:
         return []
     if len(contours) == 1:
@@ -208,23 +214,31 @@ def extract_zones(score: np.ndarray, checked: np.ndarray, params: Params,
     zones: list[Zone] = []
     for rank, (rank_score, mean_score, n_cells, members) in enumerate(
             candidates[: params.max_zones], start=1):
-        cells = np.isin(labels, [b.label for b in members])
-        pix = _cells_to_pixels(cells, win, step)
+        # Pixel work on the zone's own cell bbox only (same result as on the full grid).
+        i0, j0 = min(b.i0 for b in members), min(b.j0 for b in members)
+        i1, j1 = max(b.i1 for b in members), max(b.j1 for b in members)
+        cells_c = np.isin(labels[i0:i1, j0:j1], [b.label for b in members])
+        pix = _cells_to_pixels(cells_c, win, step)
+        ox, oy = j0 * step, i0 * step
         x, y, w, h = cv2.boundingRect(pix)
         if _water_hint(members, params):
             hint = HINT_WATER  # shape evidence takes precedence
-        else:
+        elif sig_before is not None and sig_after is not None:
+            cells = np.zeros(labels.shape, bool)
+            cells[i0:i1, j0:j1] = cells_c
             hint = _activity_hint(cells, sig_before, sig_after, params)
+        else:
+            hint = None
         zones.append(Zone(
             id=rank,
-            bbox=(int(x), int(y), int(w), int(h)),
+            bbox=(int(x + ox), int(y + oy), int(w), int(h)),
             n_cells=int(n_cells),
             area_px=int(np.count_nonzero(pix)),
             mean_score=mean_score,
-            max_score=float(score[cells].max()),
+            max_score=float(score[i0:i1, j0:j1][cells_c].max()),
             rank_score=float(rank_score),
             hint=hint,
-            contour=_contour(pix),
+            contour=_contour(pix, (ox, oy)),
         ))
     return zones
 
