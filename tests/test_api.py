@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 import server.app as app_module
-from dalil import pipeline, synth
+from ava import pipeline, synth
 
 H, W = 360, 640  # small synthetic frames keep the tests fast
 METHODS = ("pbp", "pixdiff")
@@ -284,3 +284,62 @@ def test_exif_orientation_is_applied():
     bgr = app_module.decode_image(buf.getvalue())
     assert bgr.shape == (400, 200, 3)
     assert abs(int(bgr[100, 100, 0]) - 160) < 6  # BGR order
+
+
+def test_16bit_png_is_scaled_not_clipped():
+    gray8 = np.random.default_rng(0).integers(0, 256, (120, 160)).astype(np.uint16)
+    buf = io.BytesIO()
+    Image.fromarray(gray8 * 257).save(buf, "PNG")  # opens as mode "I;16"
+    bgr = app_module.decode_image(buf.getvalue())
+    assert bgr.shape == (120, 160, 3)
+    assert np.abs(bgr[..., 1].astype(int) - gray8).max() <= 1
+
+
+def test_only_jpeg_png_webp_are_decoded():
+    for fmt in ("PNG", "WEBP", "JPEG"):
+        buf = io.BytesIO()
+        Image.new("RGB", (96, 80), (40, 90, 160)).save(buf, fmt)
+        assert app_module.decode_image(buf.getvalue()).shape == (80, 96, 3), fmt
+    for fmt in ("TIFF", "BMP", "GIF"):
+        buf = io.BytesIO()
+        Image.new("RGB", (96, 80), (40, 90, 160)).save(buf, fmt)
+        with pytest.raises(app_module.ApiError) as err:
+            app_module.decode_image(buf.getvalue())
+        assert err.value.code == "bad_image", fmt
+
+
+def test_large_wide_jpeg_is_decoded_downscaled():
+    buf = io.BytesIO()
+    Image.new("RGB", (5120, 2880), (40, 90, 160)).save(buf, "JPEG", quality=60)
+    h, w = app_module.decode_image(buf.getvalue()).shape[:2]
+    assert (w, h) == (2560, 1440)  # draft by the long side (a square box would keep 5120x2880)
+
+
+def _chunks(total: int, size: int = 64 * 1024):
+    sent = 0
+    while sent < total:
+        n = min(size, total - sent)
+        sent += n
+        yield b"\0" * n
+
+
+def test_chunked_oversize_body_is_413(client, monkeypatch):
+    monkeypatch.setattr(app_module, "MAX_BODY", 256 * 1024)
+    r = client.post("/api/scan", content=_chunks(1024 * 1024),
+                    headers={"content-type": "multipart/form-data; boundary=x"})
+    assert_error(r, 413, "too_large")
+
+
+def test_body_limit_unwraps_exception_groups(monkeypatch):
+    # Newer Starlette re-raises errors from inside BaseHTTPMiddleware as an ExceptionGroup.
+    monkeypatch.setattr(app_module, "MAX_BODY", 1024)
+
+    async def inner(scope, receive, send):
+        try:
+            while (await receive()).get("more_body"):
+                pass
+        except Exception as e:  # noqa: BLE001
+            raise ExceptionGroup("wrapped", [e]) from None
+
+    r = TestClient(app_module.BodyLimit(inner)).post("/x", content=_chunks(64 * 1024, 4096))
+    assert_error(r, 413, "too_large")

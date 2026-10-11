@@ -29,14 +29,15 @@ from starlette.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.formparsers import MultiPartParser
 
-from dalil import __version__, baselines, pipeline, surface
-from dalil.align import align
-from dalil.config import Params
+from ava import __version__, baselines, pipeline, surface
+from ava.align import align
+from ava.config import Params
 
 MAX_UPLOAD = 15 * 1024 * 1024          # bytes per uploaded image
 MAX_BODY = 2 * MAX_UPLOAD + 64 * 1024  # whole request (compare carries two images)
 MAX_PIXELS = 40_000_000                # decoded image size guard (decompression bombs)
-DECODE_SIDE = 2048                     # JPEGs are decoded at reduced scale down to about this
+DECODE_SIDE = 2048                     # JPEGs are decoded at reduced scale down to about this (long side)
+IMAGE_FORMATS = ("JPEG", "PNG", "WEBP")  # decoders reachable from uploads (camera MPO JPEGs open as JPEG)
 CPU_SLOTS = 2                          # concurrent CPU-heavy requests (PBP itself is multi-threaded)
 REF_CACHE_SIZE = 4                     # prepared references kept in memory
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
@@ -114,6 +115,13 @@ class _BodyTooLarge(Exception):
     pass
 
 
+def _is_body_too_large(exc: BaseException) -> bool:
+    """`_BodyTooLarge`, also when a middleware's task group wrapped it in an exception group."""
+    if isinstance(exc, _BodyTooLarge):
+        return True
+    return isinstance(exc, BaseExceptionGroup) and exc.subgroup(_BodyTooLarge) is not None
+
+
 def _error(status: int, code: str, message: str) -> JSONResponse:
     return JSONResponse({"error": code, "message": message}, status_code=status,
                         headers={"Cache-Control": "no-store"})
@@ -177,7 +185,9 @@ class BodyLimit:
 
         try:
             await self.app(scope, limited_receive, tracking_send)
-        except _BodyTooLarge:
+        except BaseException as exc:  # noqa: BLE001 - re-raised unless it is the body limit
+            if not _is_body_too_large(exc):
+                raise
             if not started:
                 await _error(413, "too_large", "Upload is larger than 15 MB.")(scope, receive, send)
 
@@ -198,23 +208,45 @@ app.add_middleware(BodyLimit)
 
 # --------------------------------------------------------------------------- helpers
 
+def _to_8bit(im: Image.Image) -> Image.Image:
+    """16-bit / 32-bit gray modes -> 8-bit "L" (convert("RGB") would clip them to white)."""
+    if im.mode.startswith("I;16"):
+        arr = np.asarray(im, np.float32) / 257.0
+    elif im.mode in ("I", "F"):
+        arr = np.asarray(im, np.float32)
+        top = float(arr.max()) if arr.size else 0.0
+        if top > 65535.0 or float(arr.min()) < 0.0:   # unknown range: stretch min..max
+            lo = float(arr.min())
+            arr = (arr - lo) * (255.0 / max(top - lo, 1e-6))
+        elif top > 255.0:                               # 16-bit data stored as 32-bit
+            arr = arr / 257.0
+    else:
+        return im
+    return Image.fromarray(np.clip(np.rint(arr), 0, 255).astype(np.uint8), "L")
+
+
 def decode_image(data: bytes) -> np.ndarray:
-    """Uploaded bytes -> BGR uint8, EXIF orientation applied, very large JPEGs decoded downscaled."""
+    """Uploaded bytes -> BGR uint8, EXIF orientation applied, very large JPEGs decoded downscaled.
+
+    Only JPEG, PNG and WebP are decoded; 16-bit gray images are scaled to 8 bits.
+    """
     if not data:
         raise ApiError(400, "empty_file", "The uploaded file is empty.")
     if len(data) > MAX_UPLOAD:
         raise ApiError(413, "too_large", "Upload is larger than 15 MB.")
     try:
-        im = Image.open(io.BytesIO(data))
+        im = Image.open(io.BytesIO(data), formats=IMAGE_FORMATS)
         if im.width * im.height > MAX_PIXELS:
             raise ApiError(413, "too_many_pixels", "Image resolution is too large.")
-        im.draft("RGB", (DECODE_SIDE, DECODE_SIDE))  # JPEG: decode at 1/2, 1/4, 1/8 scale
+        side = max(im.size)
+        if side > DECODE_SIDE:  # JPEG: decode at 1/2, 1/4, 1/8 scale while the long side stays >= DECODE_SIDE
+            im.draft("RGB", (max(1, im.width * DECODE_SIDE // side), max(1, im.height * DECODE_SIDE // side)))
         im = ImageOps.exif_transpose(im)
-        rgb = np.asarray(im.convert("RGB"))
+        rgb = np.asarray(_to_8bit(im).convert("RGB"))
     except ApiError:
         raise
-    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError):
-        raise ApiError(400, "bad_image", "Could not read the image (JPEG or PNG expected).") from None
+    except (UnidentifiedImageError, OSError, ValueError, KeyError, Image.DecompressionBombError):
+        raise ApiError(400, "bad_image", "Could not read the image (JPEG, PNG or WebP expected).") from None
     if min(rgb.shape[:2]) < 64:
         raise ApiError(400, "image_too_small", "Image is too small (min 64 px).")
     return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
