@@ -1,4 +1,4 @@
-# Only dalil/, server/, web/ and requirements.txt are copied; keep the build context small.
+# Only ava/, server/, web/ and requirements.txt are copied; keep the build context small.
 .git
 .gitattributes
 .gitignore

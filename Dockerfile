@@ -13,7 +13,7 @@ WORKDIR /app
 COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY --chown=user dalil ./dalil
+COPY --chown=user ava ./ava
 COPY --chown=user server ./server
 COPY --chown=user web ./web
 
