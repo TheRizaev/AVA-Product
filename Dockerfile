@@ -22,4 +22,4 @@ EXPOSE 7860
 
 # One worker on purpose: the in-memory reference cache lives in this process.
 # PORT is set by Railway / Render; Hugging Face Spaces uses 7860.
-CMD ["sh", "-c", "exec uvicorn server.app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers --forwarded-allow-ips '*'"]
+CMD ["sh", "-c", "exec uvicorn server.app:app --host 0.0.0.0 --port ${PORT:-7860}"]

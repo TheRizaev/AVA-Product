@@ -5,8 +5,8 @@
 | Remote | URL |
 |---|---|
 | `origin` | `https://github.com/TheRizaev/AVA-Product.git` (public) |
-| Space | `https://huggingface.co/spaces/TheRizaev/ava-inspect` (Docker SDK, CPU Basic) |
-| Live app | **https://therizaev-ava-inspect.hf.space** |
+| Space | `https://huggingface.co/spaces/TheRizaev/ava-check` (Docker SDK, CPU Basic) |
+| Live app | **https://therizaev-ava-check.hf.space** |
 
 Do **not** deploy to `TheRizaev/ava`: that is a different, earlier static Space of the team.
 
@@ -47,7 +47,7 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
 
 ### Push steps
 
-1. **Token.** Log in once with a token that has **write** access to `TheRizaev/ava-inspect`: `huggingface-cli login`. Never commit the token.
+1. **Token.** Log in once with a token that has **write** access to `TheRizaev/ava-check`: `huggingface-cli login`. Never commit the token.
 2. **Push to GitHub, then upload exactly that commit to the Space.** HF rejects plain-git pushes of binary files (the demo JPEGs), so the Space is updated through the Hub API from a clean export of the committed tree; the Space commit message names the GitHub commit.
 
    ```bash
@@ -57,7 +57,7 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
    import subprocess
    from huggingface_hub import HfApi
    sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
-   HfApi().upload_folder(folder_path="/tmp/ava-deploy", repo_id="TheRizaev/ava-inspect", repo_type="space",
+   HfApi().upload_folder(folder_path="/tmp/ava-deploy", repo_id="TheRizaev/ava-check", repo_type="space",
                          commit_message=f"Deploy GitHub commit {sha[:7]}",
                          commit_description=f"Exact contents of https://github.com/TheRizaev/AVA-Product/commit/{sha}",
                          delete_patterns=["*"])
@@ -70,12 +70,12 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
 4. **Smoke test:**
 
    ```bash
-   curl https://therizaev-ava-inspect.hf.space/api/health        # {"ok":true,"version":"0.2.0","params":{...}}
+   curl https://therizaev-ava-check.hf.space/api/health        # {"ok":true,"version":"0.2.0","params":{...}}
    ```
 
    The `params` must match `ava/config.py` (for example `threshold`, `threshold_pixdiff`, `mismatch_frac` 0.15). Old values mean an old build.
 
-5. **Test on a phone over HTTPS.** Open the **direct** URL `https://therizaev-ava-inspect.hf.space`, not the `huggingface.co/spaces/...` page, which wraps the app in an iframe.
+5. **Test on a phone over HTTPS.** Open the **direct** URL `https://therizaev-ava-check.hf.space`, not the `huggingface.co/spaces/...` page, which wraps the app in an iframe.
    - [ ] **Surface check** → "Try an example: Defect" → FAIL with a zone. "No defect" → PASS.
    - [ ] **Compare with reference** → "Defect" → FAIL with a zone on the crack. "Brightness change" → AVA PASS, and the "Plain reference subtraction" panel shows "FAIL — a large part of the frame changed".
    - [ ] Camera: the permission prompt appears, and the rear camera shows. In compare mode the reference overlay slider works.
@@ -87,7 +87,7 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
 ```bash
 git rev-parse --short HEAD                     # e.g. 61b37b2
 git ls-remote origin main
-# the latest commit on https://huggingface.co/spaces/TheRizaev/ava-inspect/commits/main is "Deploy GitHub commit <same sha>"
+# the latest commit on https://huggingface.co/spaces/TheRizaev/ava-check/commits/main is "Deploy GitHub commit <same sha>"
 ```
 
 All three must print the same SHA. Put this SHA in the submission form.
