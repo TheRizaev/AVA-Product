@@ -19,10 +19,10 @@ class Params:
     tolerance: int = 1         # +-cells searched when comparing signatures
     # Change-score thresholds, frozen by the CALIB split of eval/benchmark.py (eval/results/calib.json):
     # smallest threshold with <= 0.05 false events per good pair under none + monotone lighting.
-    threshold: float = 0.60976          # PBP
+    threshold: float = 0.58331          # PBP
     threshold_pixdiff: float = 0.2512
-    threshold_ssim: float = 0.13503
-    threshold_census: float = 0.39137
+    threshold_ssim: float = 0.14755
+    threshold_census: float = 0.40911
     mismatch_frac: float = 0.15       # changed area above this fraction => "mismatch" (wrong / absent /
                                       # misregistered part); largest synthetic defect: 0.054 (eval/benchmark.py)
     min_zone_cells: int = 4
@@ -48,7 +48,8 @@ class Params:
     fixed_cam_max_shift: float = 0.25   # identity path also needs visible (RMS) motion <= this (px)
     ecc_min_corr: float = 0.85          # ECC fallback accepted above this correlation
     max_references: int = 5
-    static_background: bool = True      # part moved: also compare the unregistered frame, keep the lower score
+    static_background: bool = True      # part moved over a static background (align found a second motion):
+                                        # also compare the background-registered view, keep the lower score
     static_bg_min_shift: float = 3.0    # ... only when the registration moves some image corner by more px
     part_roi_margin_px: int = 8         # two motions found: check only the part (hull of its keypoints + margin)
     part_min_inliers: int = 15          # static background dominant: min inliers of the part's similarity motion
@@ -59,13 +60,16 @@ class Params:
     glare_s: int = 40
     glare_dilate_px: int = 9
     max_glare_frac: float = 0.35   # above => retake (glare)
+    glare_blob_min_px: int = 64    # a masked glare core of at least this many px (Mode 2: only in the frame and
+                                   # not explained by the reference's brightness) may hide a white defect
+                                   # (label, tape, bare metal): the verdict is then never PASS (retake glare)
     min_blur: float = 30.0         # contrast-normalised variance of Laplacian below => blurry ...
     blur_ratio: float = 0.15       # ... and also below this fraction of the reference's score
     dark_mean: float = 35.0        # mean gray below => too dark
     min_coverage: float = 0.5      # below => retake (low_coverage)
     border_margin_px: int = 12     # cells this close to the image border are not checked
 
-    # Mode 1: single-photo surface check (dalil/surface.py). Thresholds frozen by the CALIB split of
+    # Mode 1: single-photo surface check (ava/surface.py). Thresholds frozen by the CALIB split of
     # eval/benchmark_surface.py (eval/results/surface_calib.json): smallest threshold with a
     # false-alarm rate <= 5 % on defect-free photos under none + monotone lighting.
     surface_threshold: float = 0.23764    # PBP self-reference anomaly score threshold

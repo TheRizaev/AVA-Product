@@ -34,7 +34,7 @@ NBINS = 256                 # 2**8 monomials for an 8-variable window
 _SUPPORTED_WIN = 8
 _CHUNK_WINDOWS = 4096       # windows per vectorised chunk (bounds temporary memory)
 _MAX_THREADS = 4
-_SERIAL_MAGIC = b"DALILPBP"
+_SERIAL_MAGIC = b"AVA_PBP1"
 _SERIAL_VERSION = 1
 
 

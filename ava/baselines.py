@@ -12,7 +12,7 @@ desired); a BGR image is converted to gray for convenience.
 
 ``METHODS`` maps a method name to ``(feature_fn, dist_fn)`` and includes
 ``"pbp"``. It is built lazily on first access (module ``__getattr__``), so
-importing this module never imports ``dalil.pbp``. ``get_methods()`` returns
+importing this module never imports ``ava.pbp``. ``get_methods()`` returns
 the same dict explicitly.
 """
 
@@ -23,7 +23,7 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-from dalil.config import Params
+from ava.config import Params
 
 # Number of set bits for every byte value.
 _POPCOUNT = np.array([bin(i).count("1") for i in range(256)], np.uint8)
@@ -201,19 +201,19 @@ _methods_cache: dict | None = None
 
 
 def get_methods(include_pbp: bool = True) -> dict:
-    """Name -> ``(feature_fn, dist_fn)``; ``"pbp"`` is imported lazily from dalil.pbp."""
+    """Name -> ``(feature_fn, dist_fn)``; ``"pbp"`` is imported lazily from ava.pbp."""
     global _methods_cache
     if not include_pbp:
         return dict(BASELINE_METHODS)
     if _methods_cache is None:
-        from dalil import pbp  # lazy: pbp is developed in parallel
+        from ava import pbp  # lazy: pbp is developed in parallel
 
         _methods_cache = {"pbp": (pbp.window_signatures, pbp.pair_distance), **BASELINE_METHODS}
     return _methods_cache
 
 
 def __getattr__(name: str):
-    """Lazy module attribute ``METHODS`` (PEP 562): ``from dalil.baselines import METHODS``."""
+    """Lazy module attribute ``METHODS`` (PEP 562): ``from ava.baselines import METHODS``."""
     if name == "METHODS":
         return get_methods()
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

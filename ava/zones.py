@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 import cv2
 import numpy as np
 
-from dalil.config import Params
+from ava.config import Params
 
 HINT_WATER = "water_or_dirt"
 HINT_REMOVED = "something_removed"
