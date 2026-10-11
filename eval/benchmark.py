@@ -1,4 +1,4 @@
-"""Reproducible benchmark of the Dalil QA pipeline: synthetic station pairs (+ optional VisA).
+"""Reproducible benchmark of the AVA pipeline: synthetic station pairs (+ optional VisA).
 
     python -m eval.benchmark --n 4 --seed 0            # calibrate, then test, then write eval/RESULTS.md
     python -m eval.benchmark --split calib --n 4        # calibration only (eval/results/calib.json)
@@ -49,8 +49,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:  # allow `python eval/benchmark.py`
     sys.path.insert(0, str(ROOT))
 
-from dalil import pipeline, synth  # noqa: E402
-from dalil.config import Params  # noqa: E402
+from ava import pipeline, synth  # noqa: E402
+from ava.config import Params  # noqa: E402
 
 METHODS = ("pbp", "census", "ssim", "pixdiff")
 BENCH_DEFECTS = ("scratch", "tape", "missing_hole", "burr", "dent", "stain")
@@ -159,9 +159,11 @@ def sweep_rows(res, truth: Truth, params: Params, grid: np.ndarray) -> np.ndarra
         rows[:, 0] = RETAKE_GATE
         return rows
     for i, t in enumerate(grid):
-        verdict, reason, zones, _ = pipeline.decide(res.score, res.checked, params, float(t))
+        verdict, reason, zones, _ = pipeline.decide(res.score, res.checked, params, float(t),
+                                                    bright=res.bright_spot)
         hit, n_false = truth.match(zones)
-        code = RETAKE_MISMATCH if reason == "mismatch" else _CODES[verdict]
+        code = (RETAKE_MISMATCH if reason == "mismatch"
+                else RETAKE_GATE if verdict == "retake" else _CODES[verdict])  # retake: bright spot rule
         rows[i] = (code, len(zones), n_false, int(hit and verdict == "fail"))
     return rows
 
@@ -300,7 +302,9 @@ def summarize(recs: list, method: str, ti: int | None = None) -> dict:
             reason = mm["reason"]
         else:
             code, nz, nf, hit = (int(v) for v in mm["sweep"][ti])
-            reason = "mismatch" if code == RETAKE_MISMATCH else (mm["reason"] if code == RETAKE_GATE else None)
+            # A RETAKE that appears only in the sweep is the bright spot rule (decide(..., bright=True)).
+            reason = ("mismatch" if code == RETAKE_MISMATCH
+                      else (mm["reason"] or "glare") if code == RETAKE_GATE else None)
         retake = code in (RETAKE_GATE, RETAKE_MISMATCH)
         rt_all += retake
         fz_all += nf
@@ -345,12 +349,16 @@ def separability(recs: list, method: str) -> dict:
 
 
 def mcnemar(b: int, c: int) -> float:
-    """Exact two-sided McNemar p-value from the discordant counts b and c."""
-    if b + c == 0:
-        return 1.0
-    from scipy.stats import binomtest  # lazy: only the report needs scipy
+    """Exact two-sided McNemar p-value from the discordant counts b and c.
 
-    return float(binomtest(min(b, c), b + c, 0.5).pvalue)
+    Two-sided exact binomial test with p = 0.5 (symmetric): 2 * P(X <= min(b, c)), capped at 1;
+    the same value as scipy.stats.binomtest(min(b, c), b + c, 0.5).pvalue, without the dependency.
+    """
+    n = b + c
+    if n == 0:
+        return 1.0
+    tail = sum(math.comb(n, i) for i in range(min(b, c) + 1)) / 2 ** n
+    return min(1.0, 2.0 * tail)
 
 
 def paired_comparisons(pairs: list, methods, ref: str = "pbp") -> dict:
@@ -625,9 +633,9 @@ def git_state() -> str:
     try:
         rev = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
                              text=True, timeout=20).stdout.strip()
-        dirty = subprocess.run(["git", "status", "--porcelain", "--", "dalil", "eval", "server"],
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "ava", "eval", "server"],
                                cwd=ROOT, capture_output=True, text=True, timeout=20).stdout.strip()
-        return (rev or "unknown") + (" + uncommitted changes in dalil/eval/server" if dirty else "")
+        return (rev or "unknown") + (" + uncommitted changes in ava/eval/server" if dirty else "")
     except (OSError, subprocess.SubprocessError):
         return "unknown"
 
@@ -673,7 +681,7 @@ def write_report(path: Path, calib: dict, test: dict, visa: dict | None, visa_no
     L = []
     L.append("# Synthetic benchmark — procedurally generated parts, NOT real factory images\n")
     L.append("Every number in this file was produced by `eval/benchmark.py` (raw data in `eval/results/`). "
-             "The pairs come from `dalil/synth.py`: procedural stamped / painted / molded / machined parts on "
+             "The pairs come from `ava/synth.py`: procedural stamped / painted / molded / machined parts on "
              "belt / table / ESD-mat backgrounds, procedural defects and procedural shop-floor lighting. "
              "They show how the methods compare under controlled conditions; they are **not** evidence "
              "of accuracy on real parts.\n")
@@ -843,14 +851,17 @@ def write_report(path: Path, calib: dict, test: dict, visa: dict | None, visa_no
              ". Other processes on the machine were not controlled; treat as indicative.\n")
 
     L.append("## Caveats (read before quoting any number)\n")
-    L.append(f"""- **Synthetic data only.** Parts, defects and lighting are procedural (`dalil/synth.py`). Real scratches, dents
+    L.append(f"""- **Synthetic data only.** Parts, defects and lighting are procedural (`ava/synth.py`). Real scratches, dents
   and stains on real parts look different, and real cameras add compression, rolling shutter, motion blur and
   defocus that are only partly modelled. These numbers compare the methods under identical controlled
   conditions; they are not a real-world accuracy claim.
 - **Non-monotone lighting is an expected failure.** A specular highlight or a hand shadow changes the local
   intensity order, which is exactly what PBP (and Census) rely on. Under those conditions good parts are
   judged FAIL by every method (see the non-monotone table); only a part of it is turned into RETAKE by the
-  glare mask.
+  glare mask and the bright spot rule (a glare-like blob that only the frame has never ends in PASS).
+- **The lighting kinds are pixel-wise.** `synth.apply_factory_lighting` changes gain, gamma, gradients,
+  highlights and shadows on the rendered image; it never moves the light source. Moving a directional lamp
+  over a relief part flips the shading of ribs and edges and is not covered by these numbers.
 - **Census is PBP's closest relative** (both compare the intensity *order*, both ignore monotone changes). In
   this implementation Census compares single pixels with their 8 neighbours with no tie margin and no
   contrast gate, so sensor noise flips bits on smooth surfaces and its calibrated threshold has to be high.
@@ -860,9 +871,9 @@ def write_report(path: Path, calib: dict, test: dict, visa: dict | None, visa_no
   gain change. Whether PBP differs from it on these pairs is in the paired comparison above; the large,
   consistent gap is to plain reference subtraction (pixdiff), the classic golden-template approach.
 - **Part moved on the belt (`shift`) is harder than camera jitter** for every method (see "By motion"). With
-  a moved part the pipeline checks only the hull of the part's keypoints and takes, per cell, the minimum
-  over the part-registered and background-registered views, which also lowers defect scores near shifted
-  content.
+  a moved part the pipeline checks only the hull of the part's keypoints and, when the alignment found the
+  static background as a second motion, takes per cell the minimum over the part-registered and
+  background-registered views, which also lowers defect scores near shifted content.
 - **Small N.** {test['n']} pair(s) per grid cell; per-cell and per-class rates rest on few pairs, see the Wilson
   95 % intervals. Differences inside overlapping intervals are not evidence.
 - **One calibration criterion for all methods** (false events ≤ {FALSE_EVENT_TARGET} per good pair under none + monotone
@@ -870,7 +881,8 @@ def write_report(path: Path, calib: dict, test: dict, visa: dict | None, visa_no
 - **The ground truth is a bbox.** Zones live on a 4 px window grid; recall uses the bbox IoU / coverage rule
   above, false zones use "does not touch the (dilated) defect mask".
 - Defect classes are not equally hard: burrs are small blobs on an edge, and a bright burr under strong
-  exposure can be masked as glare (unchecked) — see the per-defect table.
+  exposure can be masked as glare (unchecked; the frame is then answered RETAKE rather than PASS) — see the
+  per-defect table.
 """)
     L.append("## Real data\n")
     if visa:

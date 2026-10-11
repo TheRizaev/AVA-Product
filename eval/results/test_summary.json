@@ -1,6 +1,6 @@
 {
- "command": "python -m eval.benchmark --split test --n 4 --seed 0 --workers 8 --visa-note A download of VisA_20220922.tar (about 1.8 GB) was attempted on 2026-10-10; measured speed was 40-50 KB/s (about 10 hours), so it was abandoned.",
- "date": "2026-10-10 17:47 UTC",
+ "command": "python -m eval.benchmark --n 4 --seed 0 --workers 8 --visa-note A download of VisA_20220922.tar (about 1.8 GB) was attempted on 2026-10-10; measured speed was 40-50 KB/s (about 10 hours), so it was abandoned.",
+ "date": "2026-10-10 20:11 UTC",
  "env": {
   "cpu": "13th Gen Intel(R) Core(TM) i5-13450HX",
   "logical_cores": 16,
@@ -8,7 +8,7 @@
   "python": "3.11.9",
   "numpy": "2.2.6",
   "opencv": "4.12.0",
-  "git": "26c853e + uncommitted changes in dalil/eval/server",
+  "git": "043d4ab + uncommitted changes in ava/eval/server",
   "workers": 8
  },
  "seed": 0,
@@ -55,9 +55,9 @@
   "pixdiff"
  ],
  "thresholds": {
-  "pbp": 0.60976,
-  "census": 0.39137,
-  "ssim": 0.13503,
+  "pbp": 0.58331,
+  "census": 0.40911,
+  "ssim": 0.14755,
   "pixdiff": 0.2512
  },
  "params": {
@@ -68,10 +68,10 @@
   "eps": 0.05,
   "flat_floor": 6.0,
   "tolerance": 1,
-  "threshold": 0.60976,
+  "threshold": 0.58331,
   "threshold_pixdiff": 0.2512,
-  "threshold_ssim": 0.13503,
-  "threshold_census": 0.39137,
+  "threshold_ssim": 0.14755,
+  "threshold_census": 0.40911,
   "mismatch_frac": 0.15,
   "min_zone_cells": 4,
   "contrast_floor": 10.0,
@@ -103,12 +103,13 @@
   "glare_s": 40,
   "glare_dilate_px": 9,
   "max_glare_frac": 0.35,
+  "glare_blob_min_px": 64,
   "min_blur": 30.0,
   "blur_ratio": 0.15,
   "dark_mean": 35.0,
   "min_coverage": 0.5,
   "border_margin_px": 12,
-  "surface_threshold": 0.5,
+  "surface_threshold": 0.23764,
   "surface_samples": 768,
   "surface_k": 5,
   "surface_exclude_cells": 6,
@@ -125,26 +126,26 @@
   "surface_glare_dilate_px": 12,
   "surface_glare_halo_px": 320,
   "surface_glare_elev": 5.0,
-  "threshold_surface_gradient": 0.8,
-  "threshold_surface_census": 0.5
+  "threshold_surface_gradient": 0.53498,
+  "threshold_surface_census": 0.14604
  },
- "wall_s": 1131.4423568000202,
+ "wall_s": 1853.5626604999998,
  "summary": {
   "all": {
    "pbp": {
     "n_pairs": 1792,
     "n_defect": 1536,
     "n_good": 256,
-    "recall": 0.6321614583333334,
+    "recall": 0.6803385416666666,
     "recall_ci": [
-     0.6077437074536056,
-     0.655919775855327
+     0.6565912721851531,
+     0.7031859932166907
     ],
-    "detected": 971,
-    "escape_rate": 0.23958333333333334,
+    "detected": 1045,
+    "escape_rate": 0.19270833333333334,
     "escape_ci": [
-     0.21890386252117044,
-     0.26156218021984917
+     0.17375926967225325,
+     0.21319066076214988
     ],
     "fa_rate": 0.2421875,
     "fa_ci": [
@@ -152,12 +153,12 @@
      0.2982288612057398
     ],
     "false_alarms": 62,
-    "false_events_per_good": 1.14453125,
-    "false_zones_per_pair": 0.9854910714285714,
-    "retake_rate": 0.016183035714285716,
+    "false_events_per_good": 1.0,
+    "false_zones_per_pair": 0.8643973214285714,
+    "retake_rate": 0.030691964285714284,
     "retake_ci": [
-     0.011291019508763264,
-     0.023144979746404896
+     0.023655497324890445,
+     0.03973628511293703
     ],
     "retake_rate_good": 0.015625,
     "false_reject_rate": 0.2578125,
@@ -167,7 +168,7 @@
     ],
     "coverage": 0.9379279478458049,
     "retake_reasons": {
-     "glare": 20,
+     "glare": 46,
      "blurry": 8,
      "mismatch": 1
     }
@@ -176,39 +177,39 @@
     "n_pairs": 1792,
     "n_defect": 1536,
     "n_good": 256,
-    "recall": 0.302734375,
+    "recall": 0.28125,
     "recall_ci": [
-     0.2802730679714284,
-     0.3261799594048939
+     0.25933203013685263,
+     0.3042594457656039
     ],
-    "detected": 465,
-    "escape_rate": 0.4934895833333333,
+    "detected": 432,
+    "escape_rate": 0.494140625,
     "escape_ci": [
-     0.46853394062337017,
-     0.5184777104451552
+     0.4691829567990848,
+     0.5191275291625881
     ],
-    "fa_rate": 0.21875,
+    "fa_rate": 0.23828125,
     "fa_ci": [
-     0.172470829071034,
-     0.27334539127243684
+     0.19020459483719204,
+     0.2940966102046489
     ],
-    "false_alarms": 56,
-    "false_events_per_good": 1.328125,
-    "false_zones_per_pair": 1.1077008928571428,
-    "retake_rate": 0.015625,
+    "false_alarms": 61,
+    "false_events_per_good": 1.33984375,
+    "false_zones_per_pair": 1.1065848214285714,
+    "retake_rate": 0.03627232142857143,
     "retake_ci": [
-     0.010832280745337111,
-     0.022490034541267225
+     0.02856017208169683,
+     0.04596845004176884
     ],
     "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.234375,
+    "false_reject_rate": 0.25390625,
     "false_reject_ci": [
-     0.18664570983806794,
-     0.289958498264099
+     0.20449781341092277,
+     0.31059137938961423
     ],
     "coverage": 0.9379279478458049,
     "retake_reasons": {
-     "glare": 20,
+     "glare": 57,
      "blurry": 8
     }
    },
@@ -216,16 +217,16 @@
     "n_pairs": 1792,
     "n_defect": 1536,
     "n_good": 256,
-    "recall": 0.6497395833333334,
+    "recall": 0.6686197916666666,
     "recall_ci": [
-     0.6255353232232309,
-     0.673196702200683
+     0.6446843639932518,
+     0.6917138733319379
     ],
-    "detected": 998,
-    "escape_rate": 0.236328125,
+    "detected": 1027,
+    "escape_rate": 0.20377604166666666,
     "escape_ci": [
-     0.21575653330207847,
-     0.25821533497320387
+     0.18438222309645755,
+     0.2246479005214522
     ],
     "fa_rate": 0.21875,
     "fa_ci": [
@@ -233,23 +234,23 @@
      0.27334539127243684
     ],
     "false_alarms": 56,
-    "false_events_per_good": 0.52734375,
-    "false_zones_per_pair": 0.39453125,
-    "retake_rate": 0.02734375,
+    "false_events_per_good": 0.48046875,
+    "false_zones_per_pair": 0.37220982142857145,
+    "retake_rate": 0.045200892857142856,
     "retake_ci": [
-     0.0207446054074254,
-     0.03596507321901916
+     0.03651624303311546,
+     0.05583132258737132
     ],
-    "retake_rate_good": 0.0234375,
-    "false_reject_rate": 0.2421875,
+    "retake_rate_good": 0.0390625,
+    "false_reject_rate": 0.2578125,
     "false_reject_ci": [
-     0.19376934077577512,
-     0.2982288612057398
+     0.20808509106250064,
+     0.31470109867771046
     ],
     "coverage": 0.9379279478458049,
     "retake_reasons": {
-     "glare": 20,
-     "mismatch": 21,
+     "glare": 60,
+     "mismatch": 13,
      "blurry": 8
     }
    },
@@ -257,16 +258,16 @@
     "n_pairs": 1792,
     "n_defect": 1536,
     "n_good": 256,
-    "recall": 0.16796875,
+    "recall": 0.17903645833333334,
     "recall_ci": [
-     0.15010625285550103,
-     0.18748795163929896
+     0.16067126050201147,
+     0.1990031371762952
     ],
-    "detected": 258,
-    "escape_rate": 0.6764322916666666,
+    "detected": 275,
+    "escape_rate": 0.62109375,
     "escape_ci": [
-     0.6526204533040948,
-     0.6993638027388643
+     0.5965592542740817,
+     0.645024035851344
     ],
     "fa_rate": 0.171875,
     "fa_ci": [
@@ -275,22 +276,22 @@
     ],
     "false_alarms": 44,
     "false_events_per_good": 0.296875,
-    "false_zones_per_pair": 0.22321428571428573,
-    "retake_rate": 0.028459821428571428,
+    "false_zones_per_pair": 0.22265625,
+    "retake_rate": 0.07087053571428571,
     "retake_ci": [
-     0.02171190874045119,
-     0.037225137823121
+     0.05988464250700272,
+     0.08369238566741978
     ],
-    "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.1875,
+    "retake_rate_good": 0.046875,
+    "false_reject_rate": 0.21875,
     "false_reject_ci": [
-     0.14443726168228893,
-     0.23980298314378978
+     0.172470829071034,
+     0.27334539127243684
     ],
     "coverage": 0.9379279478458049,
     "retake_reasons": {
-     "mismatch": 23,
-     "glare": 20,
+     "glare": 95,
+     "mismatch": 24,
      "blurry": 8
     }
    }
@@ -300,16 +301,16 @@
     "n_pairs": 1344,
     "n_defect": 1152,
     "n_good": 192,
-    "recall": 0.6241319444444444,
+    "recall": 0.6779513888888888,
     "recall_ci": [
-     0.5957932788136204,
-     0.6516454705790298
+     0.6504153542628772,
+     0.7043045312300831
     ],
-    "detected": 719,
-    "escape_rate": 0.2942708333333333,
+    "detected": 781,
+    "escape_rate": 0.2361111111111111,
     "escape_ci": [
-     0.268673318075296,
-     0.321235887476745
+     0.21248859936653253,
+     0.26148776556098
     ],
     "fa_rate": 0.010416666666666666,
     "fa_ci": [
@@ -317,12 +318,12 @@
      0.03717929309882126
     ],
     "false_alarms": 2,
-    "false_events_per_good": 0.015625,
-    "false_zones_per_pair": 0.031994047619047616,
-    "retake_rate": 0.013392857142857142,
+    "false_events_per_good": 0.010416666666666666,
+    "false_zones_per_pair": 0.03869047619047619,
+    "retake_rate": 0.03050595238095238,
     "retake_ci": [
-     0.008488160242105736,
-     0.021071396311127224
+     0.02256585097641474,
+     0.041122345025251916
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.020833333333333332,
@@ -332,101 +333,23 @@
     ],
     "coverage": 0.9434645550527903,
     "retake_reasons": {
-     "glare": 18
+     "glare": 41
     }
    },
    "census": {
     "n_pairs": 1344,
     "n_defect": 1152,
     "n_good": 192,
-    "recall": 0.2743055555555556,
+    "recall": 0.2647569444444444,
     "recall_ci": [
-     0.2493229612156574,
-     0.30078840352497843
+     0.24009095516654294,
+     0.290986659620812
     ],
-    "detected": 316,
-    "escape_rate": 0.6163194444444444,
+    "detected": 305,
+    "escape_rate": 0.6232638888888888,
     "escape_ci": [
-     0.5878955507507407,
-     0.6439701304983162
-    ],
-    "fa_rate": 0.005208333333333333,
-    "fa_ci": [
-     0.0009199674643243817,
-     0.02890822021388086
-    ],
-    "false_alarms": 1,
-    "false_events_per_good": 0.010416666666666666,
-    "false_zones_per_pair": 0.025297619047619048,
-    "retake_rate": 0.013392857142857142,
-    "retake_ci": [
-     0.008488160242105736,
-     0.021071396311127224
-    ],
-    "retake_rate_good": 0.010416666666666666,
-    "false_reject_rate": 0.015625,
-    "false_reject_ci": [
-     0.005327796907835389,
-     0.04492506050346026
-    ],
-    "coverage": 0.9434645550527903,
-    "retake_reasons": {
-     "glare": 18
-    }
-   },
-   "ssim": {
-    "n_pairs": 1344,
-    "n_defect": 1152,
-    "n_good": 192,
-    "recall": 0.65625,
-    "recall_ci": [
-     0.6283438986997016,
-     0.683117464172166
-    ],
-    "detected": 756,
-    "escape_rate": 0.2795138888888889,
-    "escape_ci": [
-     0.2543648402201116,
-     0.3061285699495864
-    ],
-    "fa_rate": 0.010416666666666666,
-    "fa_ci": [
-     0.0028612294459291893,
-     0.03717929309882126
-    ],
-    "false_alarms": 2,
-    "false_events_per_good": 0.010416666666666666,
-    "false_zones_per_pair": 0.033482142857142856,
-    "retake_rate": 0.013392857142857142,
-    "retake_ci": [
-     0.008488160242105736,
-     0.021071396311127224
-    ],
-    "retake_rate_good": 0.010416666666666666,
-    "false_reject_rate": 0.020833333333333332,
-    "false_reject_ci": [
-     0.008130652411583922,
-     0.052334539866256934
-    ],
-    "coverage": 0.9434645550527903,
-    "retake_reasons": {
-     "glare": 18
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 1344,
-    "n_defect": 1152,
-    "n_good": 192,
-    "recall": 0.14756944444444445,
-    "recall_ci": [
-     0.12826003518304316,
-     0.1692215574504111
-    ],
-    "detected": 170,
-    "escape_rate": 0.7881944444444444,
-    "escape_ci": [
-     0.7636616264377172,
-     0.8108115539703942
+     0.5949153742495155,
+     0.650793034238291
     ],
     "fa_rate": 0.020833333333333332,
     "fa_ci": [
@@ -434,12 +357,12 @@
      0.052334539866256934
     ],
     "false_alarms": 4,
-    "false_events_per_good": 0.10416666666666667,
-    "false_zones_per_pair": 0.05431547619047619,
-    "retake_rate": 0.025297619047619048,
+    "false_events_per_good": 0.020833333333333332,
+    "false_zones_per_pair": 0.026041666666666668,
+    "retake_rate": 0.03273809523809524,
     "retake_ci": [
-     0.018158879066140023,
-     0.0351423397120903
+     0.024476727885826603,
+     0.04366302978302707
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.03125,
@@ -449,8 +372,86 @@
     ],
     "coverage": 0.9434645550527903,
     "retake_reasons": {
-     "mismatch": 16,
-     "glare": 18
+     "glare": 44
+    }
+   },
+   "ssim": {
+    "n_pairs": 1344,
+    "n_defect": 1152,
+    "n_good": 192,
+    "recall": 0.6727430555555556,
+    "recall_ci": [
+     0.6451122866594352,
+     0.6992255534044629
+    ],
+    "detected": 775,
+    "escape_rate": 0.24913194444444445,
+    "escape_ci": [
+     0.2250171434046118,
+     0.27491433509555646
+    ],
+    "fa_rate": 0.010416666666666666,
+    "fa_ci": [
+     0.0028612294459291893,
+     0.03717929309882126
+    ],
+    "false_alarms": 2,
+    "false_events_per_good": 0.010416666666666666,
+    "false_zones_per_pair": 0.020833333333333332,
+    "retake_rate": 0.028273809523809524,
+    "retake_ci": [
+     0.020667626153162918,
+     0.03856900818131674
+    ],
+    "retake_rate_good": 0.010416666666666666,
+    "false_reject_rate": 0.020833333333333332,
+    "false_reject_ci": [
+     0.008130652411583922,
+     0.052334539866256934
+    ],
+    "coverage": 0.9434645550527903,
+    "retake_reasons": {
+     "glare": 38
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 1344,
+    "n_defect": 1152,
+    "n_good": 192,
+    "recall": 0.1605902777777778,
+    "recall_ci": [
+     0.14052159571784673,
+     0.1829151104882632
+    ],
+    "detected": 185,
+    "escape_rate": 0.75,
+    "escape_ci": [
+     0.7241916467170717,
+     0.7741465338779163
+    ],
+    "fa_rate": 0.020833333333333332,
+    "fa_ci": [
+     0.008130652411583922,
+     0.052334539866256934
+    ],
+    "false_alarms": 4,
+    "false_events_per_good": 0.10416666666666667,
+    "false_zones_per_pair": 0.05282738095238095,
+    "retake_rate": 0.046875,
+    "retake_ci": [
+     0.03680832957188936,
+     0.05952465198914867
+    ],
+    "retake_rate_good": 0.010416666666666666,
+    "false_reject_rate": 0.03125,
+    "false_reject_ci": [
+     0.014399085841634563,
+     0.06649077616929672
+    ],
+    "coverage": 0.9434645550527903,
+    "retake_reasons": {
+     "glare": 47,
+     "mismatch": 16
     }
    }
   },
@@ -459,16 +460,16 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.6197916666666666,
+    "recall": 0.6614583333333334,
     "recall_ci": [
-     0.549412471300924,
-     0.6854712306296157
+     0.5919388552599627,
+     0.7246435256029389
     ],
-    "detected": 119,
-    "escape_rate": 0.2864583333333333,
+    "detected": 127,
+    "escape_rate": 0.25,
     "escape_ci": [
-     0.22718828617047132,
-     0.35410598430117507
+     0.19405972553588688,
+     0.31574820086994304
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -477,11 +478,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.05803571428571429,
-    "retake_rate": 0.008928571428571428,
+    "false_zones_per_pair": 0.07142857142857142,
+    "retake_rate": 0.017857142857142856,
     "retake_ci": [
-     0.0024519096737010727,
-     0.03196498346609429
+     0.006965542540871426,
+     0.0450074070872913
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -491,62 +492,62 @@
     ],
     "coverage": 0.9485774774774772,
     "retake_reasons": {
-     "glare": 2
+     "glare": 4
     }
    },
    "census": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.3072916666666667,
+    "recall": 0.2604166666666667,
     "recall_ci": [
-     0.24634322938978004,
-     0.3758003805480472
+     0.20347137628900983,
+     0.3267612198499105
     ],
-    "detected": 59,
-    "escape_rate": 0.5833333333333334,
+    "detected": 50,
+    "escape_rate": 0.6354166666666666,
     "escape_ci": [
-     0.5126304945212694,
-     0.650766863343454
+     0.5652969550602936,
+     0.7002237514698816
     ],
-    "fa_rate": 0.0,
+    "fa_rate": 0.03125,
     "fa_ci": [
-     0.0,
-     0.1071827150573635
+     0.005537717362550945,
+     0.15744607800372734
     ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.049107142857142856,
-    "retake_rate": 0.008928571428571428,
+    "false_alarms": 1,
+    "false_events_per_good": 0.03125,
+    "false_zones_per_pair": 0.05357142857142857,
+    "retake_rate": 0.017857142857142856,
     "retake_ci": [
-     0.0024519096737010727,
-     0.03196498346609429
+     0.006965542540871426,
+     0.0450074070872913
     ],
     "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
+    "false_reject_rate": 0.03125,
     "false_reject_ci": [
-     0.0,
-     0.1071827150573635
+     0.005537717362550945,
+     0.15744607800372734
     ],
     "coverage": 0.9485774774774772,
     "retake_reasons": {
-     "glare": 2
+     "glare": 4
     }
    },
    "ssim": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.6510416666666666,
+    "recall": 0.6770833333333334,
     "recall_ci": [
-     0.5812564526919826,
-     0.7149012584378285
+     0.6080284032857897,
+     0.7391909821767475
     ],
-    "detected": 125,
-    "escape_rate": 0.28125,
+    "detected": 130,
+    "escape_rate": 0.24479166666666666,
     "escape_ci": [
-     0.22242419981820605,
-     0.3486577357868952
+     0.1893708260732499,
+     0.3102247654660349
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -555,11 +556,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.03571428571428571,
-    "retake_rate": 0.008928571428571428,
+    "false_zones_per_pair": 0.022321428571428572,
+    "retake_rate": 0.013392857142857142,
     "retake_ci": [
-     0.0024519096737010727,
-     0.03196498346609429
+     0.0045649626093077905,
+     0.03862995877467126
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -569,7 +570,7 @@
     ],
     "coverage": 0.9485774774774772,
     "retake_reasons": {
-     "glare": 2
+     "glare": 3
     }
    },
    "pixdiff": {
@@ -582,10 +583,10 @@
      0.16141688171584861
     ],
     "detected": 21,
-    "escape_rate": 0.859375,
+    "escape_rate": 0.8333333333333334,
     "escape_ci": [
-     0.8031293858263988,
-     0.9015217199652206
+     0.7741907470408648,
+     0.8793986844180285
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -595,10 +596,10 @@
     "false_alarms": 0,
     "false_events_per_good": 0.0,
     "false_zones_per_pair": 0.0,
-    "retake_rate": 0.008928571428571428,
+    "retake_rate": 0.026785714285714284,
     "retake_ci": [
-     0.0024519096737010727,
-     0.03196498346609429
+     0.012332530267932566,
+     0.057196475848597515
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -608,7 +609,7 @@
     ],
     "coverage": 0.9485774774774772,
     "retake_reasons": {
-     "glare": 2
+     "glare": 6
     }
    }
   },
@@ -617,16 +618,16 @@
     "n_pairs": 1120,
     "n_defect": 960,
     "n_good": 160,
-    "recall": 0.625,
+    "recall": 0.68125,
     "recall_ci": [
-     0.5939338172177269,
-     0.6550697534934771
+     0.6510994707395461,
+     0.7099557067916997
     ],
-    "detected": 600,
-    "escape_rate": 0.29583333333333334,
+    "detected": 654,
+    "escape_rate": 0.23333333333333334,
     "escape_ci": [
-     0.2678208678268671,
-     0.32547330001149977
+     0.20767297698394416,
+     0.2611194054988207
     ],
     "fa_rate": 0.0125,
     "fa_ci": [
@@ -634,12 +635,12 @@
      0.04442626157768072
     ],
     "false_alarms": 2,
-    "false_events_per_good": 0.01875,
-    "false_zones_per_pair": 0.026785714285714284,
-    "retake_rate": 0.014285714285714285,
+    "false_events_per_good": 0.0125,
+    "false_zones_per_pair": 0.03214285714285714,
+    "retake_rate": 0.033035714285714286,
     "retake_ci": [
-     0.008812190838321384,
-     0.02307984803975538
+     0.024061094385181496,
+     0.04520275916855775
     ],
     "retake_rate_good": 0.0125,
     "false_reject_rate": 0.025,
@@ -649,62 +650,62 @@
     ],
     "coverage": 0.9424364130434781,
     "retake_reasons": {
-     "glare": 16
+     "glare": 37
     }
    },
    "census": {
     "n_pairs": 1120,
     "n_defect": 960,
     "n_good": 160,
-    "recall": 0.2677083333333333,
+    "recall": 0.265625,
     "recall_ci": [
-     0.24066599483396453,
-     0.2966023695943814
+     0.23866004947607522,
+     0.29445825544041726
     ],
-    "detected": 257,
-    "escape_rate": 0.6229166666666667,
+    "detected": 255,
+    "escape_rate": 0.6208333333333333,
     "escape_ci": [
-     0.5918252676238942,
-     0.6530282435754564
+     0.5897173171462529,
+     0.6509861345412444
     ],
-    "fa_rate": 0.00625,
+    "fa_rate": 0.01875,
     "fa_ci": [
-     0.00110410335439148,
-     0.03454984533751582
-    ],
-    "false_alarms": 1,
-    "false_events_per_good": 0.0125,
-    "false_zones_per_pair": 0.020535714285714286,
-    "retake_rate": 0.014285714285714285,
-    "retake_ci": [
-     0.008812190838321384,
-     0.02307984803975538
-    ],
-    "retake_rate_good": 0.0125,
-    "false_reject_rate": 0.01875,
-    "false_reject_ci": [
      0.00639673490167721,
      0.05367103787397927
     ],
+    "false_alarms": 3,
+    "false_events_per_good": 0.01875,
+    "false_zones_per_pair": 0.020535714285714286,
+    "retake_rate": 0.03571428571428571,
+    "retake_ci": [
+     0.0263359436121954,
+     0.04826674060949563
+    ],
+    "retake_rate_good": 0.0125,
+    "false_reject_rate": 0.03125,
+    "false_reject_ci": [
+     0.013420318754525096,
+     0.07106127810488057
+    ],
     "coverage": 0.9424364130434781,
     "retake_reasons": {
-     "glare": 16
+     "glare": 40
     }
    },
    "ssim": {
     "n_pairs": 1120,
     "n_defect": 960,
     "n_good": 160,
-    "recall": 0.6572916666666667,
+    "recall": 0.671875,
     "recall_ci": [
-     0.6266945445191456,
-     0.6866349486257861
+     0.6415393824769599,
+     0.7008405272509456
     ],
-    "detected": 631,
-    "escape_rate": 0.2791666666666667,
+    "detected": 645,
+    "escape_rate": 0.25,
     "escape_ci": [
-     0.25171257163657035,
-     0.3083811201069693
+     0.2236410854246701,
+     0.2783517731529219
     ],
     "fa_rate": 0.0125,
     "fa_ci": [
@@ -713,11 +714,11 @@
     ],
     "false_alarms": 2,
     "false_events_per_good": 0.0125,
-    "false_zones_per_pair": 0.033035714285714286,
-    "retake_rate": 0.014285714285714285,
+    "false_zones_per_pair": 0.020535714285714286,
+    "retake_rate": 0.03125,
     "retake_ci": [
-     0.008812190838321384,
-     0.02307984803975538
+     0.022554240886087148,
+     0.04315039222235091
     ],
     "retake_rate_good": 0.0125,
     "false_reject_rate": 0.025,
@@ -727,23 +728,23 @@
     ],
     "coverage": 0.9424364130434781,
     "retake_reasons": {
-     "glare": 16
+     "glare": 35
     }
    },
    "pixdiff": {
     "n_pairs": 1120,
     "n_defect": 960,
     "n_good": 160,
-    "recall": 0.15520833333333334,
+    "recall": 0.17083333333333334,
     "recall_ci": [
-     0.13368081521086683,
-     0.17948433557739552
+     0.14834833825479282,
+     0.19594225887237
     ],
-    "detected": 149,
-    "escape_rate": 0.7739583333333333,
+    "detected": 164,
+    "escape_rate": 0.7333333333333333,
     "escape_ci": [
-     0.7464376240905439,
-     0.799295201718178
+     0.7044695890225476,
+     0.760337076305033
     ],
     "fa_rate": 0.025,
     "fa_ci": [
@@ -752,11 +753,11 @@
     ],
     "false_alarms": 4,
     "false_events_per_good": 0.125,
-    "false_zones_per_pair": 0.06517857142857143,
-    "retake_rate": 0.02857142857142857,
+    "false_zones_per_pair": 0.06339285714285714,
+    "retake_rate": 0.05089285714285714,
     "retake_ci": [
-     0.020310139484648285,
-     0.04005566295583799
+     0.039487050157630155,
+     0.06536900784912097
     ],
     "retake_rate_good": 0.0125,
     "false_reject_rate": 0.0375,
@@ -766,8 +767,8 @@
     ],
     "coverage": 0.9424364130434781,
     "retake_reasons": {
-     "mismatch": 16,
-     "glare": 16
+     "glare": 41,
+     "mismatch": 16
     }
    }
   },
@@ -776,16 +777,16 @@
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.65625,
+    "recall": 0.6875,
     "recall_ci": [
-     0.6074070804567644,
-     0.7019975837154131
+     0.6394747080183484,
+     0.7318108889882647
     ],
-    "detected": 252,
-    "escape_rate": 0.07552083333333333,
+    "detected": 264,
+    "escape_rate": 0.0625,
     "escape_ci": [
-     0.053094057671069006,
-     0.1063566046611821
+     0.04235583891458391,
+     0.09131110140331908
     ],
     "fa_rate": 0.9375,
     "fa_ci": [
@@ -793,12 +794,12 @@
      0.9754291963252071
     ],
     "false_alarms": 60,
-    "false_events_per_good": 4.53125,
-    "false_zones_per_pair": 3.845982142857143,
-    "retake_rate": 0.024553571428571428,
+    "false_events_per_good": 3.96875,
+    "false_zones_per_pair": 3.341517857142857,
+    "retake_rate": 0.03125,
     "retake_ci": [
-     0.013764436718978099,
-     0.04342728710636246
+     0.018704455551291597,
+     0.051766258079325854
     ],
     "retake_rate_good": 0.03125,
     "false_reject_rate": 0.96875,
@@ -808,8 +809,8 @@
     ],
     "coverage": 0.9211664383561644,
     "retake_reasons": {
+     "glare": 5,
      "blurry": 8,
-     "glare": 2,
      "mismatch": 1
     }
    },
@@ -817,56 +818,56 @@
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.3880208333333333,
+    "recall": 0.3307291666666667,
     "recall_ci": [
-     0.3406192144169819,
-     0.43764077625962433
+     0.2855520611214142,
+     0.37925955269206035
     ],
-    "detected": 149,
-    "escape_rate": 0.125,
+    "detected": 127,
+    "escape_rate": 0.10677083333333333,
     "escape_ci": [
-     0.09559093201984385,
-     0.1618378739669301
+     0.07968474107232401,
+     0.14164685409436262
     ],
-    "fa_rate": 0.859375,
+    "fa_rate": 0.890625,
     "fa_ci": [
-     0.7538349160536257,
-     0.9242151299358556
-    ],
-    "false_alarms": 55,
-    "false_events_per_good": 5.28125,
-    "false_zones_per_pair": 4.354910714285714,
-    "retake_rate": 0.022321428571428572,
-    "retake_ci": [
-     0.012168736881174036,
-     0.04059665700907423
-    ],
-    "retake_rate_good": 0.03125,
-    "false_reject_rate": 0.890625,
-    "false_reject_ci": [
      0.7910113670806147,
      0.9459995524731695
     ],
+    "false_alarms": 57,
+    "false_events_per_good": 5.296875,
+    "false_zones_per_pair": 4.348214285714286,
+    "retake_rate": 0.046875,
+    "retake_ci": [
+     0.03086054989300076,
+     0.07059447328326278
+    ],
+    "retake_rate_good": 0.03125,
+    "false_reject_rate": 0.921875,
+    "false_reject_ci": [
+     0.8298024712135222,
+     0.9661693219045645
+    ],
     "coverage": 0.9211664383561644,
     "retake_reasons": {
-     "blurry": 8,
-     "glare": 2
+     "glare": 13,
+     "blurry": 8
     }
    },
    "ssim": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.6302083333333334,
+    "recall": 0.65625,
     "recall_ci": [
-     0.5808561576582789,
-     0.6769810624852024
+     0.6074070804567644,
+     0.7019975837154131
     ],
-    "detected": 242,
-    "escape_rate": 0.10677083333333333,
+    "detected": 252,
+    "escape_rate": 0.06770833333333333,
     "escape_ci": [
-     0.07968474107232401,
-     0.14164685409436262
+     0.046621304526481146,
+     0.09735912459716109
     ],
     "fa_rate": 0.84375,
     "fa_ci": [
@@ -874,40 +875,40 @@
      0.9128525112303834
     ],
     "false_alarms": 54,
-    "false_events_per_good": 2.078125,
-    "false_zones_per_pair": 1.4776785714285714,
-    "retake_rate": 0.06919642857142858,
+    "false_events_per_good": 1.890625,
+    "false_zones_per_pair": 1.4263392857142858,
+    "retake_rate": 0.09598214285714286,
     "retake_ci": [
-     0.049173281068151095,
-     0.09654504145903543
+     0.07203973580923725,
+     0.12679454593905684
     ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.90625,
+    "retake_rate_good": 0.125,
+    "false_reject_rate": 0.96875,
     "false_reject_ci": [
-     0.8101690141672233,
-     0.9563223421687121
+     0.8930250611770575,
+     0.9913880422874833
     ],
     "coverage": 0.9211664383561644,
     "retake_reasons": {
-     "mismatch": 21,
-     "blurry": 8,
-     "glare": 2
+     "glare": 22,
+     "mismatch": 13,
+     "blurry": 8
     }
    },
    "pixdiff": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.22916666666666666,
+    "recall": 0.234375,
     "recall_ci": [
-     0.18993364919939337,
-     0.27376493290216564
+     0.1947647971024738,
+     0.27924727380482445
     ],
-    "detected": 88,
-    "escape_rate": 0.3411458333333333,
+    "detected": 90,
+    "escape_rate": 0.234375,
     "escape_ci": [
-     0.295509197310795,
-     0.3899293941141579
+     0.1947647971024738,
+     0.27924727380482445
     ],
     "fa_rate": 0.625,
     "fa_ci": [
@@ -916,23 +917,23 @@
     ],
     "false_alarms": 40,
     "false_events_per_good": 0.875,
-    "false_zones_per_pair": 0.7299107142857143,
-    "retake_rate": 0.03794642857142857,
+    "false_zones_per_pair": 0.7321428571428571,
+    "retake_rate": 0.14285714285714285,
     "retake_ci": [
-     0.023824527667730293,
-     0.05992517576816405
+     0.11348538240505102,
+     0.1783018279801813
     ],
-    "retake_rate_good": 0.03125,
-    "false_reject_rate": 0.65625,
+    "retake_rate_good": 0.15625,
+    "false_reject_rate": 0.78125,
     "false_reject_ci": [
-     0.5340341181762038,
-     0.7607702496453097
+     0.665669836692222,
+     0.8649780253865025
     ],
     "coverage": 0.9211664383561644,
     "retake_reasons": {
-     "mismatch": 7,
-     "blurry": 8,
-     "glare": 2
+     "glare": 48,
+     "mismatch": 8,
+     "blurry": 8
     }
    }
   },
@@ -941,16 +942,16 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.609375,
+    "recall": 0.6666666666666666,
     "recall_ci": [
-     0.5388635596409697,
-     0.6755954725564797
+     0.5972931463299536,
+     0.7295015693994931
     ],
-    "detected": 117,
-    "escape_rate": 0.3020833333333333,
+    "detected": 128,
+    "escape_rate": 0.25,
     "escape_ci": [
-     0.2415399999204219,
-     0.37039127515086007
+     0.19405972553588688,
+     0.31574820086994304
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -959,11 +960,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.004464285714285714,
-    "retake_rate": 0.026785714285714284,
+    "false_zones_per_pair": 0.013392857142857142,
+    "retake_rate": 0.049107142857142856,
     "retake_ci": [
-     0.012332530267932566,
-     0.057196475848597515
+     0.027638550858422806,
+     0.08578059647902567
     ],
     "retake_rate_good": 0.0625,
     "false_reject_rate": 0.0625,
@@ -973,7 +974,7 @@
     ],
     "coverage": 0.9301027522935779,
     "retake_reasons": {
-     "glare": 6
+     "glare": 11
     }
    },
    "census": {
@@ -986,130 +987,10 @@
      0.35410598430117507
     ],
     "detected": 55,
-    "escape_rate": 0.625,
+    "escape_rate": 0.6145833333333334,
     "escape_ci": [
-     0.5546990853449807,
-     0.6903969514521042
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.0,
-    "retake_rate": 0.026785714285714284,
-    "retake_ci": [
-     0.012332530267932566,
-     0.057196475848597515
-    ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.0625,
-    "false_reject_ci": [
-     0.017310203195157234,
-     0.2014746724800358
-    ],
-    "coverage": 0.9301027522935779,
-    "retake_reasons": {
-     "glare": 6
-    }
-   },
-   "ssim": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.6614583333333334,
-    "recall_ci": [
-     0.5919388552599627,
-     0.7246435256029389
-    ],
-    "detected": 127,
-    "escape_rate": 0.2760416666666667,
-    "escape_ci": [
-     0.21767028870467015,
-     0.3431993120338858
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.017857142857142856,
-    "retake_rate": 0.026785714285714284,
-    "retake_ci": [
-     0.012332530267932566,
-     0.057196475848597515
-    ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.0625,
-    "false_reject_ci": [
-     0.017310203195157234,
-     0.2014746724800358
-    ],
-    "coverage": 0.9301027522935779,
-    "retake_reasons": {
-     "glare": 6
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.19270833333333334,
-    "recall_ci": [
-     0.14316627008140914,
-     0.2543059727924236
-    ],
-    "detected": 37,
-    "escape_rate": 0.75,
-    "escape_ci": [
-     0.684251799130057,
-     0.8059402744641131
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.013392857142857142,
-    "retake_rate": 0.03125,
-    "retake_ci": [
-     0.015218165326145262,
-     0.0630888690345685
-    ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.0625,
-    "false_reject_ci": [
-     0.017310203195157234,
-     0.2014746724800358
-    ],
-    "coverage": 0.9301027522935779,
-    "retake_reasons": {
-     "glare": 6,
-     "mismatch": 1
-    }
-   }
-  },
-  "lighting:gamma": {
-   "pbp": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.6197916666666666,
-    "recall_ci": [
-     0.549412471300924,
-     0.6854712306296157
-    ],
-    "detected": 119,
-    "escape_rate": 0.3072916666666667,
-    "escape_ci": [
-     0.24634322938978004,
-     0.3758003805480472
+     0.5441339832149131,
+     0.6805373838490815
     ],
     "fa_rate": 0.03125,
     "fa_ci": [
@@ -1117,61 +998,22 @@
      0.15744607800372734
     ],
     "false_alarms": 1,
-    "false_events_per_good": 0.0625,
-    "false_zones_per_pair": 0.022321428571428572,
-    "retake_rate": 0.004464285714285714,
+    "false_events_per_good": 0.03125,
+    "false_zones_per_pair": 0.013392857142857142,
+    "retake_rate": 0.05803571428571429,
     "retake_ci": [
-     0.0007884709218593626,
-     0.024850393973752324
+     0.03422625837668786,
+     0.09674894544912799
     ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.03125,
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.09375,
     "false_reject_ci": [
-     0.005537717362550945,
-     0.15744607800372734
+     0.032400962626319516,
+     0.24218499335778831
     ],
-    "coverage": 0.953260538116592,
+    "coverage": 0.9301027522935779,
     "retake_reasons": {
-     "glare": 1
-    }
-   },
-   "census": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.25,
-    "recall_ci": [
-     0.19405972553588688,
-     0.31574820086994304
-    ],
-    "detected": 48,
-    "escape_rate": 0.6302083333333334,
-    "escape_ci": [
-     0.5599938903616183,
-     0.6953144813020119
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.008928571428571428,
-    "retake_rate": 0.004464285714285714,
-    "retake_ci": [
-     0.0007884709218593626,
-     0.024850393973752324
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
-    "false_reject_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "coverage": 0.953260538116592,
-    "retake_reasons": {
-     "glare": 1
+     "glare": 13
     }
    },
    "ssim": {
@@ -1184,10 +1026,91 @@
      0.7197767239105444
     ],
     "detected": 126,
-    "escape_rate": 0.3020833333333333,
+    "escape_rate": 0.24479166666666666,
     "escape_ci": [
-     0.2415399999204219,
-     0.37039127515086007
+     0.1893708260732499,
+     0.3102247654660349
+    ],
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.1071827150573635
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.004464285714285714,
+    "retake_rate": 0.05357142857142857,
+    "retake_ci": [
+     0.030907059980113148,
+     0.091290115601519
+    ],
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.0625,
+    "false_reject_ci": [
+     0.017310203195157234,
+     0.2014746724800358
+    ],
+    "coverage": 0.9301027522935779,
+    "retake_reasons": {
+     "glare": 12
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.19270833333333334,
+    "recall_ci": [
+     0.14316627008140914,
+     0.2543059727924236
+    ],
+    "detected": 37,
+    "escape_rate": 0.6927083333333334,
+    "escape_ci": [
+     0.6241996194519528,
+     0.75365677061022
+    ],
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.1071827150573635
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.013392857142857142,
+    "retake_rate": 0.08035714285714286,
+    "retake_ci": [
+     0.05143160590054009,
+     0.12343373914619414
+    ],
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.0625,
+    "false_reject_ci": [
+     0.017310203195157234,
+     0.2014746724800358
+    ],
+    "coverage": 0.9301027522935779,
+    "retake_reasons": {
+     "glare": 17,
+     "mismatch": 1
+    }
+   }
+  },
+  "lighting:gamma": {
+   "pbp": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.6875,
+    "recall_ci": [
+     0.6187999478210462,
+     0.7488441073745813
+    ],
+    "detected": 132,
+    "escape_rate": 0.2604166666666667,
+    "escape_ci": [
+     0.20347137628900983,
+     0.3267612198499105
     ],
     "fa_rate": 0.03125,
     "fa_ci": [
@@ -1196,11 +1119,11 @@
     ],
     "false_alarms": 1,
     "false_events_per_good": 0.03125,
-    "false_zones_per_pair": 0.008928571428571428,
-    "retake_rate": 0.004464285714285714,
+    "false_zones_per_pair": 0.017857142857142856,
+    "retake_rate": 0.008928571428571428,
     "retake_ci": [
-     0.0007884709218593626,
-     0.024850393973752324
+     0.0024519096737010727,
+     0.03196498346609429
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.03125,
@@ -1210,23 +1133,23 @@
     ],
     "coverage": 0.953260538116592,
     "retake_reasons": {
-     "glare": 1
+     "glare": 2
     }
    },
-   "pixdiff": {
+   "census": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.15625,
+    "recall": 0.28125,
     "recall_ci": [
-     0.11169439472697824,
-     0.21429150408103803
+     0.22242419981820605,
+     0.3486577357868952
     ],
-    "detected": 30,
-    "escape_rate": 0.828125,
+    "detected": 54,
+    "escape_rate": 0.6354166666666666,
     "escape_ci": [
-     0.7684585717967164,
-     0.8749185247956316
+     0.5652969550602936,
+     0.7002237514698816
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -1235,11 +1158,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.0,
-    "retake_rate": 0.004464285714285714,
+    "false_zones_per_pair": 0.013392857142857142,
+    "retake_rate": 0.013392857142857142,
     "retake_ci": [
-     0.0007884709218593626,
-     0.024850393973752324
+     0.0045649626093077905,
+     0.03862995877467126
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -1249,7 +1172,85 @@
     ],
     "coverage": 0.953260538116592,
     "retake_reasons": {
-     "glare": 1
+     "glare": 3
+    }
+   },
+   "ssim": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.671875,
+    "recall_ci": [
+     0.6026562942994619,
+     0.73435075629653
+    ],
+    "detected": 129,
+    "escape_rate": 0.2760416666666667,
+    "escape_ci": [
+     0.21767028870467015,
+     0.3431993120338858
+    ],
+    "fa_rate": 0.03125,
+    "fa_ci": [
+     0.005537717362550945,
+     0.15744607800372734
+    ],
+    "false_alarms": 1,
+    "false_events_per_good": 0.03125,
+    "false_zones_per_pair": 0.013392857142857142,
+    "retake_rate": 0.008928571428571428,
+    "retake_ci": [
+     0.0024519096737010727,
+     0.03196498346609429
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.03125,
+    "false_reject_ci": [
+     0.005537717362550945,
+     0.15744607800372734
+    ],
+    "coverage": 0.953260538116592,
+    "retake_reasons": {
+     "glare": 2
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.17708333333333334,
+    "recall_ci": [
+     0.12957860055305548,
+     0.23725663772114164
+    ],
+    "detected": 34,
+    "escape_rate": 0.7864583333333334,
+    "escape_ci": [
+     0.7231686554853292,
+     0.8385097621746573
+    ],
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.1071827150573635
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.0,
+    "retake_rate": 0.017857142857142856,
+    "retake_ci": [
+     0.006965542540871426,
+     0.0450074070872913
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.0,
+    "false_reject_ci": [
+     0.0,
+     0.1071827150573635
+    ],
+    "coverage": 0.953260538116592,
+    "retake_reasons": {
+     "glare": 4
     }
    }
   },
@@ -1258,16 +1259,90 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.6770833333333334,
+    "recall": 0.734375,
     "recall_ci": [
-     0.6080284032857897,
-     0.7391909821767475
+     0.6677487596039902,
+     0.7918063093905441
     ],
-    "detected": 130,
-    "escape_rate": 0.2552083333333333,
+    "detected": 141,
+    "escape_rate": 0.19791666666666666,
     "escape_ci": [
-     0.19875998373439227,
-     0.32126027753798286
+     0.14772594103731715,
+     0.25995863670306074
+    ],
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.1071827150573635
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.05803571428571429,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01686083665142801
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.0,
+    "false_reject_ci": [
+     0.0,
+     0.1071827150573635
+    ],
+    "coverage": 0.9487241071428569,
+    "retake_reasons": {}
+   },
+   "census": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.2760416666666667,
+    "recall_ci": [
+     0.21767028870467015,
+     0.3431993120338858
+    ],
+    "detected": 53,
+    "escape_rate": 0.625,
+    "escape_ci": [
+     0.5546990853449807,
+     0.6903969514521042
+    ],
+    "fa_rate": 0.0625,
+    "fa_ci": [
+     0.017310203195157234,
+     0.2014746724800358
+    ],
+    "false_alarms": 2,
+    "false_events_per_good": 0.0625,
+    "false_zones_per_pair": 0.04017857142857143,
+    "retake_rate": 0.0,
+    "retake_ci": [
+     0.0,
+     0.01686083665142801
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.0625,
+    "false_reject_ci": [
+     0.017310203195157234,
+     0.2014746724800358
+    ],
+    "coverage": 0.9487241071428569,
+    "retake_reasons": {}
+   },
+   "ssim": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.6979166666666666,
+    "recall_ci": [
+     0.6296087248491399,
+     0.7584600000795779
+    ],
+    "detected": 134,
+    "escape_rate": 0.2604166666666667,
+    "escape_ci": [
+     0.20347137628900983,
+     0.3267612198499105
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -1291,94 +1366,20 @@
     "coverage": 0.9487241071428569,
     "retake_reasons": {}
    },
-   "census": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.2916666666666667,
-    "recall_ci": [
-     0.23196238406601188,
-     0.3595442212721798
-    ],
-    "detected": 56,
-    "escape_rate": 0.6197916666666666,
-    "escape_ci": [
-     0.549412471300924,
-     0.6854712306296157
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.022321428571428572,
-    "retake_rate": 0.0,
-    "retake_ci": [
-     0.0,
-     0.01686083665142801
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
-    "false_reject_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "coverage": 0.9487241071428569,
-    "retake_reasons": {}
-   },
-   "ssim": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.6666666666666666,
-    "recall_ci": [
-     0.5972931463299536,
-     0.7295015693994931
-    ],
-    "detected": 128,
-    "escape_rate": 0.2864583333333333,
-    "escape_ci": [
-     0.22718828617047132,
-     0.35410598430117507
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.022321428571428572,
-    "retake_rate": 0.0,
-    "retake_ci": [
-     0.0,
-     0.01686083665142801
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
-    "false_reject_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "coverage": 0.9487241071428569,
-    "retake_reasons": {}
-   },
    "pixdiff": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.14583333333333334,
+    "recall": 0.16666666666666666,
     "recall_ci": [
-     0.10286335807657865,
-     0.20269787099834724
+     0.12060131558197143,
+     0.22580925295913526
     ],
-    "detected": 28,
-    "escape_rate": 0.7916666666666666,
+    "detected": 32,
+    "escape_rate": 0.78125,
     "escape_ci": [
-     0.7287790691776831,
-     0.8431116833488485
+     0.7175715814084004,
+     0.8338945013850408
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -1387,7 +1388,7 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.044642857142857144,
+    "false_zones_per_pair": 0.03571428571428571,
     "retake_rate": 0.0,
     "retake_ci": [
      0.0,
@@ -1408,16 +1409,16 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.6770833333333334,
+    "recall": 0.7135416666666666,
     "recall_ci": [
-     0.6080284032857897,
-     0.7391909821767475
+     0.6458940156988248,
+     0.7728117138295286
     ],
-    "detected": 130,
-    "escape_rate": 0.2604166666666667,
+    "detected": 137,
+    "escape_rate": 0.22395833333333334,
     "escape_ci": [
-     0.20347137628900983,
-     0.3267612198499105
+     0.17073376399634171,
+     0.2880124880767623
     ],
     "fa_rate": 0.03125,
     "fa_ci": [
@@ -1447,35 +1448,35 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.2864583333333333,
+    "recall": 0.2604166666666667,
     "recall_ci": [
-     0.22718828617047132,
-     0.35410598430117507
+     0.20347137628900983,
+     0.3267612198499105
     ],
-    "detected": 55,
-    "escape_rate": 0.5885416666666666,
+    "detected": 50,
+    "escape_rate": 0.625,
     "escape_ci": [
-     0.517861400096107,
-     0.6557482926351614
+     0.5546990853449807,
+     0.6903969514521042
     ],
-    "fa_rate": 0.03125,
+    "fa_rate": 0.0,
     "fa_ci": [
-     0.005537717362550945,
-     0.15744607800372734
+     0.0,
+     0.1071827150573635
     ],
-    "false_alarms": 1,
-    "false_events_per_good": 0.0625,
-    "false_zones_per_pair": 0.017857142857142856,
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.0,
     "retake_rate": 0.017857142857142856,
     "retake_ci": [
      0.006965542540871426,
      0.0450074070872913
     ],
     "retake_rate_good": 0.0,
-    "false_reject_rate": 0.03125,
+    "false_reject_rate": 0.0,
     "false_reject_ci": [
-     0.005537717362550945,
-     0.15744607800372734
+     0.0,
+     0.1071827150573635
     ],
     "coverage": 0.9549136363636365,
     "retake_reasons": {
@@ -1486,16 +1487,16 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.7083333333333334,
+    "recall": 0.7135416666666666,
     "recall_ci": [
-     0.6404557787278202,
-     0.7680376159339881
+     0.6458940156988248,
+     0.7728117138295286
     ],
-    "detected": 136,
-    "escape_rate": 0.22916666666666666,
+    "detected": 137,
+    "escape_rate": 0.23958333333333334,
     "escape_ci": [
-     0.17537471851484018,
-     0.293583868424809
+     0.1846935223353275,
+     0.3046897343374121
     ],
     "fa_rate": 0.03125,
     "fa_ci": [
@@ -1504,7 +1505,7 @@
     ],
     "false_alarms": 1,
     "false_events_per_good": 0.03125,
-    "false_zones_per_pair": 0.03125,
+    "false_zones_per_pair": 0.013392857142857142,
     "retake_rate": 0.017857142857142856,
     "retake_ci": [
      0.006965542540871426,
@@ -1525,16 +1526,16 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.14583333333333334,
+    "recall": 0.16145833333333334,
     "recall_ci": [
-     0.10286335807657865,
-     0.20269787099834724
+     0.11613873488080888,
+     0.22005949879375258
     ],
-    "detected": 28,
-    "escape_rate": 0.8125,
+    "detected": 31,
+    "escape_rate": 0.8020833333333334,
     "escape_ci": [
-     0.7513616019821585,
-     0.8613784900105539
+     0.7400413632969393,
+     0.8522740589626828
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -1566,16 +1567,16 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.5416666666666666,
+    "recall": 0.6041666666666666,
     "recall_ci": [
-     0.4710598278856616,
-     0.6106388510466999
+     0.5336011425841927,
+     0.6706455547467114
     ],
-    "detected": 104,
-    "escape_rate": 0.3541666666666667,
+    "detected": 116,
+    "escape_rate": 0.234375,
     "escape_ci": [
-     0.2899827813782738,
-     0.4240718423584603
+     0.18002806481871048,
+     0.2991428569874839
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -1584,11 +1585,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.08035714285714286,
-    "retake_rate": 0.022321428571428572,
+    "false_zones_per_pair": 0.0625,
+    "retake_rate": 0.08928571428571429,
     "retake_ci": [
-     0.009571042248379288,
-     0.05117993562396711
+     0.05854143313248711,
+     0.13387996840261449
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -1598,7 +1599,7 @@
     ],
     "coverage": 0.924726484018265,
     "retake_reasons": {
-     "glare": 5
+     "glare": 20
     }
    },
    "census": {
@@ -1611,10 +1612,10 @@
      0.2880124880767623
     ],
     "detected": 43,
-    "escape_rate": 0.6510416666666666,
+    "escape_rate": 0.6041666666666666,
     "escape_ci": [
-     0.5812564526919826,
-     0.7149012584378285
+     0.5336011425841927,
+     0.6706455547467114
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -1623,105 +1624,24 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.05357142857142857,
-    "retake_rate": 0.022321428571428572,
-    "retake_ci": [
-     0.009571042248379288,
-     0.05117993562396711
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
-    "false_reject_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "coverage": 0.924726484018265,
-    "retake_reasons": {
-     "glare": 5
-    }
-   },
-   "ssim": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.59375,
-    "recall_ci": [
-     0.5231001126508305,
-     0.6607219149469833
-    ],
-    "detected": 114,
-    "escape_rate": 0.3020833333333333,
-    "escape_ci": [
-     0.2415399999204219,
-     0.37039127515086007
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.08482142857142858,
-    "retake_rate": 0.022321428571428572,
-    "retake_ci": [
-     0.009571042248379288,
-     0.05117993562396711
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
-    "false_reject_ci": [
-     0.0,
-     0.1071827150573635
-    ],
-    "coverage": 0.924726484018265,
-    "retake_reasons": {
-     "glare": 5
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.13541666666666666,
-    "recall_ci": [
-     0.09411469503904843,
-     0.19102186430278698
-    ],
-    "detected": 26,
-    "escape_rate": 0.6875,
-    "escape_ci": [
-     0.6187999478210462,
-     0.7488441073745813
-    ],
-    "fa_rate": 0.125,
-    "fa_ci": [
-     0.04970053844474301,
-     0.2806864978482796
-    ],
-    "false_alarms": 4,
-    "false_events_per_good": 0.625,
-    "false_zones_per_pair": 0.2544642857142857,
+    "false_zones_per_pair": 0.03571428571428571,
     "retake_rate": 0.08928571428571429,
     "retake_ci": [
      0.05854143313248711,
      0.13387996840261449
     ],
     "retake_rate_good": 0.0,
-    "false_reject_rate": 0.125,
+    "false_reject_rate": 0.0,
     "false_reject_ci": [
-     0.04970053844474301,
-     0.2806864978482796
+     0.0,
+     0.1071827150573635
     ],
     "coverage": 0.924726484018265,
     "retake_reasons": {
-     "mismatch": 15,
-     "glare": 5
+     "glare": 20
     }
-   }
-  },
-  "lighting:specular": {
-   "pbp": {
+   },
+   "ssim": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
@@ -1731,114 +1651,33 @@
      0.6854712306296157
     ],
     "detected": 119,
-    "escape_rate": 0.08854166666666667,
+    "escape_rate": 0.22916666666666666,
     "escape_ci": [
-     0.05601496383263865,
-     0.1372105817102899
+     0.17537471851484018,
+     0.293583868424809
     ],
-    "fa_rate": 0.90625,
+    "fa_rate": 0.0,
     "fa_ci": [
-     0.7578150066422116,
-     0.9675990373736805
+     0.0,
+     0.1071827150573635
     ],
-    "false_alarms": 29,
-    "false_events_per_good": 3.28125,
-    "false_zones_per_pair": 2.3482142857142856,
-    "retake_rate": 0.044642857142857144,
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.05357142857142857,
+    "retake_rate": 0.07589285714285714,
     "retake_ci": [
-     0.024426838985054003,
-     0.08021428010821079
+     0.04792048612644476,
+     0.11816683067610578
     ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.96875,
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.0,
     "false_reject_ci": [
-     0.8425539219962727,
-     0.9944622826374491
+     0.0,
+     0.1071827150573635
     ],
-    "coverage": 0.8892009345794393,
+    "coverage": 0.924726484018265,
     "retake_reasons": {
-     "blurry": 8,
-     "glare": 2
-    }
-   },
-   "census": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.3489583333333333,
-    "recall_ci": [
-     0.28509874156217146,
-     0.4187435473080174
-    ],
-    "detected": 67,
-    "escape_rate": 0.10416666666666667,
-    "escape_ci": [
-     0.06844838740538424,
-     0.15541416273717995
-    ],
-    "fa_rate": 0.90625,
-    "fa_ci": [
-     0.7578150066422116,
-     0.9675990373736805
-    ],
-    "false_alarms": 29,
-    "false_events_per_good": 4.1875,
-    "false_zones_per_pair": 3.1473214285714284,
-    "retake_rate": 0.044642857142857144,
-    "retake_ci": [
-     0.024426838985054003,
-     0.08021428010821079
-    ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.96875,
-    "false_reject_ci": [
-     0.8425539219962727,
-     0.9944622826374491
-    ],
-    "coverage": 0.8892009345794393,
-    "retake_reasons": {
-     "blurry": 8,
-     "glare": 2
-    }
-   },
-   "ssim": {
-    "n_pairs": 224,
-    "n_defect": 192,
-    "n_good": 32,
-    "recall": 0.625,
-    "recall_ci": [
-     0.5546990853449807,
-     0.6903969514521042
-    ],
-    "detected": 120,
-    "escape_rate": 0.15625,
-    "escape_ci": [
-     0.11169439472697824,
-     0.21429150408103803
-    ],
-    "fa_rate": 0.78125,
-    "fa_ci": [
-     0.6124466920955516,
-     0.8897630306846815
-    ],
-    "false_alarms": 25,
-    "false_events_per_good": 1.40625,
-    "false_zones_per_pair": 1.1160714285714286,
-    "retake_rate": 0.044642857142857144,
-    "retake_ci": [
-     0.024426838985054003,
-     0.08021428010821079
-    ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.84375,
-    "false_reject_ci": [
-     0.6824550744643347,
-     0.9313568089337279
-    ],
-    "coverage": 0.8892009345794393,
-    "retake_reasons": {
-     "blurry": 8,
-     "glare": 2
+     "glare": 17
     }
    },
    "pixdiff": {
@@ -1851,10 +1690,172 @@
      0.21429150408103803
     ],
     "detected": 30,
-    "escape_rate": 0.3020833333333333,
+    "escape_rate": 0.6041666666666666,
     "escape_ci": [
-     0.2415399999204219,
-     0.37039127515086007
+     0.5336011425841927,
+     0.6706455547467114
+    ],
+    "fa_rate": 0.125,
+    "fa_ci": [
+     0.04970053844474301,
+     0.2806864978482796
+    ],
+    "false_alarms": 4,
+    "false_events_per_good": 0.625,
+    "false_zones_per_pair": 0.2544642857142857,
+    "retake_rate": 0.13839285714285715,
+    "retake_ci": [
+     0.099238732560368,
+     0.18974097966075407
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.125,
+    "false_reject_ci": [
+     0.04970053844474301,
+     0.2806864978482796
+    ],
+    "coverage": 0.924726484018265,
+    "retake_reasons": {
+     "mismatch": 15,
+     "glare": 16
+    }
+   }
+  },
+  "lighting:specular": {
+   "pbp": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.6510416666666666,
+    "recall_ci": [
+     0.5812564526919826,
+     0.7149012584378285
+    ],
+    "detected": 125,
+    "escape_rate": 0.0625,
+    "escape_ci": [
+     0.03611029002738631,
+     0.10605358118281621
+    ],
+    "fa_rate": 0.90625,
+    "fa_ci": [
+     0.7578150066422116,
+     0.9675990373736805
+    ],
+    "false_alarms": 29,
+    "false_events_per_good": 3.15625,
+    "false_zones_per_pair": 2.232142857142857,
+    "retake_rate": 0.05803571428571429,
+    "retake_ci": [
+     0.03422625837668786,
+     0.09674894544912799
+    ],
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.96875,
+    "false_reject_ci": [
+     0.8425539219962727,
+     0.9944622826374491
+    ],
+    "coverage": 0.8892009345794393,
+    "retake_reasons": {
+     "glare": 5,
+     "blurry": 8
+    }
+   },
+   "census": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.296875,
+    "recall_ci": [
+     0.23674633794234923,
+     0.3649726022623876
+    ],
+    "detected": 57,
+    "escape_rate": 0.06770833333333333,
+    "escape_ci": [
+     0.03999230330381833,
+     0.11238390277292937
+    ],
+    "fa_rate": 0.90625,
+    "fa_ci": [
+     0.7578150066422116,
+     0.9675990373736805
+    ],
+    "false_alarms": 29,
+    "false_events_per_good": 4.21875,
+    "false_zones_per_pair": 3.1339285714285716,
+    "retake_rate": 0.08928571428571429,
+    "retake_ci": [
+     0.05854143313248711,
+     0.13387996840261449
+    ],
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.96875,
+    "false_reject_ci": [
+     0.8425539219962727,
+     0.9944622826374491
+    ],
+    "coverage": 0.8892009345794393,
+    "retake_reasons": {
+     "glare": 12,
+     "blurry": 8
+    }
+   },
+   "ssim": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.640625,
+    "recall_ci": [
+     0.5706083519812483,
+     0.7051246894154722
+    ],
+    "detected": 123,
+    "escape_rate": 0.078125,
+    "escape_ci": [
+     0.04791348285135001,
+     0.12488739295848812
+    ],
+    "fa_rate": 0.75,
+    "fa_ci": [
+     0.5789310822975338,
+     0.8674775601737845
+    ],
+    "false_alarms": 24,
+    "false_events_per_good": 1.3125,
+    "false_zones_per_pair": 1.0044642857142858,
+    "retake_rate": 0.13392857142857142,
+    "retake_ci": [
+     0.0954486955078078,
+     0.18475298846913055
+    ],
+    "retake_rate_good": 0.21875,
+    "false_reject_rate": 0.96875,
+    "false_reject_ci": [
+     0.8425539219962727,
+     0.9944622826374491
+    ],
+    "coverage": 0.8892009345794393,
+    "retake_reasons": {
+     "glare": 22,
+     "blurry": 8
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 224,
+    "n_defect": 192,
+    "n_good": 32,
+    "recall": 0.15625,
+    "recall_ci": [
+     0.11169439472697824,
+     0.21429150408103803
+    ],
+    "detected": 30,
+    "escape_rate": 0.08854166666666667,
+    "escape_ci": [
+     0.05601496383263865,
+     0.1372105817102899
     ],
     "fa_rate": 0.65625,
     "fa_ci": [
@@ -1863,22 +1864,22 @@
     ],
     "false_alarms": 21,
     "false_events_per_good": 0.96875,
-    "false_zones_per_pair": 0.8794642857142857,
-    "retake_rate": 0.044642857142857144,
+    "false_zones_per_pair": 0.9017857142857143,
+    "retake_rate": 0.25,
     "retake_ci": [
-     0.024426838985054003,
-     0.08021428010821079
+     0.1978310370892211,
+     0.31059938123649294
     ],
-    "retake_rate_good": 0.0625,
-    "false_reject_rate": 0.71875,
+    "retake_rate_good": 0.3125,
+    "false_reject_rate": 0.96875,
     "false_reject_ci": [
-     0.546251630618882,
-     0.8443559315435214
+     0.8425539219962727,
+     0.9944622826374491
     ],
     "coverage": 0.8892009345794393,
     "retake_reasons": {
-     "blurry": 8,
-     "glare": 2
+     "glare": 48,
+     "blurry": 8
     }
    }
   },
@@ -1887,12 +1888,12 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.6927083333333334,
+    "recall": 0.7239583333333334,
     "recall_ci": [
-     0.6241996194519528,
-     0.75365677061022
+     0.6568006879661141,
+     0.7823297112953298
     ],
-    "detected": 133,
+    "detected": 139,
     "escape_rate": 0.0625,
     "escape_ci": [
      0.03611029002738631,
@@ -1904,8 +1905,8 @@
      0.9944622826374491
     ],
     "false_alarms": 31,
-    "false_events_per_good": 5.78125,
-    "false_zones_per_pair": 5.34375,
+    "false_events_per_good": 4.78125,
+    "false_zones_per_pair": 4.450892857142857,
     "retake_rate": 0.004464285714285714,
     "retake_ci": [
      0.0007884709218593626,
@@ -1926,68 +1927,70 @@
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.4270833333333333,
+    "recall": 0.3645833333333333,
     "recall_ci": [
-     0.35921925017624723,
-     0.4978080616921198
+     0.29977624853011825,
+     0.4347030449397062
     ],
-    "detected": 82,
+    "detected": 70,
     "escape_rate": 0.14583333333333334,
     "escape_ci": [
      0.10286335807657865,
      0.20269787099834724
     ],
-    "fa_rate": 0.8125,
+    "fa_rate": 0.875,
     "fa_ci": [
-     0.6469050424507756,
-     0.9111057606383721
+     0.7193135021517204,
+     0.950299461555257
     ],
-    "false_alarms": 26,
+    "false_alarms": 28,
     "false_events_per_good": 6.375,
     "false_zones_per_pair": 5.5625,
-    "retake_rate": 0.0,
+    "retake_rate": 0.004464285714285714,
     "retake_ci": [
-     0.0,
-     0.01686083665142801
+     0.0007884709218593626,
+     0.024850393973752324
     ],
     "retake_rate_good": 0.0,
-    "false_reject_rate": 0.8125,
+    "false_reject_rate": 0.875,
     "false_reject_ci": [
-     0.6469050424507756,
-     0.9111057606383721
+     0.7193135021517204,
+     0.950299461555257
     ],
     "coverage": 0.9517049107142856,
-    "retake_reasons": {}
+    "retake_reasons": {
+     "glare": 1
+    }
    },
    "ssim": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.6354166666666666,
+    "recall": 0.671875,
     "recall_ci": [
-     0.5652969550602936,
-     0.7002237514698816
+     0.6026562942994619,
+     0.73435075629653
     ],
-    "detected": 122,
+    "detected": 129,
     "escape_rate": 0.057291666666666664,
     "escape_ci": [
      0.0322881930436125,
      0.09966334330004481
     ],
-    "fa_rate": 0.90625,
+    "fa_rate": 0.9375,
     "fa_ci": [
-     0.7578150066422116,
-     0.9675990373736805
+     0.7985253275199642,
+     0.9826897968048427
     ],
-    "false_alarms": 29,
-    "false_events_per_good": 2.75,
-    "false_zones_per_pair": 1.8392857142857142,
-    "retake_rate": 0.09375,
+    "false_alarms": 30,
+    "false_events_per_good": 2.46875,
+    "false_zones_per_pair": 1.8482142857142858,
+    "retake_rate": 0.05803571428571429,
     "retake_ci": [
-     0.06213634162352002,
-     0.13906308815576524
+     0.03422625837668786,
+     0.09674894544912799
     ],
-    "retake_rate_good": 0.0625,
+    "retake_rate_good": 0.03125,
     "false_reject_rate": 0.96875,
     "false_reject_ci": [
      0.8425539219962727,
@@ -1995,19 +1998,19 @@
     ],
     "coverage": 0.9517049107142856,
     "retake_reasons": {
-     "mismatch": 21
+     "mismatch": 13
     }
    },
    "pixdiff": {
     "n_pairs": 224,
     "n_defect": 192,
     "n_good": 32,
-    "recall": 0.3020833333333333,
+    "recall": 0.3125,
     "recall_ci": [
-     0.2415399999204219,
-     0.37039127515086007
+     0.2511558926254186,
+     0.3812000521789538
     ],
-    "detected": 58,
+    "detected": 60,
     "escape_rate": 0.3802083333333333,
     "escape_ci": [
      0.3145287693703842,
@@ -2020,11 +2023,11 @@
     ],
     "false_alarms": 19,
     "false_events_per_good": 0.78125,
-    "false_zones_per_pair": 0.5803571428571429,
-    "retake_rate": 0.03125,
+    "false_zones_per_pair": 0.5625,
+    "retake_rate": 0.03571428571428571,
     "retake_ci": [
-     0.015218165326145262,
-     0.0630888690345685
+     0.018205838595204072,
+     0.06887922400969336
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.59375,
@@ -2034,7 +2037,7 @@
     ],
     "coverage": 0.9517049107142856,
     "retake_reasons": {
-     "mismatch": 7
+     "mismatch": 8
     }
    }
   },
@@ -2043,16 +2046,16 @@
     "n_pairs": 896,
     "n_defect": 768,
     "n_good": 128,
-    "recall": 0.8489583333333334,
+    "recall": 0.8684895833333334,
     "recall_ci": [
-     0.8218989487402687,
-     0.872544056145708
+     0.842742464789241,
+     0.8905686187284134
     ],
-    "detected": 652,
-    "escape_rate": 0.11067708333333333,
+    "detected": 667,
+    "escape_rate": 0.08072916666666667,
     "escape_ci": [
-     0.09039663198693412,
-     0.13483300062162182
+     0.06348407727250409,
+     0.10214783476747925
     ],
     "fa_rate": 0.2421875,
     "fa_ci": [
@@ -2060,12 +2063,12 @@
      0.3232129562738243
     ],
     "false_alarms": 31,
-    "false_events_per_good": 1.0,
-    "false_zones_per_pair": 0.9977678571428571,
-    "retake_rate": 0.0078125,
+    "false_events_per_good": 0.875,
+    "false_zones_per_pair": 0.8816964285714286,
+    "retake_rate": 0.021205357142857144,
     "retake_ci": [
-     0.0037893876183600333,
-     0.016038102019816286
+     0.013616755857548981,
+     0.03288209460679942
     ],
     "retake_rate_good": 0.015625,
     "false_reject_rate": 0.2578125,
@@ -2075,135 +2078,11 @@
     ],
     "coverage": 0.93040449943757,
     "retake_reasons": {
-     "glare": 4,
+     "glare": 16,
      "blurry": 3
     }
    },
    "census": {
-    "n_pairs": 896,
-    "n_defect": 768,
-    "n_good": 128,
-    "recall": 0.4908854166666667,
-    "recall_ci": [
-     0.4556620230651663,
-     0.5261995402400507
-    ],
-    "detected": 377,
-    "escape_rate": 0.33203125,
-    "escape_ci": [
-     0.299632162936628,
-     0.36610236083094294
-    ],
-    "fa_rate": 0.2421875,
-    "fa_ci": [
-     0.17618632286113767,
-     0.3232129562738243
-    ],
-    "false_alarms": 31,
-    "false_events_per_good": 1.8203125,
-    "false_zones_per_pair": 1.6272321428571428,
-    "retake_rate": 0.0078125,
-    "retake_ci": [
-     0.0037893876183600333,
-     0.016038102019816286
-    ],
-    "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.2578125,
-    "false_reject_ci": [
-     0.18986792282559609,
-     0.33987079393755004
-    ],
-    "coverage": 0.93040449943757,
-    "retake_reasons": {
-     "glare": 4,
-     "blurry": 3
-    }
-   },
-   "ssim": {
-    "n_pairs": 896,
-    "n_defect": 768,
-    "n_good": 128,
-    "recall": 0.8776041666666666,
-    "recall_ci": [
-     0.852526545127567,
-     0.8989229750848704
-    ],
-    "detected": 674,
-    "escape_rate": 0.07682291666666667,
-    "escape_ci": [
-     0.06002348579014949,
-     0.0978348105234983
-    ],
-    "fa_rate": 0.234375,
-    "fa_ci": [
-     0.16939254101487963,
-     0.3148370193059903
-    ],
-    "false_alarms": 30,
-    "false_events_per_good": 0.375,
-    "false_zones_per_pair": 0.33482142857142855,
-    "retake_rate": 0.013392857142857142,
-    "retake_ci": [
-     0.007677547816978282,
-     0.02326300883210307
-    ],
-    "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.25,
-    "false_reject_ci": [
-     0.18301177076150696,
-     0.331557227187547
-    ],
-    "coverage": 0.93040449943757,
-    "retake_reasons": {
-     "glare": 4,
-     "mismatch": 5,
-     "blurry": 3
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 896,
-    "n_defect": 768,
-    "n_good": 128,
-    "recall": 0.24479166666666666,
-    "recall_ci": [
-     0.21570172180706312,
-     0.2764220507390137
-    ],
-    "detected": 188,
-    "escape_rate": 0.5703125,
-    "escape_ci": [
-     0.5350367233825424,
-     0.6048883596914978
-    ],
-    "fa_rate": 0.21875,
-    "fa_ci": [
-     0.1559042491230976,
-     0.29798587356958817
-    ],
-    "false_alarms": 28,
-    "false_events_per_good": 0.4453125,
-    "false_zones_per_pair": 0.3236607142857143,
-    "retake_rate": 0.018973214285714284,
-    "retake_ci": [
-     0.011879091199915134,
-     0.030174532460071242
-    ],
-    "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.234375,
-    "false_reject_ci": [
-     0.16939254101487963,
-     0.3148370193059903
-    ],
-    "coverage": 0.93040449943757,
-    "retake_reasons": {
-     "mismatch": 10,
-     "glare": 4,
-     "blurry": 3
-    }
-   }
-  },
-  "motion:shift": {
-   "pbp": {
     "n_pairs": 896,
     "n_defect": 768,
     "n_good": 128,
@@ -2213,10 +2092,10 @@
      0.4505539450498417
     ],
     "detected": 319,
-    "escape_rate": 0.3684895833333333,
+    "escape_rate": 0.3763020833333333,
     "escape_ci": [
-     0.3351052634186242,
-     0.4031830071280786
+     0.34273414387213924,
+     0.41110135812723464
     ],
     "fa_rate": 0.2421875,
     "fa_ci": [
@@ -2224,12 +2103,136 @@
      0.3232129562738243
     ],
     "false_alarms": 31,
-    "false_events_per_good": 1.2890625,
-    "false_zones_per_pair": 0.9732142857142857,
-    "retake_rate": 0.024553571428571428,
+    "false_events_per_good": 1.84375,
+    "false_zones_per_pair": 1.5803571428571428,
+    "retake_rate": 0.022321428571428572,
     "retake_ci": [
-     0.016269753186756837,
-     0.03689693748413457
+     0.014495327869692303,
+     0.03422613599683709
+    ],
+    "retake_rate_good": 0.015625,
+    "false_reject_rate": 0.2578125,
+    "false_reject_ci": [
+     0.18986792282559609,
+     0.33987079393755004
+    ],
+    "coverage": 0.93040449943757,
+    "retake_reasons": {
+     "glare": 17,
+     "blurry": 3
+    }
+   },
+   "ssim": {
+    "n_pairs": 896,
+    "n_defect": 768,
+    "n_good": 128,
+    "recall": 0.8697916666666666,
+    "recall_ci": [
+     0.8441378187913932,
+     0.891764469968373
+    ],
+    "detected": 668,
+    "escape_rate": 0.07161458333333333,
+    "escape_ci": [
+     0.05543119743038793,
+     0.09206227791481242
+    ],
+    "fa_rate": 0.234375,
+    "fa_ci": [
+     0.16939254101487963,
+     0.3148370193059903
+    ],
+    "false_alarms": 30,
+    "false_events_per_good": 0.421875,
+    "false_zones_per_pair": 0.3482142857142857,
+    "retake_rate": 0.0234375,
+    "retake_ci": [
+     0.015379789863783697,
+     0.03556428740492671
+    ],
+    "retake_rate_good": 0.0234375,
+    "false_reject_rate": 0.2578125,
+    "false_reject_ci": [
+     0.18986792282559609,
+     0.33987079393755004
+    ],
+    "coverage": 0.93040449943757,
+    "retake_reasons": {
+     "glare": 15,
+     "mismatch": 3,
+     "blurry": 3
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 896,
+    "n_defect": 768,
+    "n_good": 128,
+    "recall": 0.25,
+    "recall_ci": [
+     0.22067027441203058,
+     0.28181831910249366
+    ],
+    "detected": 192,
+    "escape_rate": 0.5377604166666666,
+    "escape_ci": [
+     0.5023981194213188,
+     0.5727468325999249
+    ],
+    "fa_rate": 0.21875,
+    "fa_ci": [
+     0.1559042491230976,
+     0.29798587356958817
+    ],
+    "false_alarms": 28,
+    "false_events_per_good": 0.4453125,
+    "false_zones_per_pair": 0.32254464285714285,
+    "retake_rate": 0.04241071428571429,
+    "retake_ci": [
+     0.031052712927648395,
+     0.05767579217813912
+    ],
+    "retake_rate_good": 0.0234375,
+    "false_reject_rate": 0.2421875,
+    "false_reject_ci": [
+     0.17618632286113767,
+     0.3232129562738243
+    ],
+    "coverage": 0.93040449943757,
+    "retake_reasons": {
+     "glare": 25,
+     "mismatch": 10,
+     "blurry": 3
+    }
+   }
+  },
+  "motion:shift": {
+   "pbp": {
+    "n_pairs": 896,
+    "n_defect": 768,
+    "n_good": 128,
+    "recall": 0.4921875,
+    "recall_ci": [
+     0.45695607826619056,
+     0.5274966902811383
+    ],
+    "detected": 378,
+    "escape_rate": 0.3046875,
+    "escape_ci": [
+     0.27317303836367746,
+     0.3381461753195446
+    ],
+    "fa_rate": 0.2421875,
+    "fa_ci": [
+     0.17618632286113767,
+     0.3232129562738243
+    ],
+    "false_alarms": 31,
+    "false_events_per_good": 1.125,
+    "false_zones_per_pair": 0.8470982142857143,
+    "retake_rate": 0.04017857142857143,
+    "retake_ci": [
+     0.029161192847462977,
+     0.05512208545396252
     ],
     "retake_rate_good": 0.015625,
     "false_reject_rate": 0.2578125,
@@ -2239,7 +2242,7 @@
     ],
     "coverage": 0.9455717714285713,
     "retake_reasons": {
-     "glare": 16,
+     "glare": 30,
      "blurry": 5,
      "mismatch": 1
     }
@@ -2248,39 +2251,39 @@
     "n_pairs": 896,
     "n_defect": 768,
     "n_good": 128,
-    "recall": 0.11458333333333333,
+    "recall": 0.14713541666666666,
     "recall_ci": [
-     0.09394867894945877,
-     0.13905456938543273
+     0.12383865190890397,
+     0.17394472747878387
     ],
-    "detected": 88,
-    "escape_rate": 0.6549479166666666,
+    "detected": 113,
+    "escape_rate": 0.6119791666666666,
     "escape_ci": [
-     0.6206298052970961,
-     0.6877236185142143
+     0.5770387368765059,
+     0.6458049139451135
     ],
-    "fa_rate": 0.1953125,
+    "fa_rate": 0.234375,
     "fa_ci": [
-     0.1359386913872761,
-     0.2724422748631335
+     0.16939254101487963,
+     0.3148370193059903
     ],
-    "false_alarms": 25,
+    "false_alarms": 30,
     "false_events_per_good": 0.8359375,
-    "false_zones_per_pair": 0.5881696428571429,
-    "retake_rate": 0.0234375,
+    "false_zones_per_pair": 0.6328125,
+    "retake_rate": 0.05022321428571429,
     "retake_ci": [
-     0.015379789863783697,
-     0.03556428740492671
+     0.037744394254288875,
+     0.06654240466676567
     ],
     "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.2109375,
+    "false_reject_rate": 0.25,
     "false_reject_ci": [
-     0.1492121185502459,
-     0.28950828532834777
+     0.18301177076150696,
+     0.331557227187547
     ],
     "coverage": 0.9455717714285713,
     "retake_reasons": {
-     "glare": 16,
+     "glare": 40,
      "blurry": 5
     }
    },
@@ -2288,16 +2291,16 @@
     "n_pairs": 896,
     "n_defect": 768,
     "n_good": 128,
-    "recall": 0.421875,
+    "recall": 0.4674479166666667,
     "recall_ci": [
-     0.38742034094455113,
-     0.4571073445287377
+     0.432409806776688,
+     0.5028100621705156
     ],
-    "detected": 324,
-    "escape_rate": 0.3958333333333333,
+    "detected": 359,
+    "escape_rate": 0.3359375,
     "escape_ci": [
-     0.3618473033716596,
-     0.43085627725939213
+     0.30342247708617226,
+     0.3700856624077343
     ],
     "fa_rate": 0.203125,
     "fa_ci": [
@@ -2305,23 +2308,23 @@
      0.28099424862870914
     ],
     "false_alarms": 26,
-    "false_events_per_good": 0.6796875,
-    "false_zones_per_pair": 0.45424107142857145,
-    "retake_rate": 0.041294642857142856,
+    "false_events_per_good": 0.5390625,
+    "false_zones_per_pair": 0.39620535714285715,
+    "retake_rate": 0.06696428571428571,
     "retake_ci": [
-     0.030105709192086785,
-     0.05640018251151971
+     0.05237653445240953,
+     0.08524946550136012
     ],
-    "retake_rate_good": 0.03125,
-    "false_reject_rate": 0.234375,
+    "retake_rate_good": 0.0546875,
+    "false_reject_rate": 0.2578125,
     "false_reject_ci": [
-     0.16939254101487963,
-     0.3148370193059903
+     0.18986792282559609,
+     0.33987079393755004
     ],
     "coverage": 0.9455717714285713,
     "retake_reasons": {
-     "glare": 16,
-     "mismatch": 16,
+     "glare": 45,
+     "mismatch": 10,
      "blurry": 5
     }
    },
@@ -2329,16 +2332,16 @@
     "n_pairs": 896,
     "n_defect": 768,
     "n_good": 128,
-    "recall": 0.09114583333333333,
+    "recall": 0.10807291666666667,
     "recall_ci": [
-     0.07277385265821021,
-     0.11358770131866794
+     0.08803334046392285,
+     0.13201388166040942
     ],
-    "detected": 70,
-    "escape_rate": 0.7825520833333334,
+    "detected": 83,
+    "escape_rate": 0.7044270833333334,
     "escape_ci": [
-     0.7520095821967716,
-     0.8102819553415006
+     0.6712019539054286,
+     0.7356172691061325
     ],
     "fa_rate": 0.125,
     "fa_ci": [
@@ -2348,21 +2351,21 @@
     "false_alarms": 16,
     "false_events_per_good": 0.1484375,
     "false_zones_per_pair": 0.12276785714285714,
-    "retake_rate": 0.03794642857142857,
+    "retake_rate": 0.09933035714285714,
     "retake_ci": [
-     0.027280017690934955,
-     0.05255803380612853
+     0.08142292861716838,
+     0.12065885999985043
     ],
-    "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.140625,
+    "retake_rate_good": 0.0703125,
+    "false_reject_rate": 0.1953125,
     "false_reject_ci": [
-     0.09083896111136737,
-     0.2113539734403978
+     0.1359386913872761,
+     0.2724422748631335
     ],
     "coverage": 0.9455717714285713,
     "retake_reasons": {
-     "mismatch": 13,
-     "glare": 16,
+     "glare": 70,
+     "mismatch": 14,
      "blurry": 5
     }
    }
@@ -2372,16 +2375,16 @@
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.6223958333333334,
+    "recall": 0.6822916666666666,
     "recall_ci": [
-     0.5729201214132715,
-     0.669446865521601
+     0.6341138558029115,
+     0.7268582523979622
     ],
-    "detected": 239,
-    "escape_rate": 0.21614583333333334,
+    "detected": 262,
+    "escape_rate": 0.1640625,
     "escape_ci": [
-     0.17789540017266287,
-     0.260019459914548
+     0.1303830475802878,
+     0.20439692444953056
     ],
     "fa_rate": 0.25,
     "fa_ci": [
@@ -2389,12 +2392,12 @@
      0.36816509174383727
     ],
     "false_alarms": 16,
-    "false_events_per_good": 1.484375,
-    "false_zones_per_pair": 1.3861607142857142,
-    "retake_rate": 0.004464285714285714,
+    "false_events_per_good": 1.328125,
+    "false_zones_per_pair": 1.1852678571428572,
+    "retake_rate": 0.024553571428571428,
     "retake_ci": [
-     0.0012250974423162744,
-     0.016129656967193606
+     0.013764436718978099,
+     0.04342728710636246
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.25,
@@ -2404,180 +2407,19 @@
     ],
     "coverage": 0.9444219730941703,
     "retake_reasons": {
-     "glare": 2
+     "glare": 11
     }
    },
    "census": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.234375,
+    "recall": 0.20833333333333334,
     "recall_ci": [
-     0.1947647971024738,
-     0.27924727380482445
+     0.17070076767983164,
+     0.2517438591987704
     ],
-    "detected": 90,
-    "escape_rate": 0.53125,
-    "escape_ci": [
-     0.48127466783474326,
-     0.5806062649996921
-    ],
-    "fa_rate": 0.234375,
-    "fa_ci": [
-     0.1474976721963502,
-     0.35133490250707655
-    ],
-    "false_alarms": 15,
-    "false_events_per_good": 1.328125,
-    "false_zones_per_pair": 1.0714285714285714,
-    "retake_rate": 0.004464285714285714,
-    "retake_ci": [
-     0.0012250974423162744,
-     0.016129656967193606
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.234375,
-    "false_reject_ci": [
-     0.1474976721963502,
-     0.35133490250707655
-    ],
-    "coverage": 0.9444219730941703,
-    "retake_reasons": {
-     "glare": 2
-    }
-   },
-   "ssim": {
-    "n_pairs": 448,
-    "n_defect": 384,
-    "n_good": 64,
-    "recall": 0.6588541666666666,
-    "recall_ci": [
-     0.610070605885842,
-     0.7044908026892049
-    ],
-    "detected": 253,
-    "escape_rate": 0.21614583333333334,
-    "escape_ci": [
-     0.17789540017266287,
-     0.260019459914548
-    ],
-    "fa_rate": 0.21875,
-    "fa_ci": [
-     0.13502197461349755,
-     0.3343301633077779
-    ],
-    "false_alarms": 14,
-    "false_events_per_good": 0.6875,
-    "false_zones_per_pair": 0.4375,
-    "retake_rate": 0.022321428571428572,
-    "retake_ci": [
-     0.012168736881174036,
-     0.04059665700907423
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.21875,
-    "false_reject_ci": [
-     0.13502197461349755,
-     0.3343301633077779
-    ],
-    "coverage": 0.9444219730941703,
-    "retake_reasons": {
-     "glare": 2,
-     "mismatch": 8
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 448,
-    "n_defect": 384,
-    "n_good": 64,
-    "recall": 0.19791666666666666,
-    "recall_ci": [
-     0.16114275091415498,
-     0.2406748983529685
-    ],
-    "detected": 76,
-    "escape_rate": 0.6354166666666666,
-    "escape_ci": [
-     0.5861542552108526,
-     0.6819964537383679
-    ],
-    "fa_rate": 0.171875,
-    "fa_ci": [
-     0.0987764126731623,
-     0.2821344149016591
-    ],
-    "false_alarms": 11,
-    "false_events_per_good": 0.21875,
-    "false_zones_per_pair": 0.21651785714285715,
-    "retake_rate": 0.013392857142857142,
-    "retake_ci": [
-     0.006152050153465909,
-     0.028908023996413162
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.171875,
-    "false_reject_ci": [
-     0.0987764126731623,
-     0.2821344149016591
-    ],
-    "coverage": 0.9444219730941703,
-    "retake_reasons": {
-     "mismatch": 4,
-     "glare": 2
-    }
-   }
-  },
-  "part:painted": {
-   "pbp": {
-    "n_pairs": 448,
-    "n_defect": 384,
-    "n_good": 64,
-    "recall": 0.6119791666666666,
-    "recall_ci": [
-     0.5623592237403757,
-     0.6593807855830182
-    ],
-    "detected": 235,
-    "escape_rate": 0.22135416666666666,
-    "escape_ci": [
-     0.18270376950530834,
-     0.2655245793876418
-    ],
-    "fa_rate": 0.21875,
-    "fa_ci": [
-     0.13502197461349755,
-     0.3343301633077779
-    ],
-    "false_alarms": 14,
-    "false_events_per_good": 1.125,
-    "false_zones_per_pair": 0.890625,
-    "retake_rate": 0.05357142857142857,
-    "retake_ci": [
-     0.036260713156894775,
-     0.07847329982464565
-    ],
-    "retake_rate_good": 0.046875,
-    "false_reject_rate": 0.265625,
-    "false_reject_ci": [
-     0.17296238569537764,
-     0.38483106257235195
-    ],
-    "coverage": 0.9361580188679246,
-    "retake_reasons": {
-     "glare": 16,
-     "blurry": 8
-    }
-   },
-   "census": {
-    "n_pairs": 448,
-    "n_defect": 384,
-    "n_good": 64,
-    "recall": 0.25,
-    "recall_ci": [
-     0.20930992293805784,
-     0.2956426143864582
-    ],
-    "detected": 96,
+    "detected": 80,
     "escape_rate": 0.5182291666666666,
     "escape_ci": [
      0.4683192400070459,
@@ -2589,39 +2431,38 @@
      0.3343301633077779
     ],
     "false_alarms": 14,
-    "false_events_per_good": 1.390625,
-    "false_zones_per_pair": 1.1316964285714286,
-    "retake_rate": 0.05357142857142857,
+    "false_events_per_good": 1.21875,
+    "false_zones_per_pair": 1.0491071428571428,
+    "retake_rate": 0.04017857142857143,
     "retake_ci": [
-     0.036260713156894775,
-     0.07847329982464565
+     0.025563419683437668,
+     0.06261261368754897
     ],
-    "retake_rate_good": 0.046875,
-    "false_reject_rate": 0.265625,
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.21875,
     "false_reject_ci": [
-     0.17296238569537764,
-     0.38483106257235195
+     0.13502197461349755,
+     0.3343301633077779
     ],
-    "coverage": 0.9361580188679246,
+    "coverage": 0.9444219730941703,
     "retake_reasons": {
-     "glare": 16,
-     "blurry": 8
+     "glare": 18
     }
    },
    "ssim": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.6041666666666666,
+    "recall": 0.6901041666666666,
     "recall_ci": [
-     0.5544537182800495,
-     0.6518160578347354
+     0.6421576389483497,
+     0.734284702461133
     ],
-    "detected": 232,
-    "escape_rate": 0.24479166666666666,
+    "detected": 265,
+    "escape_rate": 0.16666666666666666,
     "escape_ci": [
-     0.2044531224611903,
-     0.2901859260575864
+     0.13273119963174246,
+     0.2072055168009455
     ],
     "fa_rate": 0.21875,
     "fa_ci": [
@@ -2629,12 +2470,94 @@
      0.3343301633077779
     ],
     "false_alarms": 14,
-    "false_events_per_good": 0.375,
-    "false_zones_per_pair": 0.3638392857142857,
-    "retake_rate": 0.0625,
+    "false_events_per_good": 0.625,
+    "false_zones_per_pair": 0.3705357142857143,
+    "retake_rate": 0.046875,
     "retake_ci": [
-     0.04359212739290949,
-     0.08884720532900015
+     0.03086054989300076,
+     0.07059447328326278
+    ],
+    "retake_rate_good": 0.03125,
+    "false_reject_rate": 0.25,
+    "false_reject_ci": [
+     0.16014791974174092,
+     0.36816509174383727
+    ],
+    "coverage": 0.9444219730941703,
+    "retake_reasons": {
+     "glare": 18,
+     "mismatch": 3
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 448,
+    "n_defect": 384,
+    "n_good": 64,
+    "recall": 0.22135416666666666,
+    "recall_ci": [
+     0.18270376950530834,
+     0.2655245793876418
+    ],
+    "detected": 85,
+    "escape_rate": 0.5416666666666666,
+    "escape_ci": [
+     0.49166320323390966,
+     0.5908447072120042
+    ],
+    "fa_rate": 0.171875,
+    "fa_ci": [
+     0.0987764126731623,
+     0.2821344149016591
+    ],
+    "false_alarms": 11,
+    "false_events_per_good": 0.21875,
+    "false_zones_per_pair": 0.21205357142857142,
+    "retake_rate": 0.08928571428571429,
+    "retake_ci": [
+     0.06625348729238209,
+     0.11930180465063511
+    ],
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.234375,
+    "false_reject_ci": [
+     0.1474976721963502,
+     0.35133490250707655
+    ],
+    "coverage": 0.9444219730941703,
+    "retake_reasons": {
+     "glare": 35,
+     "mismatch": 5
+    }
+   }
+  },
+  "part:painted": {
+   "pbp": {
+    "n_pairs": 448,
+    "n_defect": 384,
+    "n_good": 64,
+    "recall": 0.6744791666666666,
+    "recall_ci": [
+     0.6260849386014335,
+     0.7194169363908314
+    ],
+    "detected": 259,
+    "escape_rate": 0.1796875,
+    "escape_ci": [
+     0.14451868582635008,
+     0.22120175262068603
+    ],
+    "fa_rate": 0.21875,
+    "fa_ci": [
+     0.13502197461349755,
+     0.3343301633077779
+    ],
+    "false_alarms": 14,
+    "false_events_per_good": 0.90625,
+    "false_zones_per_pair": 0.7946428571428571,
+    "retake_rate": 0.05803571428571429,
+    "retake_ci": [
+     0.03990935658158702,
+     0.08367731627013801
     ],
     "retake_rate_good": 0.046875,
     "false_reject_rate": 0.265625,
@@ -2644,25 +2567,105 @@
     ],
     "coverage": 0.9361580188679246,
     "retake_reasons": {
-     "glare": 16,
+     "glare": 18,
+     "blurry": 8
+    }
+   },
+   "census": {
+    "n_pairs": 448,
+    "n_defect": 384,
+    "n_good": 64,
+    "recall": 0.2421875,
+    "recall_ci": [
+     0.20202784757445647,
+     0.2874544565414507
+    ],
+    "detected": 93,
+    "escape_rate": 0.5208333333333334,
+    "escape_ci": [
+     0.4709076436718199,
+     0.5703463115511372
+    ],
+    "fa_rate": 0.25,
+    "fa_ci": [
+     0.16014791974174092,
+     0.36816509174383727
+    ],
+    "false_alarms": 16,
+    "false_events_per_good": 1.4375,
+    "false_zones_per_pair": 1.2254464285714286,
+    "retake_rate": 0.0625,
+    "retake_ci": [
+     0.04359212739290949,
+     0.08884720532900015
+    ],
+    "retake_rate_good": 0.046875,
+    "false_reject_rate": 0.296875,
+    "false_reject_ci": [
+     0.19904999589075245,
+     0.4177043259412798
+    ],
+    "coverage": 0.9361580188679246,
+    "retake_reasons": {
+     "glare": 20,
+     "blurry": 8
+    }
+   },
+   "ssim": {
+    "n_pairs": 448,
+    "n_defect": 384,
+    "n_good": 64,
+    "recall": 0.6432291666666666,
+    "recall_ci": [
+     0.5941126433229119,
+     0.6895082988349174
+    ],
+    "detected": 247,
+    "escape_rate": 0.20052083333333334,
+    "escape_ci": [
+     0.16352841926143363,
+     0.24344597440855953
+    ],
+    "fa_rate": 0.21875,
+    "fa_ci": [
+     0.13502197461349755,
+     0.3343301633077779
+    ],
+    "false_alarms": 14,
+    "false_events_per_good": 0.484375,
+    "false_zones_per_pair": 0.42410714285714285,
+    "retake_rate": 0.06919642857142858,
+    "retake_ci": [
+     0.049173281068151095,
+     0.09654504145903543
+    ],
+    "retake_rate_good": 0.046875,
+    "false_reject_rate": 0.265625,
+    "false_reject_ci": [
+     0.17296238569537764,
+     0.38483106257235195
+    ],
+    "coverage": 0.9361580188679246,
+    "retake_reasons": {
+     "glare": 20,
      "blurry": 8,
-     "mismatch": 4
+     "mismatch": 3
     }
    },
    "pixdiff": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.1328125,
+    "recall": 0.14583333333333334,
     "recall_ci": [
-     0.10247852549559508,
-     0.17042051369978775
+     0.11404064903667194,
+     0.1846421121730591
     ],
-    "detected": 51,
-    "escape_rate": 0.671875,
+    "detected": 56,
+    "escape_rate": 0.640625,
     "escape_ci": [
-     0.6234118875706743,
-     0.7169332430187209
+     0.5914583391820077,
+     0.687005858572952
     ],
     "fa_rate": 0.140625,
     "fa_ci": [
@@ -2671,11 +2674,11 @@
     ],
     "false_alarms": 9,
     "false_events_per_good": 0.203125,
-    "false_zones_per_pair": 0.22098214285714285,
-    "retake_rate": 0.06473214285714286,
+    "false_zones_per_pair": 0.21651785714285715,
+    "retake_rate": 0.08258928571428571,
     "retake_ci": [
-     0.04544526971113827,
-     0.09142039294586365
+     0.060510360341314726,
+     0.11176594179642559
     ],
     "retake_rate_good": 0.046875,
     "false_reject_rate": 0.1875,
@@ -2685,7 +2688,7 @@
     ],
     "coverage": 0.9361580188679246,
     "retake_reasons": {
-     "glare": 16,
+     "glare": 24,
      "mismatch": 5,
      "blurry": 8
     }
@@ -2696,16 +2699,16 @@
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.7057291666666666,
+    "recall": 0.7734375,
     "recall_ci": [
-     0.6582910304986674,
-     0.7490917773280329
+     0.7289795791679514,
+     0.8124785831333592
     ],
-    "detected": 271,
-    "escape_rate": 0.2109375,
+    "detected": 297,
+    "escape_rate": 0.1484375,
     "escape_ci": [
-     0.17309654709198236,
-     0.2545048241894893
+     0.11636465127853034,
+     0.18747485433407024
     ],
     "fa_rate": 0.265625,
     "fa_ci": [
@@ -2713,12 +2716,12 @@
      0.38483106257235195
     ],
     "false_alarms": 17,
-    "false_events_per_good": 0.984375,
-    "false_zones_per_pair": 0.8794642857142857,
-    "retake_rate": 0.0,
+    "false_events_per_good": 0.890625,
+    "false_zones_per_pair": 0.7410714285714286,
+    "retake_rate": 0.011160714285714286,
     "retake_ci": [
-     0.0,
-     0.008502094539325286
+     0.004776280956771328,
+     0.025857463258015446
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.265625,
@@ -2727,59 +2730,63 @@
      0.38483106257235195
     ],
     "coverage": 0.9509486607142856,
-    "retake_reasons": {}
+    "retake_reasons": {
+     "glare": 5
+    }
    },
    "census": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.359375,
+    "recall": 0.3723958333333333,
     "recall_ci": [
-     0.312994141427048,
-     0.4085416608179923
+     0.32552886147871285,
+     0.42179066278067556
     ],
-    "detected": 138,
-    "escape_rate": 0.4661458333333333,
+    "detected": 143,
+    "escape_rate": 0.453125,
     "escape_ci": [
-     0.4168321044363027,
-     0.5161302183263923
+     0.40404416784779834,
+     0.5031344329005486
     ],
-    "fa_rate": 0.21875,
+    "fa_rate": 0.28125,
     "fa_ci": [
-     0.13502197461349755,
-     0.3343301633077779
+     0.18593226105484584,
+     0.40134162399503504
     ],
-    "false_alarms": 14,
-    "false_events_per_good": 1.375,
-    "false_zones_per_pair": 1.109375,
-    "retake_rate": 0.0,
+    "false_alarms": 18,
+    "false_events_per_good": 1.421875,
+    "false_zones_per_pair": 1.0803571428571428,
+    "retake_rate": 0.011160714285714286,
     "retake_ci": [
-     0.0,
-     0.008502094539325286
+     0.004776280956771328,
+     0.025857463258015446
     ],
     "retake_rate_good": 0.0,
-    "false_reject_rate": 0.21875,
+    "false_reject_rate": 0.28125,
     "false_reject_ci": [
-     0.13502197461349755,
-     0.3343301633077779
+     0.18593226105484584,
+     0.40134162399503504
     ],
     "coverage": 0.9509486607142856,
-    "retake_reasons": {}
+    "retake_reasons": {
+     "glare": 5
+    }
    },
    "ssim": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.71875,
+    "recall": 0.7421875,
     "recall_ci": [
-     0.6717838217931001,
-     0.7613827080479484
+     0.6961876596144894,
+     0.7833895698523858
     ],
-    "detected": 276,
-    "escape_rate": 0.20052083333333334,
+    "detected": 285,
+    "escape_rate": 0.17708333333333334,
     "escape_ci": [
-     0.16352841926143363,
-     0.24344597440855953
+     0.14215514019581393,
+     0.21840855384835256
     ],
     "fa_rate": 0.25,
     "fa_ci": [
@@ -2787,12 +2794,12 @@
      0.36816509174383727
     ],
     "false_alarms": 16,
-    "false_events_per_good": 0.640625,
-    "false_zones_per_pair": 0.45535714285714285,
-    "retake_rate": 0.006696428571428571,
+    "false_events_per_good": 0.453125,
+    "false_zones_per_pair": 0.421875,
+    "retake_rate": 0.013392857142857142,
     "retake_ci": [
-     0.002279908894731661,
-     0.01950117544987052
+     0.006152050153465909,
+     0.028908023996413162
     ],
     "retake_rate_good": 0.015625,
     "false_reject_rate": 0.265625,
@@ -2802,23 +2809,24 @@
     ],
     "coverage": 0.9509486607142856,
     "retake_reasons": {
-     "mismatch": 3
+     "glare": 4,
+     "mismatch": 2
     }
    },
    "pixdiff": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.1328125,
+    "recall": 0.140625,
     "recall_ci": [
-     0.10247852549559508,
-     0.17042051369978775
+     0.10940396035956448,
+     0.17896531204442725
     ],
-    "detected": 51,
-    "escape_rate": 0.7708333333333334,
+    "detected": 54,
+    "escape_rate": 0.7447916666666666,
     "escape_ci": [
-     0.7262350670978344,
-     0.8100663508006067
+     0.6989088882491158,
+     0.7858250856206289
     ],
     "fa_rate": 0.203125,
     "fa_ci": [
@@ -2827,20 +2835,21 @@
     ],
     "false_alarms": 13,
     "false_events_per_good": 0.53125,
-    "false_zones_per_pair": 0.21651785714285715,
-    "retake_rate": 0.008928571428571428,
+    "false_zones_per_pair": 0.22991071428571427,
+    "retake_rate": 0.022321428571428572,
     "retake_ci": [
-     0.0034774132100374652,
-     0.02273000106965701
+     0.012168736881174036,
+     0.04059665700907423
     ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.203125,
+    "retake_rate_good": 0.015625,
+    "false_reject_rate": 0.21875,
     "false_reject_ci": [
-     0.12273302562695812,
-     0.3171386755121659
+     0.13502197461349755,
+     0.3343301633077779
     ],
     "coverage": 0.9509486607142856,
     "retake_reasons": {
+     "glare": 6,
      "mismatch": 4
     }
    }
@@ -2850,16 +2859,16 @@
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.5885416666666666,
+    "recall": 0.5911458333333334,
     "recall_ci": [
-     0.5386811298230674,
-     0.6366481798744998
+     0.5413063670658085,
+     0.6391796870346285
     ],
-    "detected": 226,
-    "escape_rate": 0.3098958333333333,
+    "detected": 227,
+    "escape_rate": 0.2786458333333333,
     "escape_ci": [
-     0.265715297538867,
-     0.35784236105165035
+     0.23616454170946824,
+     0.32551218404661364
     ],
     "fa_rate": 0.234375,
     "fa_ci": [
@@ -2867,12 +2876,12 @@
      0.35133490250707655
     ],
     "false_alarms": 15,
-    "false_events_per_good": 0.984375,
-    "false_zones_per_pair": 0.7857142857142857,
-    "retake_rate": 0.006696428571428571,
+    "false_events_per_good": 0.875,
+    "false_zones_per_pair": 0.7366071428571429,
+    "retake_rate": 0.029017857142857144,
     "retake_ci": [
-     0.002279908894731661,
-     0.01950117544987052
+     0.017035066051464966,
+     0.0490093176440602
     ],
     "retake_rate_good": 0.015625,
     "false_reject_rate": 0.25,
@@ -2882,7 +2891,7 @@
     ],
     "coverage": 0.9200374439461882,
     "retake_reasons": {
-     "glare": 2,
+     "glare": 12,
      "mismatch": 1
     }
    },
@@ -2890,16 +2899,16 @@
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.3671875,
+    "recall": 0.3020833333333333,
     "recall_ci": [
-     0.32051049694437667,
-     0.4164955385092725
+     0.2583040143795169,
+     0.34978341100239163
     ],
-    "detected": 141,
-    "escape_rate": 0.4583333333333333,
+    "detected": 116,
+    "escape_rate": 0.484375,
     "escape_ci": [
-     0.4091552927879958,
-     0.5083367967660902
+     0.4347917090900472,
+     0.5342678244927352
     ],
     "fa_rate": 0.203125,
     "fa_ci": [
@@ -2907,12 +2916,12 @@
      0.3171386755121659
     ],
     "false_alarms": 13,
-    "false_events_per_good": 1.21875,
-    "false_zones_per_pair": 1.1183035714285714,
-    "retake_rate": 0.004464285714285714,
+    "false_events_per_good": 1.28125,
+    "false_zones_per_pair": 1.0714285714285714,
+    "retake_rate": 0.03125,
     "retake_ci": [
-     0.0012250974423162744,
-     0.016129656967193606
+     0.018704455551291597,
+     0.051766258079325854
     ],
     "retake_rate_good": 0.015625,
     "false_reject_rate": 0.21875,
@@ -2922,23 +2931,23 @@
     ],
     "coverage": 0.9200374439461882,
     "retake_reasons": {
-     "glare": 2
+     "glare": 14
     }
    },
    "ssim": {
     "n_pairs": 448,
     "n_defect": 384,
     "n_good": 64,
-    "recall": 0.6171875,
+    "recall": 0.5989583333333334,
     "recall_ci": [
-     0.5676367655478717,
-     0.6644167325812614
+     0.5491905274276686,
+     0.6467657598813773
     ],
-    "detected": 237,
-    "escape_rate": 0.2838541666666667,
+    "detected": 230,
+    "escape_rate": 0.2708333333333333,
     "escape_ci": [
-     0.24107187391788576,
-     0.33091834064393544
+     0.22881743833440588,
+     0.3173890542130671
     ],
     "fa_rate": 0.1875,
     "fa_ci": [
@@ -2946,23 +2955,23 @@
      0.29974591554775176
     ],
     "false_alarms": 12,
-    "false_events_per_good": 0.40625,
-    "false_zones_per_pair": 0.32142857142857145,
-    "retake_rate": 0.017857142857142856,
+    "false_events_per_good": 0.359375,
+    "false_zones_per_pair": 0.27232142857142855,
+    "retake_rate": 0.05133928571428571,
     "retake_ci": [
-     0.009075542954714173,
-     0.03483719106534949
+     0.03445038439814893,
+     0.0758572986482992
     ],
-    "retake_rate_good": 0.03125,
-    "false_reject_rate": 0.21875,
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.25,
     "false_reject_ci": [
-     0.13502197461349755,
-     0.3343301633077779
+     0.16014791974174092,
+     0.36816509174383727
     ],
     "coverage": 0.9200374439461882,
     "retake_reasons": {
-     "glare": 2,
-     "mismatch": 6
+     "glare": 18,
+     "mismatch": 5
     }
    },
    "pixdiff": {
@@ -2975,10 +2984,10 @@
      0.2517438591987704
     ],
     "detected": 80,
-    "escape_rate": 0.6276041666666666,
+    "escape_rate": 0.5572916666666666,
     "escape_ci": [
-     0.5782093372193244,
-     0.6744711385212872
+     0.5072865618712289,
+     0.6061618149919027
     ],
     "fa_rate": 0.171875,
     "fa_ci": [
@@ -2987,21 +2996,21 @@
     ],
     "false_alarms": 11,
     "false_events_per_good": 0.234375,
-    "false_zones_per_pair": 0.23883928571428573,
-    "retake_rate": 0.026785714285714284,
+    "false_zones_per_pair": 0.23214285714285715,
+    "retake_rate": 0.08928571428571429,
     "retake_ci": [
-     0.015387558615106935,
-     0.04623049514532592
+     0.06625348729238209,
+     0.11930180465063511
     ],
-    "retake_rate_good": 0.015625,
-    "false_reject_rate": 0.1875,
+    "retake_rate_good": 0.0625,
+    "false_reject_rate": 0.234375,
     "false_reject_ci": [
-     0.11064534880922097,
-     0.29974591554775176
+     0.1474976721963502,
+     0.35133490250707655
     ],
     "coverage": 0.9200374439461882,
     "retake_reasons": {
-     "glare": 2,
+     "glare": 30,
      "mismatch": 10
     }
    }
@@ -3013,53 +3022,16 @@
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.609375,
+    "recall": 0.6979166666666666,
     "recall_ci": [
-     0.5388635596409697,
-     0.6755954725564797
+     0.6296087248491399,
+     0.7584600000795779
     ],
-    "detected": 117,
-    "escape_rate": 0.3072916666666667,
+    "detected": 134,
+    "escape_rate": 0.22395833333333334,
     "escape_ci": [
-     0.24634322938978004,
-     0.3758003805480472
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.06770833333333333,
-    "retake_rate": 0.0,
-    "retake_ci": [
-     0.0,
-     0.019615852811660034
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9411020833333333,
-    "retake_reasons": {}
-   },
-   "census": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.036458333333333336,
-    "recall_ci": [
-     0.0177704201063221,
-     0.07333177677115439
-    ],
-    "detected": 7,
-    "escape_rate": 0.8958333333333334,
-    "escape_ci": [
-     0.8445858372628201,
-     0.9315516125946157
+     0.17073376399634171,
+     0.2880124880767623
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3069,10 +3041,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.057291666666666664,
-    "retake_rate": 0.0,
+    "retake_rate": 0.010416666666666666,
     "retake_ci": [
-     0.0,
-     0.019615852811660034
+     0.0028612294459291893,
+     0.03717929309882126
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3081,18 +3053,338 @@
      NaN
     ],
     "coverage": 0.9411020833333333,
-    "retake_reasons": {}
+    "retake_reasons": {
+     "glare": 2
+    }
+   },
+   "census": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.015625,
+    "recall_ci": [
+     0.005327796907835389,
+     0.04492506050346026
+    ],
+    "detected": 3,
+    "escape_rate": 0.9322916666666666,
+    "escape_ci": [
+     0.8876160972270705,
+     0.9600076966961816
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.052083333333333336,
+    "retake_rate": 0.010416666666666666,
+    "retake_ci": [
+     0.0028612294459291893,
+     0.03717929309882126
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9411020833333333,
+    "retake_reasons": {
+     "glare": 2
+    }
    },
    "ssim": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.5677083333333334,
+    "recall": 0.609375,
     "recall_ci": [
-     0.496984211861378,
-     0.6357761414037099
+     0.5388635596409697,
+     0.6755954725564797
     ],
-    "detected": 109,
+    "detected": 117,
+    "escape_rate": 0.3177083333333333,
+    "escape_ci": [
+     0.25597786243346865,
+     0.3865904172374489
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.026041666666666668,
+    "retake_rate": 0.010416666666666666,
+    "retake_ci": [
+     0.0028612294459291893,
+     0.03717929309882126
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9411020833333333,
+    "retake_reasons": {
+     "glare": 2
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.026041666666666668,
+    "recall_ci": [
+     0.01117344421564433,
+     0.059504082928741736
+    ],
+    "detected": 5,
+    "escape_rate": 0.90625,
+    "escape_ci": [
+     0.8566867662836848,
+     0.9398753533068414
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.09895833333333333,
+    "retake_rate": 0.026041666666666668,
+    "retake_ci": [
+     0.01117344421564433,
+     0.059504082928741736
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9411020833333333,
+    "retake_reasons": {
+     "mismatch": 4,
+     "glare": 1
+    }
+   }
+  },
+  "tape": {
+   "pbp": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.7552083333333334,
+    "recall_ci": [
+     0.6897752345339652,
+     0.8106291739267502
+    ],
+    "detected": 145,
+    "escape_rate": 0.078125,
+    "escape_ci": [
+     0.04791348285135001,
+     0.12488739295848812
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.0,
+    "retake_rate": 0.036458333333333336,
+    "retake_ci": [
+     0.0177704201063221,
+     0.07333177677115439
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9386244680851062,
+    "retake_reasons": {
+     "glare": 7
+    }
+   },
+   "census": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.2708333333333333,
+    "recall_ci": [
+     0.21292672514609529,
+     0.3377305407259154
+    ],
+    "detected": 52,
+    "escape_rate": 0.46875,
+    "escape_ci": [
+     0.39946891224581904,
+     0.5392570785549096
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.0,
+    "retake_rate": 0.041666666666666664,
+    "retake_ci": [
+     0.021261640780226746,
+     0.08005289096379495
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9386244680851062,
+    "retake_reasons": {
+     "glare": 8
+    }
+   },
+   "ssim": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.7135416666666666,
+    "recall_ci": [
+     0.6458940156988248,
+     0.7728117138295286
+    ],
+    "detected": 137,
+    "escape_rate": 0.125,
+    "escape_ci": [
+     0.08545611724349239,
+     0.17925577236525264
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.005208333333333333,
+    "retake_rate": 0.036458333333333336,
+    "retake_ci": [
+     0.0177704201063221,
+     0.07333177677115439
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9386244680851062,
+    "retake_reasons": {
+     "glare": 7
+    }
+   },
+   "pixdiff": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.2916666666666667,
+    "recall_ci": [
+     0.23196238406601188,
+     0.3595442212721798
+    ],
+    "detected": 56,
+    "escape_rate": 0.6041666666666666,
+    "escape_ci": [
+     0.5336011425841927,
+     0.6706455547467114
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.026041666666666668,
+    "retake_rate": 0.036458333333333336,
+    "retake_ci": [
+     0.0177704201063221,
+     0.07333177677115439
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9386244680851062,
+    "retake_reasons": {
+     "glare": 6,
+     "mismatch": 1
+    }
+   }
+  },
+  "missing_hole": {
+   "pbp": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.7395833333333334,
+    "recall_ci": [
+     0.6732387801500894,
+     0.7965286237109901
+    ],
+    "detected": 142,
+    "escape_rate": 0.22916666666666666,
+    "escape_ci": [
+     0.17537471851484018,
+     0.293583868424809
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.16145833333333334,
+    "retake_rate": 0.020833333333333332,
+    "retake_ci": [
+     0.008130652411583922,
+     0.052334539866256934
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9431883597883599,
+    "retake_reasons": {
+     "glare": 4
+    }
+   },
+   "census": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.59375,
+    "recall_ci": [
+     0.5231001126508305,
+     0.6607219149469833
+    ],
+    "detected": 114,
     "escape_rate": 0.3697916666666667,
     "escape_ci": [
      0.3046855186979881,
@@ -3105,248 +3397,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.052083333333333336,
-    "retake_rate": 0.0,
-    "retake_ci": [
-     0.0,
-     0.019615852811660034
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9411020833333333,
-    "retake_reasons": {}
-   },
-   "pixdiff": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.010416666666666666,
-    "recall_ci": [
-     0.0028612294459291893,
-     0.03717929309882126
-    ],
-    "detected": 2,
-    "escape_rate": 0.921875,
-    "escape_ci": [
-     0.8751126070415118,
-     0.9520865171486499
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.08854166666666667,
+    "false_zones_per_pair": 0.07291666666666667,
     "retake_rate": 0.020833333333333332,
     "retake_ci": [
      0.008130652411583922,
      0.052334539866256934
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9411020833333333,
-    "retake_reasons": {
-     "mismatch": 4
-    }
-   }
-  },
-  "tape": {
-   "pbp": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.7083333333333334,
-    "recall_ci": [
-     0.6404557787278202,
-     0.7680376159339881
-    ],
-    "detected": 136,
-    "escape_rate": 0.11458333333333333,
-    "escape_ci": [
-     0.0768969042315616,
-     0.16739031564409296
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.0,
-    "retake_rate": 0.020833333333333332,
-    "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9386244680851062,
-    "retake_reasons": {
-     "glare": 4
-    }
-   },
-   "census": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.328125,
-    "recall_ci": [
-     0.26564924370346993,
-     0.3973437057005382
-    ],
-    "detected": 63,
-    "escape_rate": 0.4270833333333333,
-    "escape_ci": [
-     0.35921925017624723,
-     0.4978080616921198
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.010416666666666666,
-    "retake_rate": 0.020833333333333332,
-    "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9386244680851062,
-    "retake_reasons": {
-     "glare": 4
-    }
-   },
-   "ssim": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.703125,
-    "recall_ci": [
-     0.6350273977376124,
-     0.7632536620576507
-    ],
-    "detected": 135,
-    "escape_rate": 0.16666666666666666,
-    "escape_ci": [
-     0.12060131558197143,
-     0.22580925295913526
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.010416666666666666,
-    "retake_rate": 0.020833333333333332,
-    "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9386244680851062,
-    "retake_reasons": {
-     "glare": 4
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.2708333333333333,
-    "recall_ci": [
-     0.21292672514609529,
-     0.3377305407259154
-    ],
-    "detected": 52,
-    "escape_rate": 0.6302083333333334,
-    "escape_ci": [
-     0.5599938903616183,
-     0.6953144813020119
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.03125,
-    "retake_rate": 0.026041666666666668,
-    "retake_ci": [
-     0.01117344421564433,
-     0.059504082928741736
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9386244680851062,
-    "retake_reasons": {
-     "mismatch": 1,
-     "glare": 4
-    }
-   }
-  },
-  "missing_hole": {
-   "pbp": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.7239583333333334,
-    "recall_ci": [
-     0.6568006879661141,
-     0.7823297112953298
-    ],
-    "detected": 139,
-    "escape_rate": 0.25,
-    "escape_ci": [
-     0.19405972553588688,
-     0.31574820086994304
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.11458333333333333,
-    "retake_rate": 0.015625,
-    "retake_ci": [
-     0.005327796907835389,
-     0.04492506050346026
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3356,46 +3411,7 @@
     ],
     "coverage": 0.9431883597883599,
     "retake_reasons": {
-     "glare": 3
-    }
-   },
-   "census": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.5416666666666666,
-    "recall_ci": [
-     0.4710598278856616,
-     0.6106388510466999
-    ],
-    "detected": 104,
-    "escape_rate": 0.4166666666666667,
-    "escape_ci": [
-     0.349233136656546,
-     0.4873695054787306
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.0625,
-    "retake_rate": 0.015625,
-    "retake_ci": [
-     0.005327796907835389,
-     0.04492506050346026
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9431883597883599,
-    "retake_reasons": {
-     "glare": 3
+     "glare": 4
     }
    },
    "ssim": {
@@ -3420,11 +3436,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.078125,
-    "retake_rate": 0.015625,
+    "false_zones_per_pair": 0.07291666666666667,
+    "retake_rate": 0.020833333333333332,
     "retake_ci": [
-     0.005327796907835389,
-     0.04492506050346026
+     0.008130652411583922,
+     0.052334539866256934
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3434,23 +3450,23 @@
     ],
     "coverage": 0.9431883597883599,
     "retake_reasons": {
-     "glare": 3
+     "glare": 4
     }
    },
    "pixdiff": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.24479166666666666,
+    "recall": 0.25,
     "recall_ci": [
-     0.1893708260732499,
-     0.3102247654660349
+     0.19405972553588688,
+     0.31574820086994304
     ],
-    "detected": 47,
-    "escape_rate": 0.7291666666666666,
+    "detected": 48,
+    "escape_rate": 0.71875,
     "escape_ci": [
-     0.6622694592740844,
-     0.7870732748539045
+     0.6513422642131048,
+     0.7775758001817938
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3460,10 +3476,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.005208333333333333,
-    "retake_rate": 0.026041666666666668,
+    "retake_rate": 0.03125,
     "retake_ci": [
-     0.01117344421564433,
-     0.059504082928741736
+     0.014399085841634563,
+     0.06649077616929672
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3473,7 +3489,7 @@
     ],
     "coverage": 0.9431883597883599,
     "retake_reasons": {
-     "glare": 3,
+     "glare": 4,
      "mismatch": 2
     }
    }
@@ -3483,16 +3499,16 @@
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.19270833333333334,
+    "recall": 0.2552083333333333,
     "recall_ci": [
-     0.14316627008140914,
-     0.2543059727924236
+     0.19875998373439227,
+     0.32126027753798286
     ],
-    "detected": 37,
-    "escape_rate": 0.7916666666666666,
+    "detected": 49,
+    "escape_rate": 0.6875,
     "escape_ci": [
-     0.7287790691776831,
-     0.8431116833488485
+     0.6187999478210462,
+     0.7488441073745813
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3501,11 +3517,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.0,
-    "retake_rate": 0.015625,
+    "false_zones_per_pair": 0.005208333333333333,
+    "retake_rate": 0.052083333333333336,
     "retake_ci": [
-     0.005327796907835389,
-     0.04492506050346026
+     0.028533149337053414,
+     0.0932060521400587
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3515,23 +3531,23 @@
     ],
     "coverage": 0.94114708994709,
     "retake_reasons": {
-     "glare": 3
+     "glare": 10
     }
    },
    "census": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.041666666666666664,
+    "recall": 0.026041666666666668,
     "recall_ci": [
-     0.021261640780226746,
-     0.08005289096379495
+     0.01117344421564433,
+     0.059504082928741736
     ],
-    "detected": 8,
-    "escape_rate": 0.9322916666666666,
+    "detected": 5,
+    "escape_rate": 0.9114583333333334,
     "escape_ci": [
-     0.8876160972270705,
-     0.9600076966961816
+     0.8627894182897101,
+     0.9439850361673613
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3541,10 +3557,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.010416666666666666,
-    "retake_rate": 0.015625,
+    "retake_rate": 0.052083333333333336,
     "retake_ci": [
-     0.005327796907835389,
-     0.04492506050346026
+     0.028533149337053414,
+     0.0932060521400587
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3554,23 +3570,23 @@
     ],
     "coverage": 0.94114708994709,
     "retake_reasons": {
-     "glare": 3
+     "glare": 10
     }
    },
    "ssim": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.421875,
+    "recall": 0.4322916666666667,
     "recall_ci": [
-     0.3542223307010853,
-     0.49259264630073646
+     0.3642238585962902,
+     0.5030157881386221
     ],
-    "detected": 81,
-    "escape_rate": 0.5364583333333334,
+    "detected": 83,
+    "escape_rate": 0.515625,
     "escape_ci": [
-     0.46589762049580147,
-     0.605588723570015
+     0.445323730229399,
+     0.5853132743702366
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3579,11 +3595,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.03125,
-    "retake_rate": 0.015625,
+    "false_zones_per_pair": 0.020833333333333332,
+    "retake_rate": 0.036458333333333336,
     "retake_ci": [
-     0.005327796907835389,
-     0.04492506050346026
+     0.0177704201063221,
+     0.07333177677115439
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3593,7 +3609,7 @@
     ],
     "coverage": 0.94114708994709,
     "retake_reasons": {
-     "glare": 3
+     "glare": 7
     }
    },
    "pixdiff": {
@@ -3606,10 +3622,10 @@
      0.04492506050346026
     ],
     "detected": 3,
-    "escape_rate": 0.9322916666666666,
+    "escape_rate": 0.90625,
     "escape_ci": [
-     0.8876160972270705,
-     0.9600076966961816
+     0.8566867662836848,
+     0.9398753533068414
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3618,11 +3634,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.026041666666666668,
-    "retake_rate": 0.041666666666666664,
+    "false_zones_per_pair": 0.020833333333333332,
+    "retake_rate": 0.06770833333333333,
     "retake_ci": [
-     0.021261640780226746,
-     0.08005289096379495
+     0.03999230330381833,
+     0.11238390277292937
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3633,7 +3649,7 @@
     "coverage": 0.94114708994709,
     "retake_reasons": {
      "mismatch": 5,
-     "glare": 3
+     "glare": 8
     }
    }
   },
@@ -3642,16 +3658,55 @@
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.8125,
+    "recall": 0.8385416666666666,
     "recall_ci": [
-     0.7513616019821585,
-     0.8613784900105539
+     0.7799405012062472,
+     0.883861265119191
     ],
-    "detected": 156,
-    "escape_rate": 0.171875,
+    "detected": 161,
+    "escape_rate": 0.11458333333333333,
     "escape_ci": [
-     0.1250814752043684,
-     0.2315414282032835
+     0.0768969042315616,
+     0.16739031564409296
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.015625,
+    "retake_rate": 0.046875,
+    "retake_ci": [
+     0.024853950810733074,
+     0.08667291579983383
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.945998947368421,
+    "retake_reasons": {
+     "glare": 9
+    }
+   },
+   "census": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.5989583333333334,
+    "recall_ci": [
+     0.5283466773916066,
+     0.6656876850727524
+    ],
+    "detected": 115,
+    "escape_rate": 0.3177083333333333,
+    "escape_ci": [
+     0.25597786243346865,
+     0.3865904172374489
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3661,10 +3716,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.010416666666666666,
-    "retake_rate": 0.010416666666666666,
+    "retake_rate": 0.057291666666666664,
     "retake_ci": [
-     0.0028612294459291893,
-     0.03717929309882126
+     0.0322881930436125,
+     0.09966334330004481
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3674,23 +3729,23 @@
     ],
     "coverage": 0.945998947368421,
     "retake_reasons": {
-     "glare": 2
+     "glare": 11
     }
    },
-   "census": {
+   "ssim": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.5625,
+    "recall": 0.8020833333333334,
     "recall_ci": [
-     0.49178414064771236,
-     0.6307638777508302
+     0.7400413632969393,
+     0.8522740589626828
     ],
-    "detected": 108,
-    "escape_rate": 0.3802083333333333,
+    "detected": 154,
+    "escape_rate": 0.140625,
     "escape_ci": [
-     0.3145287693703842,
-     0.4505875286990759
+     0.09847828003477943,
+     0.1968706141736012
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3699,11 +3754,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.0,
-    "retake_rate": 0.010416666666666666,
+    "false_zones_per_pair": 0.010416666666666666,
+    "retake_rate": 0.046875,
     "retake_ci": [
-     0.0028612294459291893,
-     0.03717929309882126
+     0.024853950810733074,
+     0.08667291579983383
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3713,23 +3768,23 @@
     ],
     "coverage": 0.945998947368421,
     "retake_reasons": {
-     "glare": 2
+     "glare": 9
     }
    },
-   "ssim": {
+   "pixdiff": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.78125,
+    "recall": 0.140625,
     "recall_ci": [
-     0.7175715814084004,
-     0.8338945013850408
+     0.09847828003477943,
+     0.1968706141736012
     ],
-    "detected": 150,
-    "escape_rate": 0.203125,
+    "detected": 27,
+    "escape_rate": 0.6822916666666666,
     "escape_ci": [
-     0.15230009131255312,
-     0.26559682129437
+     0.613409582762551,
+     0.7440221375665312
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3739,10 +3794,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.036458333333333336,
-    "retake_rate": 0.010416666666666666,
+    "retake_rate": 0.11458333333333333,
     "retake_ci": [
-     0.0028612294459291893,
-     0.03717929309882126
+     0.0768969042315616,
+     0.16739031564409296
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3752,46 +3807,7 @@
     ],
     "coverage": 0.945998947368421,
     "retake_reasons": {
-     "glare": 2
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.10416666666666667,
-    "recall_ci": [
-     0.06844838740538424,
-     0.15541416273717995
-    ],
-    "detected": 20,
-    "escape_rate": 0.8177083333333334,
-    "escape_ci": [
-     0.7570445489899875,
-     0.8659078778692701
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.046875,
-    "retake_rate": 0.020833333333333332,
-    "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.945998947368421,
-    "retake_reasons": {
-     "glare": 2,
+     "glare": 20,
      "mismatch": 2
     }
    }
@@ -3801,16 +3817,16 @@
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.6979166666666666,
+    "recall": 0.78125,
     "recall_ci": [
-     0.6296087248491399,
-     0.7584600000795779
+     0.7175715814084004,
+     0.8338945013850408
     ],
-    "detected": 134,
-    "escape_rate": 0.13020833333333334,
+    "detected": 150,
+    "escape_rate": 0.08333333333333333,
     "escape_ci": [
-     0.0897736071169068,
-     0.18515061735838345
+     0.05194354711266898,
+     0.13106966356371436
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3819,11 +3835,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.015625,
-    "retake_rate": 0.020833333333333332,
+    "false_zones_per_pair": 0.020833333333333332,
+    "retake_rate": 0.036458333333333336,
     "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
+     0.0177704201063221,
+     0.07333177677115439
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3833,62 +3849,23 @@
     ],
     "coverage": 0.9467196808510637,
     "retake_reasons": {
-     "glare": 4
+     "glare": 7
     }
    },
    "census": {
     "n_pairs": 192,
     "n_defect": 192,
     "n_good": 0,
-    "recall": 0.13541666666666666,
+    "recall": 0.08333333333333333,
     "recall_ci": [
-     0.09411469503904843,
-     0.19102186430278698
+     0.05194354711266898,
+     0.13106966356371436
     ],
-    "detected": 26,
-    "escape_rate": 0.6458333333333334,
+    "detected": 16,
+    "escape_rate": 0.7395833333333334,
     "escape_ci": [
-     0.5759281576415396,
-     0.7100172186217262
-    ],
-    "fa_rate": NaN,
-    "fa_ci": [
-     NaN,
-     NaN
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": NaN,
-    "false_zones_per_pair": 0.026041666666666668,
-    "retake_rate": 0.020833333333333332,
-    "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
-    ],
-    "retake_rate_good": NaN,
-    "false_reject_rate": NaN,
-    "false_reject_ci": [
-     NaN,
-     NaN
-    ],
-    "coverage": 0.9467196808510637,
-    "retake_reasons": {
-     "glare": 4
-    }
-   },
-   "ssim": {
-    "n_pairs": 192,
-    "n_defect": 192,
-    "n_good": 0,
-    "recall": 0.734375,
-    "recall_ci": [
-     0.6677487596039902,
-     0.7918063093905441
-    ],
-    "detected": 141,
-    "escape_rate": 0.16145833333333334,
-    "escape_ci": [
-     0.11613873488080888,
-     0.22005949879375258
+     0.6732387801500894,
+     0.7965286237109901
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3898,10 +3875,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.015625,
-    "retake_rate": 0.020833333333333332,
+    "retake_rate": 0.036458333333333336,
     "retake_ci": [
-     0.008130652411583922,
-     0.052334539866256934
+     0.0177704201063221,
+     0.07333177677115439
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3911,7 +3888,46 @@
     ],
     "coverage": 0.9467196808510637,
     "retake_reasons": {
-     "glare": 4
+     "glare": 7
+    }
+   },
+   "ssim": {
+    "n_pairs": 192,
+    "n_defect": 192,
+    "n_good": 0,
+    "recall": 0.75,
+    "recall_ci": [
+     0.684251799130057,
+     0.8059402744641131
+    ],
+    "detected": 144,
+    "escape_rate": 0.15625,
+    "escape_ci": [
+     0.11169439472697824,
+     0.21429150408103803
+    ],
+    "fa_rate": NaN,
+    "fa_ci": [
+     NaN,
+     NaN
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": NaN,
+    "false_zones_per_pair": 0.0,
+    "retake_rate": 0.036458333333333336,
+    "retake_ci": [
+     0.0177704201063221,
+     0.07333177677115439
+    ],
+    "retake_rate_good": NaN,
+    "false_reject_rate": NaN,
+    "false_reject_ci": [
+     NaN,
+     NaN
+    ],
+    "coverage": 0.9467196808510637,
+    "retake_reasons": {
+     "glare": 7
     }
    },
    "pixdiff": {
@@ -3924,10 +3940,10 @@
      0.3046897343374121
     ],
     "detected": 46,
-    "escape_rate": 0.6979166666666666,
+    "escape_rate": 0.6822916666666666,
     "escape_ci": [
-     0.6296087248491399,
-     0.7584600000795779
+     0.613409582762551,
+     0.7440221375665312
     ],
     "fa_rate": NaN,
     "fa_ci": [
@@ -3937,10 +3953,10 @@
     "false_alarms": 0,
     "false_events_per_good": NaN,
     "false_zones_per_pair": 0.078125,
-    "retake_rate": 0.03125,
+    "retake_rate": 0.041666666666666664,
     "retake_ci": [
-     0.014399085841634563,
-     0.06649077616929672
+     0.021261640780226746,
+     0.08005289096379495
     ],
     "retake_rate_good": NaN,
     "false_reject_rate": NaN,
@@ -3950,7 +3966,7 @@
     ],
     "coverage": 0.9467196808510637,
     "retake_reasons": {
-     "glare": 4,
+     "glare": 6,
      "mismatch": 2
     }
    }
@@ -3962,16 +3978,16 @@
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.8315972222222222,
+    "recall": 0.8559027777777778,
     "recall_ci": [
-     0.798860998184116,
-     0.8599396121894757
+     0.8248625319903183,
+     0.8822271283583011
     ],
-    "detected": 479,
-    "escape_rate": 0.14583333333333334,
+    "detected": 493,
+    "escape_rate": 0.10590277777777778,
     "escape_ci": [
-     0.11935639471674009,
-     0.17700316278999972
+     0.08333152602257815,
+     0.1336960208109019
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -3981,10 +3997,10 @@
     "false_alarms": 0,
     "false_events_per_good": 0.0,
     "false_zones_per_pair": 0.0,
-    "retake_rate": 0.005952380952380952,
+    "retake_rate": 0.023809523809523808,
     "retake_ci": [
-     0.0023170901071042508,
-     0.015204175230809247
+     0.014707733146688624,
+     0.038324811757324384
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.010416666666666666,
@@ -3994,23 +4010,23 @@
     ],
     "coverage": 0.9345323353293412,
     "retake_reasons": {
-     "glare": 4
+     "glare": 16
     }
    },
    "census": {
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.4565972222222222,
+    "recall": 0.3888888888888889,
     "recall_ci": [
-     0.4163395374574129,
-     0.49743001615860905
+     0.34993796510073444,
+     0.4293120921562819
     ],
-    "detected": 263,
-    "escape_rate": 0.4409722222222222,
+    "detected": 224,
+    "escape_rate": 0.5,
     "escape_ci": [
-     0.40094816179296683,
-     0.48177843112482305
+     0.45930215713156963,
+     0.5406978428684304
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4019,11 +4035,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.001488095238095238,
-    "retake_rate": 0.005952380952380952,
+    "false_zones_per_pair": 0.0,
+    "retake_rate": 0.025297619047619048,
     "retake_ci": [
-     0.0023170901071042508,
-     0.015204175230809247
+     0.01585345902385618,
+     0.040138359177331794
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.010416666666666666,
@@ -4033,23 +4049,23 @@
     ],
     "coverage": 0.9345323353293412,
     "retake_reasons": {
-     "glare": 4
+     "glare": 17
     }
    },
    "ssim": {
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.8767361111111112,
+    "recall": 0.8663194444444444,
     "recall_ci": [
-     0.8473659706258189,
-     0.90111430398711
+     0.8360866991694803,
+     0.8916982683112938
     ],
-    "detected": 505,
-    "escape_rate": 0.10243055555555555,
+    "detected": 499,
+    "escape_rate": 0.09375,
     "escape_ci": [
-     0.08024411134312626,
-     0.12988499977963555
+     0.07256406690713209,
+     0.12031895493883414
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4059,10 +4075,10 @@
     "false_alarms": 0,
     "false_events_per_good": 0.0,
     "false_zones_per_pair": 0.002976190476190476,
-    "retake_rate": 0.005952380952380952,
+    "retake_rate": 0.020833333333333332,
     "retake_ci": [
-     0.0023170901071042508,
-     0.015204175230809247
+     0.012449725861651717,
+     0.03466427244801138
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.010416666666666666,
@@ -4072,23 +4088,23 @@
     ],
     "coverage": 0.9345323353293412,
     "retake_reasons": {
-     "glare": 4
+     "glare": 14
     }
    },
    "pixdiff": {
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.2152777777777778,
+    "recall": 0.2222222222222222,
     "recall_ci": [
-     0.18365615627769027,
-     0.2506721154434143
+     0.1901731462684333,
+     0.2579519968741077
     ],
-    "detected": 124,
-    "escape_rate": 0.7083333333333334,
+    "detected": 128,
+    "escape_rate": 0.6753472222222222,
     "escape_ci": [
-     0.6699305788125893,
-     0.743975563830505
+     0.6360546802857862,
+     0.7123163231054849
     ],
     "fa_rate": 0.041666666666666664,
     "fa_ci": [
@@ -4097,11 +4113,11 @@
     ],
     "false_alarms": 4,
     "false_events_per_good": 0.20833333333333334,
-    "false_zones_per_pair": 0.09523809523809523,
-    "retake_rate": 0.020833333333333332,
+    "false_zones_per_pair": 0.09375,
+    "retake_rate": 0.043154761904761904,
     "retake_ci": [
-     0.012449725861651717,
-     0.03466427244801138
+     0.030212675878589,
+     0.06129042188869849
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.052083333333333336,
@@ -4111,8 +4127,8 @@
     ],
     "coverage": 0.9345323353293412,
     "retake_reasons": {
-     "mismatch": 10,
-     "glare": 4
+     "glare": 19,
+     "mismatch": 10
     }
    }
   },
@@ -4121,16 +4137,16 @@
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.4166666666666667,
+    "recall": 0.5,
     "recall_ci": [
-     0.3770863593817418,
-     0.4573511835610205
+     0.45930215713156963,
+     0.5406978428684304
     ],
-    "detected": 240,
-    "escape_rate": 0.4427083333333333,
+    "detected": 288,
+    "escape_rate": 0.3663194444444444,
     "escape_ci": [
-     0.40265633141848894,
-     0.48351947935466005
+     0.32797881762147196,
+     0.4064314075158758
     ],
     "fa_rate": 0.020833333333333332,
     "fa_ci": [
@@ -4138,12 +4154,12 @@
      0.07280855829614466
     ],
     "false_alarms": 2,
-    "false_events_per_good": 0.03125,
-    "false_zones_per_pair": 0.06398809523809523,
-    "retake_rate": 0.020833333333333332,
+    "false_events_per_good": 0.020833333333333332,
+    "false_zones_per_pair": 0.07738095238095238,
+    "retake_rate": 0.03720238095238095,
     "retake_ci": [
-     0.012449725861651717,
-     0.03466427244801138
+     0.02532376679659829,
+     0.054342237781989364
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.03125,
@@ -4153,62 +4169,62 @@
     ],
     "coverage": 0.9525325227963526,
     "retake_reasons": {
-     "glare": 14
+     "glare": 25
     }
    },
    "census": {
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.0920138888888889,
+    "recall": 0.140625,
     "recall_ci": [
-     0.07103507587423724,
-     0.11839872811636987
+     0.11461002388036215,
+     0.1714018800603003
     ],
-    "detected": 53,
-    "escape_rate": 0.7916666666666666,
+    "detected": 81,
+    "escape_rate": 0.7465277777777778,
     "escape_ci": [
-     0.7566217423000321,
-     0.8228468574002998
+     0.7094497809710429,
+     0.7803391544899521
     ],
-    "fa_rate": 0.010416666666666666,
+    "fa_rate": 0.041666666666666664,
     "fa_ci": [
-     0.001841122818436635,
-     0.056667554927112326
+     0.0163204434524125,
+     0.10228342507533544
     ],
-    "false_alarms": 1,
-    "false_events_per_good": 0.020833333333333332,
-    "false_zones_per_pair": 0.049107142857142856,
-    "retake_rate": 0.020833333333333332,
+    "false_alarms": 4,
+    "false_events_per_good": 0.041666666666666664,
+    "false_zones_per_pair": 0.052083333333333336,
+    "retake_rate": 0.04017857142857143,
     "retake_ci": [
-     0.012449725861651717,
-     0.03466427244801138
+     0.02775773844756818,
+     0.057826812725369395
     ],
     "retake_rate_good": 0.010416666666666666,
-    "false_reject_rate": 0.020833333333333332,
+    "false_reject_rate": 0.052083333333333336,
     "false_reject_ci": [
-     0.005731849710137293,
-     0.07280855829614466
+     0.022449269421270103,
+     0.11618632936721088
     ],
     "coverage": 0.9525325227963526,
     "retake_reasons": {
-     "glare": 14
+     "glare": 27
     }
    },
    "ssim": {
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.4357638888888889,
+    "recall": 0.4791666666666667,
     "recall_ci": [
-     0.39582664174679155,
-     0.47655229760492107
+     0.43864195907487746,
+     0.5199674266608132
     ],
-    "detected": 251,
-    "escape_rate": 0.4565972222222222,
+    "detected": 276,
+    "escape_rate": 0.4045138888888889,
     "escape_ci": [
-     0.4163395374574129,
-     0.49743001615860905
+     0.36519268325046744,
+     0.445100334704781
     ],
     "fa_rate": 0.020833333333333332,
     "fa_ci": [
@@ -4217,11 +4233,11 @@
     ],
     "false_alarms": 2,
     "false_events_per_good": 0.020833333333333332,
-    "false_zones_per_pair": 0.06398809523809523,
-    "retake_rate": 0.020833333333333332,
+    "false_zones_per_pair": 0.03869047619047619,
+    "retake_rate": 0.03571428571428571,
     "retake_ci": [
-     0.012449725861651717,
-     0.03466427244801138
+     0.024115364676169225,
+     0.05259136660524346
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.03125,
@@ -4231,23 +4247,23 @@
     ],
     "coverage": 0.9525325227963526,
     "retake_reasons": {
-     "glare": 14
+     "glare": 24
     }
    },
    "pixdiff": {
     "n_pairs": 672,
     "n_defect": 576,
     "n_good": 96,
-    "recall": 0.0798611111111111,
+    "recall": 0.09895833333333333,
     "recall_ci": [
-     0.06040517189785716,
-     0.1048841071052361
+     0.0771652942619635,
+     0.12606538115008006
     ],
-    "detected": 46,
-    "escape_rate": 0.8680555555555556,
+    "detected": 57,
+    "escape_rate": 0.8246527777777778,
     "escape_ci": [
-     0.8379626047386047,
-     0.8932715805975285
+     0.7914753894022193,
+     0.853528349549936
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4256,11 +4272,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.013392857142857142,
-    "retake_rate": 0.02976190476190476,
+    "false_zones_per_pair": 0.011904761904761904,
+    "retake_rate": 0.050595238095238096,
     "retake_ci": [
-     0.01934736756716479,
-     0.04552227052554805
+     0.03642948406871051,
+     0.06986998018445177
     ],
     "retake_rate_good": 0.010416666666666666,
     "false_reject_rate": 0.010416666666666666,
@@ -4270,8 +4286,8 @@
     ],
     "coverage": 0.9525325227963526,
     "retake_reasons": {
-     "mismatch": 6,
-     "glare": 14
+     "glare": 28,
+     "mismatch": 6
     }
    }
   },
@@ -4280,16 +4296,16 @@
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.625,
+    "recall": 0.6840277777777778,
     "recall_ci": [
-     0.5677860976016006,
-     0.6789230761419643
+     0.6282115167797984,
+     0.7349992112315613
     ],
-    "detected": 180,
-    "escape_rate": 0.2743055555555556,
+    "detected": 197,
+    "escape_rate": 0.21180555555555555,
     "escape_ci": [
-     0.22600129809633449,
-     0.32855158264445106
+     0.1685680334873284,
+     0.26263026038167453
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4298,11 +4314,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.02976190476190476,
-    "retake_rate": 0.005952380952380952,
+    "false_zones_per_pair": 0.03571428571428571,
+    "retake_rate": 0.02976190476190476,
     "retake_ci": [
-     0.00163384395062258,
-     0.02144043536068009
+     0.016244723626680543,
+     0.05391031330817381
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -4312,23 +4328,23 @@
     ],
     "coverage": 0.9523266467065867,
     "retake_reasons": {
-     "glare": 2
+     "glare": 10
     }
    },
    "census": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.20833333333333334,
+    "recall": 0.19444444444444445,
     "recall_ci": [
-     0.16542039630521596,
-     0.25892486495979905
+     0.15288123551422778,
+     0.24405189533483562
     ],
-    "detected": 60,
-    "escape_rate": 0.6840277777777778,
+    "detected": 56,
+    "escape_rate": 0.6770833333333334,
     "escape_ci": [
-     0.6282115167797984,
-     0.7349992112315613
+     0.6210543031848308,
+     0.728450359618553
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4337,11 +4353,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.011904761904761904,
-    "retake_rate": 0.005952380952380952,
+    "false_zones_per_pair": 0.01488095238095238,
+    "retake_rate": 0.03571428571428571,
     "retake_ci": [
-     0.00163384395062258,
-     0.02144043536068009
+     0.02054585643268033,
+     0.06137936990806194
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -4351,62 +4367,23 @@
     ],
     "coverage": 0.9523266467065867,
     "retake_reasons": {
-     "glare": 2
+     "glare": 12
     }
    },
    "ssim": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.6666666666666666,
+    "recall": 0.6840277777777778,
     "recall_ci": [
-     0.610343381775173,
-     0.7186021832162469
+     0.6282115167797984,
+     0.7349992112315613
     ],
-    "detected": 192,
-    "escape_rate": 0.2604166666666667,
+    "detected": 197,
+    "escape_rate": 0.2152777777777778,
     "escape_ci": [
-     0.21312043819577964,
-     0.31402031212905424
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.0741026511527422
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.011904761904761904,
-    "retake_rate": 0.005952380952380952,
-    "retake_ci": [
-     0.00163384395062258,
-     0.02144043536068009
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.0,
-    "false_reject_ci": [
-     0.0,
-     0.0741026511527422
-    ],
-    "coverage": 0.9523266467065867,
-    "retake_reasons": {
-     "glare": 2
-    }
-   },
-   "pixdiff": {
-    "n_pairs": 336,
-    "n_defect": 288,
-    "n_good": 48,
-    "recall": 0.1875,
-    "recall_ci": [
-     0.1466438941486491,
-     0.23658317149243846
-    ],
-    "detected": 54,
-    "escape_rate": 0.7708333333333334,
-    "escape_ci": [
-     0.7189154189293135,
-     0.815621124181744
+     0.17172062518127107,
+     0.2663307012917198
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4416,10 +4393,10 @@
     "false_alarms": 0,
     "false_events_per_good": 0.0,
     "false_zones_per_pair": 0.002976190476190476,
-    "retake_rate": 0.011904761904761904,
+    "retake_rate": 0.02976190476190476,
     "retake_ci": [
-     0.004638926977687495,
-     0.030205541739503093
+     0.016244723626680543,
+     0.05391031330817381
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.0,
@@ -4429,26 +4406,23 @@
     ],
     "coverage": 0.9523266467065867,
     "retake_reasons": {
-     "mismatch": 2,
-     "glare": 2
+     "glare": 10
     }
-   }
-  },
-  "part:painted": {
-   "pbp": {
+   },
+   "pixdiff": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.6006944444444444,
+    "recall": 0.21180555555555555,
     "recall_ci": [
-     0.5431629633236368,
-     0.6555749821920127
+     0.1685680334873284,
+     0.26263026038167453
     ],
-    "detected": 173,
-    "escape_rate": 0.28125,
+    "detected": 61,
+    "escape_rate": 0.7083333333333334,
     "escape_ci": [
-     0.2324648534761261,
-     0.33579409247263525
+     0.6533700745876247,
+     0.7578118816516504
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4457,11 +4431,53 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.023809523809523808,
-    "retake_rate": 0.041666666666666664,
+    "false_zones_per_pair": 0.002976190476190476,
+    "retake_rate": 0.047619047619047616,
     "retake_ci": [
-     0.024979425408563835,
-     0.06871599033806636
+     0.02952057243070933,
+     0.07594503272180878
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.0,
+    "false_reject_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "coverage": 0.9523266467065867,
+    "retake_reasons": {
+     "glare": 14,
+     "mismatch": 2
+    }
+   }
+  },
+  "part:painted": {
+   "pbp": {
+    "n_pairs": 336,
+    "n_defect": 288,
+    "n_good": 48,
+    "recall": 0.6736111111111112,
+    "recall_ci": [
+     0.6174807033945902,
+     0.7251709268048059
+    ],
+    "detected": 194,
+    "escape_rate": 0.22916666666666666,
+    "escape_ci": [
+     0.18437887581825607,
+     0.28108458107068646
+    ],
+    "fa_rate": 0.0,
+    "fa_ci": [
+     0.0,
+     0.0741026511527422
+    ],
+    "false_alarms": 0,
+    "false_events_per_good": 0.0,
+    "false_zones_per_pair": 0.041666666666666664,
+    "retake_rate": 0.047619047619047616,
+    "retake_ci": [
+     0.02952057243070933,
+     0.07594503272180878
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.020833333333333332,
@@ -4471,23 +4487,62 @@
     ],
     "coverage": 0.9390484472049689,
     "retake_reasons": {
-     "glare": 14
+     "glare": 16
     }
    },
    "census": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.20833333333333334,
+    "recall": 0.21875,
     "recall_ci": [
-     0.16542039630521596,
-     0.25892486495979905
+     0.17487808580492395,
+     0.27002627327205486
     ],
-    "detected": 60,
-    "escape_rate": 0.6631944444444444,
+    "detected": 63,
+    "escape_rate": 0.6701388888888888,
     "escape_ci": [
-     0.6067796081978836,
-     0.7153129241895484
+     0.6139104050274963,
+     0.7218881925679116
+    ],
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_events_per_good": 0.041666666666666664,
+    "false_zones_per_pair": 0.03869047619047619,
+    "retake_rate": 0.047619047619047616,
+    "retake_ci": [
+     0.02952057243070933,
+     0.07594503272180878
+    ],
+    "retake_rate_good": 0.020833333333333332,
+    "false_reject_rate": 0.0625,
+    "false_reject_ci": [
+     0.021482843131227225,
+     0.1683569766274222
+    ],
+    "coverage": 0.9390484472049689,
+    "retake_reasons": {
+     "glare": 16
+    }
+   },
+   "ssim": {
+    "n_pairs": 336,
+    "n_defect": 288,
+    "n_good": 48,
+    "recall": 0.6493055555555556,
+    "recall_ci": [
+     0.5925565307991768,
+     0.7021238711723038
+    ],
+    "detected": 187,
+    "escape_rate": 0.2569444444444444,
+    "escape_ci": [
+     0.2099101345239568,
+     0.310377583196889
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4497,10 +4552,10 @@
     "false_alarms": 0,
     "false_events_per_good": 0.0,
     "false_zones_per_pair": 0.020833333333333332,
-    "retake_rate": 0.041666666666666664,
+    "retake_rate": 0.047619047619047616,
     "retake_ci": [
-     0.024979425408563835,
-     0.06871599033806636
+     0.02952057243070933,
+     0.07594503272180878
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.020833333333333332,
@@ -4510,62 +4565,23 @@
     ],
     "coverage": 0.9390484472049689,
     "retake_reasons": {
-     "glare": 14
-    }
-   },
-   "ssim": {
-    "n_pairs": 336,
-    "n_defect": 288,
-    "n_good": 48,
-    "recall": 0.6076388888888888,
-    "recall_ci": [
-     0.5501834289449831,
-     0.6622605817786423
-    ],
-    "detected": 175,
-    "escape_rate": 0.3055555555555556,
-    "escape_ci": [
-     0.25520298288549725,
-     0.36102719129117955
-    ],
-    "fa_rate": 0.0,
-    "fa_ci": [
-     0.0,
-     0.0741026511527422
-    ],
-    "false_alarms": 0,
-    "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.026785714285714284,
-    "retake_rate": 0.041666666666666664,
-    "retake_ci": [
-     0.024979425408563835,
-     0.06871599033806636
-    ],
-    "retake_rate_good": 0.020833333333333332,
-    "false_reject_rate": 0.020833333333333332,
-    "false_reject_ci": [
-     0.003687015979399688,
-     0.10899469137531158
-    ],
-    "coverage": 0.9390484472049689,
-    "retake_reasons": {
-     "glare": 14
+     "glare": 16
     }
    },
    "pixdiff": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.1076388888888889,
+    "recall": 0.125,
     "recall_ci": [
-     0.07687252099852268,
-     0.14873479475084278
+     0.09167264119455928,
+     0.16819983757474574
     ],
-    "detected": 31,
-    "escape_rate": 0.8055555555555556,
+    "detected": 36,
+    "escape_rate": 0.7847222222222222,
     "escape_ci": [
-     0.7559481046651645,
-     0.8471187644857724
+     0.7336692987082802,
+     0.8282793748187289
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4574,11 +4590,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.05357142857142857,
-    "retake_rate": 0.050595238095238096,
+    "false_zones_per_pair": 0.041666666666666664,
+    "retake_rate": 0.05952380952380952,
     "retake_ci": [
-     0.03182574691105024,
-     0.07952495294441184
+     0.0388592127487198,
+     0.09014677121557414
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.020833333333333332,
@@ -4588,7 +4604,7 @@
     ],
     "coverage": 0.9390484472049689,
     "retake_reasons": {
-     "glare": 14,
+     "glare": 17,
      "mismatch": 3
     }
    }
@@ -4598,16 +4614,94 @@
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.6875,
+    "recall": 0.7673611111111112,
     "recall_ci": [
-     0.6317951878020394,
-     0.7382685728133083
+     0.7152385328335116,
+     0.812444977673558
     ],
-    "detected": 198,
-    "escape_rate": 0.2638888888888889,
+    "detected": 221,
+    "escape_rate": 0.18055555555555555,
     "escape_ci": [
-     0.2163347557514174,
-     0.31765902717740435
+     0.14042922903148597,
+     0.22909177140162573
+    ],
+    "fa_rate": 0.020833333333333332,
+    "fa_ci": [
+     0.003687015979399688,
+     0.10899469137531158
+    ],
+    "false_alarms": 1,
+    "false_events_per_good": 0.020833333333333332,
+    "false_zones_per_pair": 0.047619047619047616,
+    "retake_rate": 0.01488095238095238,
+    "retake_ci": [
+     0.006372469570219542,
+     0.034357093849915005
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.020833333333333332,
+    "false_reject_ci": [
+     0.003687015979399688,
+     0.10899469137531158
+    ],
+    "coverage": 0.9561982142857143,
+    "retake_reasons": {
+     "glare": 5
+    }
+   },
+   "census": {
+    "n_pairs": 336,
+    "n_defect": 288,
+    "n_good": 48,
+    "recall": 0.3402777777777778,
+    "recall_ci": [
+     0.28797955991461127,
+     0.3967809403019446
+    ],
+    "detected": 98,
+    "escape_rate": 0.5729166666666666,
+    "escape_ci": [
+     0.515196289765106,
+     0.6287173949186401
+    ],
+    "fa_rate": 0.041666666666666664,
+    "fa_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "false_alarms": 2,
+    "false_events_per_good": 0.041666666666666664,
+    "false_zones_per_pair": 0.020833333333333332,
+    "retake_rate": 0.01488095238095238,
+    "retake_ci": [
+     0.006372469570219542,
+     0.034357093849915005
+    ],
+    "retake_rate_good": 0.0,
+    "false_reject_rate": 0.041666666666666664,
+    "false_reject_ci": [
+     0.011501652078965613,
+     0.13975911147771472
+    ],
+    "coverage": 0.9561982142857143,
+    "retake_reasons": {
+     "glare": 5
+    }
+   },
+   "ssim": {
+    "n_pairs": 336,
+    "n_defect": 288,
+    "n_good": 48,
+    "recall": 0.7465277777777778,
+    "recall_ci": [
+     0.6932692116762077,
+     0.7932961032069344
+    ],
+    "detected": 215,
+    "escape_rate": 0.2152777777777778,
+    "escape_ci": [
+     0.17172062518127107,
+     0.2663307012917198
     ],
     "fa_rate": 0.020833333333333332,
     "fa_ci": [
@@ -4617,10 +4711,10 @@
     "false_alarms": 1,
     "false_events_per_good": 0.020833333333333332,
     "false_zones_per_pair": 0.03273809523809524,
-    "retake_rate": 0.0,
+    "retake_rate": 0.011904761904761904,
     "retake_ci": [
-     0.0,
-     0.011304089905414755
+     0.004638926977687495,
+     0.030205541739503093
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.020833333333333332,
@@ -4629,96 +4723,24 @@
      0.10899469137531158
     ],
     "coverage": 0.9561982142857143,
-    "retake_reasons": {}
-   },
-   "census": {
-    "n_pairs": 336,
-    "n_defect": 288,
-    "n_good": 48,
-    "recall": 0.3194444444444444,
-    "recall_ci": [
-     0.2682735361956833,
-     0.3753687683969451
-    ],
-    "detected": 92,
-    "escape_rate": 0.5868055555555556,
-    "escape_ci": [
-     0.5291567688925302,
-     0.6421690462071677
-    ],
-    "fa_rate": 0.020833333333333332,
-    "fa_ci": [
-     0.003687015979399688,
-     0.10899469137531158
-    ],
-    "false_alarms": 1,
-    "false_events_per_good": 0.041666666666666664,
-    "false_zones_per_pair": 0.020833333333333332,
-    "retake_rate": 0.0,
-    "retake_ci": [
-     0.0,
-     0.011304089905414755
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.020833333333333332,
-    "false_reject_ci": [
-     0.003687015979399688,
-     0.10899469137531158
-    ],
-    "coverage": 0.9561982142857143,
-    "retake_reasons": {}
-   },
-   "ssim": {
-    "n_pairs": 336,
-    "n_defect": 288,
-    "n_good": 48,
-    "recall": 0.7152777777777778,
-    "recall_ci": [
-     0.6605902797296612,
-     0.7642977417175896
-    ],
-    "detected": 206,
-    "escape_rate": 0.2465277777777778,
-    "escape_ci": [
-     0.20030383701414195,
-     0.2994247828947402
-    ],
-    "fa_rate": 0.020833333333333332,
-    "fa_ci": [
-     0.003687015979399688,
-     0.10899469137531158
-    ],
-    "false_alarms": 1,
-    "false_events_per_good": 0.020833333333333332,
-    "false_zones_per_pair": 0.05357142857142857,
-    "retake_rate": 0.0,
-    "retake_ci": [
-     0.0,
-     0.011304089905414755
-    ],
-    "retake_rate_good": 0.0,
-    "false_reject_rate": 0.020833333333333332,
-    "false_reject_ci": [
-     0.003687015979399688,
-     0.10899469137531158
-    ],
-    "coverage": 0.9561982142857143,
-    "retake_reasons": {}
+    "retake_reasons": {
+     "glare": 4
+    }
    },
    "pixdiff": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.1111111111111111,
+    "recall": 0.12152777777777778,
     "recall_ci": [
-     0.07981198757459146,
-     0.1526483607787619
+     0.08869282044735492,
+     0.16432662571796214
     ],
-    "detected": 32,
-    "escape_rate": 0.8576388888888888,
+    "detected": 35,
+    "escape_rate": 0.8368055555555556,
     "escape_ci": [
-     0.8125662352598269,
-     0.8932961229509286
+     0.7897427112703159,
+     0.8750014513165121
     ],
     "fa_rate": 0.08333333333333333,
     "fa_ci": [
@@ -4727,11 +4749,11 @@
     ],
     "false_alarms": 4,
     "false_events_per_good": 0.4166666666666667,
-    "false_zones_per_pair": 0.08035714285714286,
-    "retake_rate": 0.011904761904761904,
+    "false_zones_per_pair": 0.08928571428571429,
+    "retake_rate": 0.017857142857142856,
     "retake_ci": [
-     0.004638926977687495,
-     0.030205541739503093
+     0.008209029241095317,
+     0.03840562888198319
     ],
     "retake_rate_good": 0.0,
     "false_reject_rate": 0.08333333333333333,
@@ -4741,6 +4763,7 @@
     ],
     "coverage": 0.9561982142857143,
     "retake_reasons": {
+     "glare": 2,
      "mismatch": 4
     }
    }
@@ -4750,16 +4773,16 @@
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.5833333333333334,
+    "recall": 0.5868055555555556,
     "recall_ci": [
-     0.5256623892865534,
-     0.6388103932091568
+     0.5291567688925302,
+     0.6421690462071677
     ],
-    "detected": 168,
-    "escape_rate": 0.3576388888888889,
+    "detected": 169,
+    "escape_rate": 0.3229166666666667,
     "escape_ci": [
-     0.3044895515571881,
-     0.41453611167930743
+     0.27154964038144713,
+     0.3789456968151692
     ],
     "fa_rate": 0.020833333333333332,
     "fa_ci": [
@@ -4767,12 +4790,12 @@
      0.10899469137531158
     ],
     "false_alarms": 1,
-    "false_events_per_good": 0.041666666666666664,
-    "false_zones_per_pair": 0.041666666666666664,
-    "retake_rate": 0.005952380952380952,
+    "false_events_per_good": 0.020833333333333332,
+    "false_zones_per_pair": 0.02976190476190476,
+    "retake_rate": 0.02976190476190476,
     "retake_ci": [
-     0.00163384395062258,
-     0.02144043536068009
+     0.016244723626680543,
+     0.05391031330817381
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.041666666666666664,
@@ -4782,23 +4805,23 @@
     ],
     "coverage": 0.92605,
     "retake_reasons": {
-     "glare": 2
+     "glare": 10
     }
    },
    "census": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.3611111111111111,
+    "recall": 0.3055555555555556,
     "recall_ci": [
-     0.30780091370943596,
-     0.4180777821310474
+     0.25520298288549725,
+     0.36102719129117955
     ],
-    "detected": 104,
-    "escape_rate": 0.53125,
+    "detected": 88,
+    "escape_rate": 0.5729166666666666,
     "escape_ci": [
-     0.4735835973520299,
-     0.5880936960838614
+     0.515196289765106,
+     0.6287173949186401
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4807,11 +4830,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.047619047619047616,
-    "retake_rate": 0.005952380952380952,
+    "false_zones_per_pair": 0.02976190476190476,
+    "retake_rate": 0.03273809523809524,
     "retake_ci": [
-     0.00163384395062258,
-     0.02144043536068009
+     0.01837679584958438,
+     0.057663335788213935
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.020833333333333332,
@@ -4821,23 +4844,23 @@
     ],
     "coverage": 0.92605,
     "retake_reasons": {
-     "glare": 2
+     "glare": 11
     }
    },
    "ssim": {
     "n_pairs": 336,
     "n_defect": 288,
     "n_good": 48,
-    "recall": 0.6354166666666666,
+    "recall": 0.6111111111111112,
     "recall_ci": [
-     0.5783836219195262,
-     0.6888846496360026
+     0.5536980481560965,
+     0.6655989951715169
     ],
-    "detected": 183,
-    "escape_rate": 0.3055555555555556,
+    "detected": 176,
+    "escape_rate": 0.3090277777777778,
     "escape_ci": [
-     0.25520298288549725,
-     0.36102719129117955
+     0.2584654815261959,
+     0.3646177252544687
     ],
     "fa_rate": 0.020833333333333332,
     "fa_ci": [
@@ -4846,11 +4869,11 @@
     ],
     "false_alarms": 1,
     "false_events_per_good": 0.020833333333333332,
-    "false_zones_per_pair": 0.041666666666666664,
-    "retake_rate": 0.005952380952380952,
+    "false_zones_per_pair": 0.026785714285714284,
+    "retake_rate": 0.023809523809523808,
     "retake_ci": [
-     0.00163384395062258,
-     0.02144043536068009
+     0.012112833738929966,
+     0.046272013790036454
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.041666666666666664,
@@ -4860,7 +4883,7 @@
     ],
     "coverage": 0.92605,
     "retake_reasons": {
-     "glare": 2
+     "glare": 8
     }
    },
    "pixdiff": {
@@ -4873,10 +4896,10 @@
      0.23284036595241925
     ],
     "detected": 53,
-    "escape_rate": 0.71875,
+    "escape_rate": 0.6701388888888888,
     "escape_ci": [
-     0.6642059075273649,
-     0.7675351465238739
+     0.6139104050274963,
+     0.7218881925679116
     ],
     "fa_rate": 0.0,
     "fa_ci": [
@@ -4885,11 +4908,11 @@
     ],
     "false_alarms": 0,
     "false_events_per_good": 0.0,
-    "false_zones_per_pair": 0.08035714285714286,
-    "retake_rate": 0.026785714285714284,
+    "false_zones_per_pair": 0.07738095238095238,
+    "retake_rate": 0.0625,
     "retake_ci": [
-     0.01415464089193397,
-     0.05011530133997642
+     0.04123852925624141,
+     0.09365254941099649
     ],
     "retake_rate_good": 0.020833333333333332,
     "false_reject_rate": 0.020833333333333332,
@@ -4899,7 +4922,7 @@
     ],
     "coverage": 0.92605,
     "retake_reasons": {
-     "glare": 2,
+     "glare": 14,
      "mismatch": 7
     }
    }
@@ -4908,25 +4931,25 @@
  "auroc": {
   "none+monotone": {
    "pbp": {
-    "auroc": 0.9308816716085989,
+    "auroc": 0.9306708673091179,
     "n_pos": 1136,
     "n_neg": 190,
     "n_unscored": 18
    },
    "census": {
-    "auroc": 0.8939330059303188,
+    "auroc": 0.8871154558932542,
     "n_pos": 1136,
     "n_neg": 190,
     "n_unscored": 18
    },
    "ssim": {
-    "auroc": 0.926704966641957,
+    "auroc": 0.9336499258710156,
     "n_pos": 1136,
     "n_neg": 190,
     "n_unscored": 18
    },
    "pixdiff": {
-    "auroc": 0.6892790956263899,
+    "auroc": 0.7034979614529281,
     "n_pos": 1136,
     "n_neg": 190,
     "n_unscored": 18
@@ -4934,25 +4957,25 @@
   },
   "non_monotone": {
    "pbp": {
-    "auroc": 0.4895118393960192,
+    "auroc": 0.4735758407687028,
     "n_pos": 376,
     "n_neg": 62,
     "n_unscored": 10
    },
    "census": {
-    "auroc": 0.462079615648593,
+    "auroc": 0.467656142759094,
     "n_pos": 376,
     "n_neg": 62,
     "n_unscored": 10
    },
    "ssim": {
-    "auroc": 0.5757978723404256,
+    "auroc": 0.584162663006177,
     "n_pos": 376,
     "n_neg": 62,
     "n_unscored": 10
    },
    "pixdiff": {
-    "auroc": 0.5292982155113246,
+    "auroc": 0.5314001372683597,
     "n_pos": 376,
     "n_neg": 62,
     "n_unscored": 10
@@ -4960,25 +4983,25 @@
   },
   "all": {
    "pbp": {
-    "auroc": 0.7892993617199966,
+    "auroc": 0.7898439468379944,
     "n_pos": 1512,
     "n_neg": 252,
     "n_unscored": 28
    },
    "census": {
-    "auroc": 0.7411987171411775,
+    "auroc": 0.7367331191735954,
     "n_pos": 1512,
     "n_neg": 252,
     "n_unscored": 28
    },
    "ssim": {
-    "auroc": 0.8122637944066515,
+    "auroc": 0.821006025867137,
     "n_pos": 1512,
     "n_neg": 252,
     "n_unscored": 28
    },
    "pixdiff": {
-    "auroc": 0.6280627991937515,
+    "auroc": 0.6376763668430335,
     "n_pos": 1512,
     "n_neg": 252,
     "n_unscored": 28
@@ -4988,66 +5011,23 @@
  "consistency_failures": 0,
  "visa_note": "A download of VisA_20220922.tar (about 1.8 GB) was attempted on 2026-10-10; measured speed was 40-50 KB/s (about 10 hours), so it was abandoned.",
  "errors": [],
- "timing": {
-  "pbp": {
-   "n": 24,
-   "mean_ms": 550.1583333333333,
-   "median_ms": 525.5999999999999,
-   "min_ms": 105.4,
-   "max_ms": 819.4
-  },
-  "census": {
-   "n": 24,
-   "mean_ms": 251.6208333333333,
-   "median_ms": 275.1,
-   "min_ms": 110.3,
-   "max_ms": 332.4
-  },
-  "ssim": {
-   "n": 24,
-   "mean_ms": 194.82083333333333,
-   "median_ms": 208.60000000000002,
-   "min_ms": 105.3,
-   "max_ms": 254.6
-  },
-  "pixdiff": {
-   "n": 24,
-   "mean_ms": 219.30416666666667,
-   "median_ms": 234.55,
-   "min_ms": 108.8,
-   "max_ms": 282.8
-  },
-  "_pbp_stage_median_ms": {
-   "resize": 1.1,
-   "quality": 3.7,
-   "align": 50.8,
-   "mask": 33.3,
-   "features": 91.7,
-   "change": 166.9,
-   "zones": 1.1,
-   "render": 77.6,
-   "total": 534.3,
-   "extra_views": 258.2
-  },
-  "_prepare_reference_pbp_median_ms": 119.45425000158139
- },
  "paired": {
   "none+monotone:census": {
    "n_defect": 1152,
    "n_good": 192,
-   "recall_only_ref": 407,
-   "recall_only_other": 4,
-   "recall_p": 4.474740104704482e-115,
-   "fa_only_ref": 1,
-   "fa_only_other": 0,
-   "fa_p": 1.0
+   "recall_only_ref": 479,
+   "recall_only_other": 3,
+   "recall_p": 2.9893125117509546e-138,
+   "fa_only_ref": 2,
+   "fa_only_other": 4,
+   "fa_p": 0.6875
   },
   "none+monotone:ssim": {
    "n_defect": 1152,
    "n_good": 192,
-   "recall_only_ref": 58,
-   "recall_only_other": 95,
-   "recall_p": 0.0034722536662487513,
+   "recall_only_ref": 68,
+   "recall_only_other": 62,
+   "recall_p": 0.661169683138816,
    "fa_only_ref": 0,
    "fa_only_other": 0,
    "fa_p": 1.0
@@ -5055,9 +5035,9 @@
   "none+monotone:pixdiff": {
    "n_defect": 1152,
    "n_good": 192,
-   "recall_only_ref": 562,
-   "recall_only_other": 13,
-   "recall_p": 1.7416716446696698e-147,
+   "recall_only_ref": 605,
+   "recall_only_other": 9,
+   "recall_p": 9.62211062719887e-166,
    "fa_only_ref": 2,
    "fa_only_other": 4,
    "fa_p": 0.6875
@@ -5065,19 +5045,19 @@
   "non_monotone:census": {
    "n_defect": 384,
    "n_good": 64,
-   "recall_only_ref": 109,
-   "recall_only_other": 6,
-   "recall_p": 1.4321082389149612e-25,
-   "fa_only_ref": 5,
+   "recall_only_ref": 138,
+   "recall_only_other": 1,
+   "recall_p": 4.0178029569121155e-40,
+   "fa_only_ref": 3,
    "fa_only_other": 0,
-   "fa_p": 0.0625
+   "fa_p": 0.25
   },
   "non_monotone:ssim": {
    "n_defect": 384,
    "n_good": 64,
    "recall_only_ref": 23,
-   "recall_only_other": 13,
-   "recall_p": 0.13249816396273675,
+   "recall_only_other": 11,
+   "recall_p": 0.05761267291381955,
    "fa_only_ref": 6,
    "fa_only_other": 0,
    "fa_p": 0.03125
@@ -5085,14 +5065,57 @@
   "non_monotone:pixdiff": {
    "n_defect": 384,
    "n_good": 64,
-   "recall_only_ref": 169,
-   "recall_only_other": 5,
-   "recall_p": 1.0791522929101471e-43,
+   "recall_only_ref": 178,
+   "recall_only_other": 4,
+   "recall_p": 1.475682890876291e-47,
    "fa_only_ref": 20,
    "fa_only_other": 0,
    "fa_p": 1.9073486328125e-06
   }
  },
- "timing_date": "2026-10-10 18:03 UTC",
+ "timing": {
+  "pbp": {
+   "n": 24,
+   "mean_ms": 494.7791666666667,
+   "median_ms": 443.4,
+   "min_ms": 96.1,
+   "max_ms": 716.0
+  },
+  "census": {
+   "n": 24,
+   "mean_ms": 248.47500000000002,
+   "median_ms": 217.55,
+   "min_ms": 117.4,
+   "max_ms": 366.4
+  },
+  "ssim": {
+   "n": 24,
+   "mean_ms": 205.39583333333334,
+   "median_ms": 192.35,
+   "min_ms": 102.4,
+   "max_ms": 295.5
+  },
+  "pixdiff": {
+   "n": 24,
+   "mean_ms": 224.6875,
+   "median_ms": 221.45,
+   "min_ms": 110.3,
+   "max_ms": 351.0
+  },
+  "_pbp_stage_median_ms": {
+   "resize": 1.4,
+   "quality": 3.5,
+   "align": 55.1,
+   "mask": 38.7,
+   "features": 95.5,
+   "change": 158.6,
+   "zones": 1.2,
+   "render": 72.4,
+   "total": 452.9,
+   "extra_views": 253.39999999999998
+  },
+  "_prepare_reference_pbp_median_ms": 132.1268500178121
+ },
+ "timing_date": "2026-10-11 02:47 UTC",
  "timing_command": "python -m eval.benchmark --split timing --timing-pairs 24"
 }
