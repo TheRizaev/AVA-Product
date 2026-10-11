@@ -14,7 +14,7 @@ license: mit
 AVA spots visual defects on parts — scratches, chips, stains, stickers, missing features — from ordinary photos.
 **No neural network. No training data. No GPU.** Every decision can be explained.
 
-### ▶ Try it: **https://therizaev-ava.hf.space**
+### ▶ Try it: **https://therizaev-ava-qa.hf.space**
 Works on a phone. Built-in examples (a scratched leather seat, a cracked brake disc) let you test it in one tap.
 
 ---

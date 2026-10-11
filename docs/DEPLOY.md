@@ -5,22 +5,10 @@
 | Remote | URL |
 |---|---|
 | `origin` | `https://github.com/TheRizaev/AVA-Product.git` (public) |
-| `space` | `https://huggingface.co/spaces/<USER>/<SPACE>` (Docker SDK) — **decide it first, see below** |
-| Live app | `https://<user>-<space>.hf.space` (lower case, `/` → `-`) |
+| Space | `https://huggingface.co/spaces/TheRizaev/ava-qa` (Docker SDK, CPU Basic) |
+| Live app | **https://therizaev-ava-qa.hf.space** |
 
-### Decide the target Space first (state on 2026-10-10)
-
-- **`TheRizaev/ava` is NOT ours to push to.** That name resolves to `TheRizaev/AVA`, an existing *static* Space of an earlier project ("AVA - traffic CCTV analytics", served at `therizaev-ava.static.hf.space`). `https://therizaev-ava.hf.space` returns 404. **Never `--force` push there**: it would wipe that project.
-- **The Space the current `space` remote points to** (`git remote -v`) is public and still serves an old prototype build: Russian UI, the old working name, uncalibrated thresholds (`/api/health`: threshold 0.45, threshold_pixdiff 0.08).
-- **Recommended:** rename that old Space in its HF *Settings* to a free name (for example `TheRizaev/ava-inspect`). It is already a Docker Space on CPU Basic, which is free. Creating a *new* Docker Space instead needs a paid HF plan (PRO, $9/month; HF docs, checked 2026-10-11, see docs/SOURCES.md "Hosting"). Then point the remote at it and push the submitted commit:
-
-  ```bash
-  git remote -v
-  git remote set-url space https://huggingface.co/spaces/<USER>/<SPACE>
-  ```
-
-- If the old prototype Space is not renamed and reused, make it private or delete it after the new deploy.
-- Then put the final URL into: the README "Live demo" line, the repository's *About → Website*, the deck and the QR code. Check `curl https://<user>-<space>.hf.space/api/health` before the defence.
+Do **not** deploy to `TheRizaev/ava`: that is a different, earlier static Space of the team.
 
 ---
 
@@ -59,29 +47,22 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
 
 ### Push steps
 
-1. **Token.** Go to <https://huggingface.co/settings/tokens> and create a token with **write** access to `TheRizaev/ava`. Never commit it, and never paste it into a shared chat.
-2. **Push the same commit to both remotes.** Use your HF username and the token as the password; Git Credential Manager stores it.
+1. **Token.** Log in once with a token that has **write** access to `TheRizaev/ava-qa`: `huggingface-cli login`. Never commit the token.
+2. **Push to GitHub, then upload exactly that commit to the Space.** HF rejects plain-git pushes of binary files (the demo JPEGs), so the Space is updated through the Hub API from a clean export of the committed tree; the Space commit message names the GitHub commit.
 
    ```bash
-   git checkout main
    git push origin main
-   git push space main
+   rm -rf /tmp/ava-deploy && mkdir /tmp/ava-deploy && git archive HEAD | tar -x -C /tmp/ava-deploy
+   python - <<'PY'
+   import subprocess
+   from huggingface_hub import HfApi
+   sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+   HfApi().upload_folder(folder_path="/tmp/ava-deploy", repo_id="TheRizaev/ava-qa", repo_type="space",
+                         commit_message=f"Deploy GitHub commit {sha[:7]}",
+                         commit_description=f"Exact contents of https://github.com/TheRizaev/AVA-Product/commit/{sha}",
+                         delete_patterns=["*"])
+   PY
    ```
-
-   - If the Space still holds only its own template commit (a new Space or the renamed old prototype Space), the first push needs `git push --force space main`. Never force-push to a Space that holds another project.
-   - **HF rejects any binary file that is not tracked with LFS/Xet, whatever its size** ("Your push was rejected because it contains binary files"), and it checks every pushed commit. The five demo JPEGs in `web/examples/` were committed as plain blobs (commit `cebc21c`), so they must be moved to LFS before the first push, which rewrites `cebc21c` and later commits:
-
-     ```bash
-     git lfs install
-     git lfs track "*.jpg" "*.jpeg" "*.png"        # writes .gitattributes; drop the old "*.jpg binary" / "*.png binary" lines
-     git add .gitattributes && git commit -m "Track images with LFS"
-     git lfs migrate import --include="*.jpg,*.jpeg,*.png" --include-ref=refs/heads/main
-     git lfs ls-files                              # the five web/examples/*.jpg must be listed
-     git push --force-with-lease origin main       # origin already has the old hashes
-     git push --force space main
-     ```
-
-     Optionally test the push against a throwaway Space first. PDFs and dataset images are git-ignored.
 3. **Check the build logs.** On the Space page the badge goes *Building* → *Running*. Open **Logs**:
    - *Build* should end with the `pip install -r requirements.txt` step;
    - *Container* should show `Application startup complete` and `Uvicorn running on http://0.0.0.0:7860`. Startup includes a short OpenCV warm-up.
@@ -89,14 +70,14 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
 4. **Smoke test:**
 
    ```bash
-   curl https://<user>-<space>.hf.space/api/health        # {"ok":true,"version":"0.2.0","params":{...}}
+   curl https://therizaev-ava-qa.hf.space/api/health        # {"ok":true,"version":"0.2.0","params":{...}}
    ```
 
    The `params` must match `ava/config.py` (for example `threshold`, `threshold_pixdiff`, `mismatch_frac` 0.15). Old values mean an old build.
 
-5. **Test on a phone over HTTPS.** Open the **direct** URL `https://<user>-<space>.hf.space`, not the `huggingface.co/spaces/...` page, which wraps the app in an iframe.
+5. **Test on a phone over HTTPS.** Open the **direct** URL `https://therizaev-ava-qa.hf.space`, not the `huggingface.co/spaces/...` page, which wraps the app in an iframe.
    - [ ] **Surface check** → "Try an example: Defect" → FAIL with a zone. "No defect" → PASS.
-   - [ ] **Compare with reference** → "Defect" → FAIL with a zone on the tape. "Brightness change" → AVA PASS, and the "Plain reference subtraction" panel shows "FAIL — a large part of the frame changed".
+   - [ ] **Compare with reference** → "Defect" → FAIL with a zone on the crack. "Brightness change" → AVA PASS, and the "Plain reference subtraction" panel shows "FAIL — a large part of the frame changed".
    - [ ] Camera: the permission prompt appears, and the rear camera shows. In compare mode the reference overlay slider works.
    - [ ] The QR button opens a code that another phone can scan.
    - If the camera is denied: on iOS, Settings → Safari → Camera → Allow, then reload. On Android Chrome, the lock icon → Permissions.
@@ -104,9 +85,9 @@ The YAML front matter at the top of `README.md` (`sdk: docker`, `app_port: 7860`
 ### Verify that it is the same commit everywhere
 
 ```bash
-git rev-parse HEAD
+git rev-parse --short HEAD                     # e.g. 61b37b2
 git ls-remote origin main
-git ls-remote space main
+# the latest commit on https://huggingface.co/spaces/TheRizaev/ava-qa/commits/main is "Deploy GitHub commit <same sha>"
 ```
 
 All three must print the same SHA. Put this SHA in the submission form.
@@ -128,7 +109,7 @@ All three must print the same SHA. Put this SHA in the submission form.
 2. Push with `git push origin main`.
 3. On github.com, check that:
    - `README.md` renders (the HF front matter shows as a small table, which is expected) and the Mermaid diagrams draw;
-   - the demo JPEGs in `web/examples/` open (they are LFS objects after the migration);
+   - the demo JPEGs in `web/examples/` open;
    - `LICENSE` is detected as MIT;
    - `docs/`, `eval/RESULTS.md` and `eval/RESULTS_SURFACE.md` are present.
 4. Put the Space URL in the repository's "About" → Website.
