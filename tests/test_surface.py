@@ -1,4 +1,4 @@
-"""Tests for dalil.surface (Mode 1: single-photo surface check) on synthetic surfaces."""
+"""Tests for ava.surface (Mode 1: single-photo surface check) on synthetic surfaces."""
 
 import functools
 import time
@@ -7,9 +7,9 @@ import cv2
 import numpy as np
 import pytest
 
-from dalil import pbp, synth, surface
-from dalil.config import Params
-from dalil.pipeline import result_to_json
+from ava import pbp, synth, surface
+from ava.config import Params
+from ava.pipeline import result_to_json
 
 P = Params()
 SEEDS = (0, 1, 2)

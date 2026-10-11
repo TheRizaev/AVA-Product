@@ -1,4 +1,4 @@
-"""End-to-end tests of dalil.pipeline on synthetic station pairs (dalil.synth).
+"""End-to-end tests of ava.pipeline on synthetic station pairs (ava.synth).
 
 Pairs are generated at 576x1024 (= the default working size, so no resize) with
 fixed seeds; each scenario runs over 5 seeds. Detection rates asserted here are
@@ -12,11 +12,11 @@ import cv2
 import numpy as np
 import pytest
 
-from dalil import synth
-from dalil.align import align
-from dalil.config import Params
-from dalil.pbp import serialize_signatures, window_signatures
-from dalil.pipeline import (InspectResult, Reference, inspect_compare, inspect_frame,
+from ava import synth
+from ava.align import align
+from ava.config import Params
+from ava.pbp import serialize_signatures, window_signatures
+from ava.pipeline import (InspectResult, Reference, inspect_compare, inspect_frame,
                             prepare_reference, result_to_json)
 
 H, W = 576, 1024
@@ -123,6 +123,46 @@ def test_inspect_compare_runs_pbp_and_pixdiff_on_one_alignment():
         assert len(res.signature_sha256) == 64
     assert pbp.verdict == "fail"
     assert pbp.signature_sha256 != pix.signature_sha256
+
+
+def test_handheld_camera_motion_does_not_hide_a_defect():
+    # The whole frame is moved (handheld camera, no second motion): no static-background
+    # view may be min-ed in. On the old code this burr passed (only the unregistered frame
+    # "matched" the reference there).
+    pair = make_pair(22, part_kind=synth.PART_KINDS[22 % 4], defect="burr")
+    M = cv2.getRotationMatrix2D((W / 2, H / 2), 2.0, 1.0)
+    M[:, 2] += (-12, 8)
+    frame = cv2.warpAffine(pair["frame"], M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    ref, res = run(pair)
+    res = inspect_frame(ref, frame, P)
+    assert res.align["method"] == "orb"
+    assert res.verdict == "fail" and res.zones, describe(res)
+
+
+@pytest.mark.parametrize("ref_side,frame_side", [(480, 1280), (1280, 640), (1280, 400)])
+def test_reference_and_check_at_different_resolutions_align(ref_side, frame_side):
+    # Each photo is resized to the working size independently; the frame is brought to the
+    # reference's scale before alignment, so a resolution mismatch is not a RETAKE.
+    pair = synth.make_station_pair(np.random.default_rng(606), part_kind="stamped", h=720, w=1280)
+    small = lambda img, side: cv2.resize(img, (side, round(side * 720 / 1280)), interpolation=cv2.INTER_AREA)
+    ref = prepare_reference([small(pair["reference"], ref_side)], P, methods=("pbp",))
+    res = inspect_frame(ref, small(pair["frame"], frame_side), P)
+    assert res.verdict == "pass", describe(res)
+
+
+def test_new_bright_blob_is_never_a_silent_pass():
+    # A white label clipped to 255 looks exactly like glare (bright, unsaturated) and is
+    # masked; the verdict must then be RETAKE (glare + bright_spot), never PASS.
+    pair = make_pair(607, part_kind="stamped")
+    ref = prepare_reference([pair["reference"]], P)
+    frame = pair["frame"].copy()
+    frame[H // 2 - 30:H // 2 + 30, W // 2 - 45:W // 2 + 45] = 255
+    for res in inspect_compare(ref, frame, P).values():
+        assert res.verdict != "pass", describe(res)
+        if res.verdict == "retake":
+            assert res.reason == "glare" and "bright_spot" in res.hints
+    clean = inspect_frame(ref, pair["frame"], P)
+    assert clean.verdict == "pass" and "bright_spot" not in clean.hints, describe(clean)
 
 
 # --------------------------------------------------------------------------- contracts
