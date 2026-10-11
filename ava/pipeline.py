@@ -2,12 +2,14 @@
 
     prepare_reference(shots)  resize -> register extra shots to shot 0 -> blurred gray
                               -> features per method (computed once, cached by the server)
-    inspect_frame(ref, frame) resize -> capture quality (blur / dark) -> align to shot 0
+    inspect_frame(ref, frame) resize -> capture quality (blur / dark) -> reference scale
+                              -> align to shot 0
                               -> checked cells (valid, on the part if it moved, no glare)
                               -> glare / coverage gates -> blurred gray -> features
                               -> multi-reference change map (PBP: low-contrast gate; min over
                                  background-registered views if the part moved) -> smoothing
-                              -> zones -> mismatch gate -> verdict + overlay JPEGs
+                              -> zones -> mismatch gate -> verdict (never PASS with an
+                                 unexplained glare-like blob in the frame) + overlay JPEGs
 
 `inspect_compare` aligns once and scores several methods (PBP and the baselines)
 on the same aligned frame, so the UI and the benchmark compare like with like.
@@ -34,6 +36,7 @@ from .zones import Zone, coverage, extract_zones
 VERDICTS = ("pass", "fail", "retake")
 REASONS = (None, "alignment", "glare", "blurry", "dark", "low_coverage", "mismatch")
 HINT_CHANGE_ANGLE = "change_angle"
+HINT_BRIGHT_SPOT = "bright_spot"   # a large glare-like blob was not checked: glare or a white object
 
 _JPEG_QUALITY = 85
 _RED = (40, 40, 230)          # BGR
@@ -76,6 +79,9 @@ class InspectResult:
     # rejected before scoring). Not serialised; used by eval/benchmark.py to re-threshold.
     score: np.ndarray | None = field(default=None, repr=False)
     checked: np.ndarray | None = field(default=None, repr=False)
+    # A large glare-like blob was masked (see `bright_spot`): the verdict is never "pass".
+    # Not serialised (the hints carry it); eval passes it to `decide` when re-thresholding.
+    bright_spot: bool = field(default=False, repr=False)
 
 
 # --------------------------------------------------------------------------- helpers
@@ -244,6 +250,7 @@ def prepare_reference(images_bgr: list, params: Params,
     images = [first]
     for k, extra in enumerate(images_bgr[1:], start=1):
         small, _ = resize_max_side(_as_bgr(extra), params.work_max_side)
+        small = match_scale(small, (w, h))
         res = align(first, small, params)
         if not res.ok:
             raise ValueError(f"reference shot {k + 1} does not match shot 1 ({res.reason})")
@@ -282,6 +289,56 @@ def part_roi(points: np.ndarray | None, shape: tuple[int, int], margin_px: int) 
     return mask.astype(bool)
 
 
+def match_scale(img: np.ndarray, work_size: tuple[int, int], aspect_tol: float = 0.01,
+                max_up: float = 2.0) -> np.ndarray:
+    """Resize a photo to the reference's working scale before registration.
+
+    Both photos are resized independently to `work_max_side` (never up), so a small Check
+    (or a small Reference) would leave the whole resolution ratio to the homography, whose
+    scale is limited (align._degenerate). Here the frame is brought to the same long side
+    as the reference (`work_size` = (w, h)); with the same aspect ratio (within
+    `aspect_tol`) it gets exactly the reference's size, so the identity and ECC paths
+    (which need equal shapes) stay available. Upscaling is limited to `max_up`: a much
+    smaller photo has too little detail to compare and is left to the alignment checks.
+    """
+    rw, rh = int(work_size[0]), int(work_size[1])
+    h, w = img.shape[:2]
+    if (w, h) == (rw, rh) or min(rw, rh, w, h) <= 0:
+        return img
+    s = max(rw, rh) / max(w, h)
+    if s <= max_up and abs((w / h) / (rw / rh) - 1.0) <= aspect_tol:
+        size = (rw, rh)
+    else:
+        s = min(s, max_up)
+        size = (max(1, round(w * s)), max(1, round(h * s)))
+    if size == (w, h):
+        return img
+    interp = cv2.INTER_AREA if size[0] < w else cv2.INTER_LINEAR
+    return cv2.resize(img, size, interpolation=interp)
+
+
+def bright_spot(core: np.ndarray, ref_gray: np.ndarray, frame_gray: np.ndarray, area: np.ndarray,
+                params: Params) -> bool:
+    """Does the frame show a glare-like blob that the reference does not explain?
+
+    `core` = the frame's undilated glare pixels (bright, unsaturated) outside the
+    reference's glare mask. Glare cells are not checked, and colour alone cannot tell a
+    highlight from a white label, white tape or bare metal clipped to 255, so such a blob
+    must not end in a silent PASS. A blob of >= `params.glare_blob_min_px` counts unless
+    the reference was already about as bright there once the global exposure change is
+    applied (a bright area clipped by a brighter exposure hides nothing new).
+    """
+    if params.glare_blob_min_px <= 0 or not core.any() or not area.any():
+        return False
+    n, labels, stats, _ = cv2.connectedComponentsWithStats(core.astype(np.uint8), connectivity=8)
+    big = [i for i in range(1, n) if stats[i, cv2.CC_STAT_AREA] >= params.glare_blob_min_px]
+    if not big:
+        return False
+    gain = float(np.median(frame_gray[area])) / max(1.0, float(np.median(ref_gray[area])))
+    level = 0.9 * float(params.glare_v)
+    return any(gain * float(np.median(ref_gray[labels == i])) < level for i in big)
+
+
 def _change_map(method: str, dist_fn, ref_feats: list, feat, params: Params) -> np.ndarray:
     """Multi-reference tolerant change map; for PBP with the low-contrast gate.
 
@@ -291,13 +348,23 @@ def _change_map(method: str, dist_fn, ref_feats: list, feat, params: Params) -> 
     the flat-window rule). The frame's contrast is first divided by the global contrast
     gain between the two images (exposure / lamp changes scale all contrasts), so the
     gate itself does not react to lighting. Baselines compare intensities: no gate.
+
+    The flat rule of the signatures (window contrast < `flat_floor`, flat vs non-flat = 1)
+    uses an absolute floor, so a darker exposure turns low-contrast windows "flat" in the
+    frame only. A flat/non-flat disagreement is therefore ignored in a low-contrast cell
+    (< 2 x `contrast_floor`) whose gain-normalised contrasts agree within a factor of 2:
+    that is the exposure, not a defect (tape or a scratch changes the contrast far more).
     """
     score = multi_reference_change_map(dist_fn, ref_feats, feat, params.tolerance)
     if method == "pbp" and params.contrast_floor > 0:
         ref_con = ref_feats[0].contrast
         gain = contrast_gain(ref_con, feat.contrast, 2.0 * params.contrast_floor)
-        low = np.maximum(ref_con, feat.contrast / gain) < params.contrast_floor
-        score[low] = 0.0
+        frame_con = feat.contrast / gain
+        hi = np.maximum(ref_con, frame_con)
+        low = hi < params.contrast_floor
+        exposure_flat = ((ref_feats[0].flat ^ feat.flat) & (hi < 2.0 * params.contrast_floor)
+                         & (np.minimum(ref_con, frame_con) >= 0.5 * hi))
+        score[low | exposure_flat] = 0.0
     return score
 
 
@@ -313,20 +380,25 @@ def contrast_gain(ref_con: np.ndarray, frame_con: np.ndarray, min_con: float) ->
 
 
 def decide(score: np.ndarray, checked: np.ndarray, params: Params, threshold: float,
-           sig_ref=None, sig_frame=None) -> tuple[str, str | None, list, float]:
+           sig_ref=None, sig_frame=None, bright: bool = False) -> tuple[str, str | None, list, float]:
     """Verdict from a (smoothed) change map at `threshold`: (verdict, reason, zones, changed_frac).
 
     changed_frac = fraction of checked cells at/above the threshold; above
     `params.mismatch_frac` the frame is a different / absent part ("retake", "mismatch"),
-    otherwise "fail" if any zone survives `extract_zones`, else "pass". `sig_ref` /
-    `sig_frame` (PBP signatures) only enable the zone hints.
+    otherwise "fail" if any zone survives `extract_zones`, else "pass" - unless `bright`
+    (an unexplained glare-like blob was masked, see `bright_spot`): then "retake", "glare".
+    `sig_ref` / `sig_frame` (PBP signatures) only enable the zone hints.
     """
     changed = float(np.count_nonzero(checked & (score >= threshold))) / max(1, int(checked.sum()))
     if changed > params.mismatch_frac:
         return "retake", "mismatch", [], changed
     zones = extract_zones(score, checked, dataclasses.replace(params, threshold=float(threshold)),
                           sig_ref, sig_frame, win=params.win, step=params.step)
-    return ("fail" if zones else "pass"), None, zones, changed
+    if zones:
+        return "fail", None, zones, changed
+    if bright:
+        return "retake", "glare", [], changed
+    return "pass", None, zones, changed
 
 
 def _lap(timing: dict, name: str, since: float) -> float:
@@ -383,7 +455,8 @@ def inspect_compare(ref: Reference, frame_bgr: np.ndarray, params: Params,
         imgs["overlay"] = imgs["frame"]
         return {m: finish(m, "retake", reason, {}, images=imgs) for m in methods}
 
-    # 2. registration onto shot 0
+    # 2. registration onto shot 0, at the reference's working scale
+    frame = match_scale(frame, ref.work_size)
     al = align(ref.images[0], frame, params)
     tic = _lap(timing, "align", tic)
     if not al.ok:
@@ -410,6 +483,9 @@ def inspect_compare(ref: Reference, frame_bgr: np.ndarray, params: Params,
         area[:m], area[-m:], area[:, :m], area[:, -m:] = False, False, False, False
     glare = (ref.glare | quality.glare_mask(aligned, params)) & area
     glare_frac = float(glare.sum()) / max(1, int(area.sum()))
+    # Glare that only the frame has may be a white defect: it must not end in a silent PASS.
+    new_core = quality.glare_mask(aligned, dataclasses.replace(params, glare_dilate_px=0)) & area & ~ref.glare
+    bright = bright_spot(new_core, ref.grays[0], _gray(aligned), area, params)
     cells_area = cell_mask_from_pixel_mask(area, win, step, frac=1.0)
     cells_glare = cell_mask_from_pixel_mask(glare, win, step, frac=1.0 / (win * win))
     checked = cells_area & ~cells_glare
@@ -423,13 +499,14 @@ def inspect_compare(ref: Reference, frame_bgr: np.ndarray, params: Params,
     # Extra views for the background left inside that region: the view registered on the
     # part shows a shifted background, while a view registered on the background (ORB's
     # second motion, or the frame as shot for a fixed camera) matches it. A cell counts
-    # as changed only if it differs in every view.
+    # as changed only if it differs in every view. Only when align found that second
+    # motion (evidence of a static background): with a single motion the camera moved,
+    # and a min with a misregistered view would only hide defects.
     extra_views = []
-    if moved and frame.shape == aligned.shape:
-        if al.alt_H is not None:
-            extra_views.append(cv2.warpPerspective(frame, al.alt_H, (w, h), flags=cv2.INTER_LINEAR,
-                                                   borderMode=cv2.BORDER_REPLICATE))
-        if al.alt_H is None or corner_shift(al.alt_H, (h, w)) > params.static_bg_min_shift:
+    if moved and frame.shape == aligned.shape and al.alt_H is not None:
+        extra_views.append(cv2.warpPerspective(frame, al.alt_H, (w, h), flags=cv2.INTER_LINEAR,
+                                               borderMode=cv2.BORDER_REPLICATE))
+        if corner_shift(al.alt_H, (h, w)) > params.static_bg_min_shift:
             extra_views.append(frame)
     gray_views = [_work_gray(v, params) for v in extra_views]
     tic = _lap(timing, "mask", tic)
@@ -466,15 +543,16 @@ def inspect_compare(ref: Reference, frame_bgr: np.ndarray, params: Params,
 
         sig_pair = (ref_feats[0], feat) if m == "pbp" else (None, None)
         verdict, reason, zones, changed = decide(score, checked, params, method_threshold(m, params),
-                                                 *sig_pair)
+                                                 *sig_pair, bright=bright)
         tm = _lap(own, "zones", tm)
 
         overlay = _jpeg(render_overlay(aligned, zones, unchecked_px))
         sha = _signature_sha256(ref, m, feat)
         _lap(own, "render", tm)
+        hints = [HINT_CHANGE_ANGLE, HINT_BRIGHT_SPOT] if reason == "glare" else []
         out[m] = finish(m, verdict, reason, own, zones=zones, cov=cov, changed=changed, al=al,
-                        images={"frame": frame_jpeg, "overlay": overlay}, sha=sha)
-        out[m].score, out[m].checked = score, checked
+                        images={"frame": frame_jpeg, "overlay": overlay}, sha=sha, hints=hints)
+        out[m].score, out[m].checked, out[m].bright_spot = score, checked, bright
     return out
 
 

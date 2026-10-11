@@ -8,7 +8,8 @@ stain edge or sticker border is rare.
     scan_surface(photo)   resize -> capture quality (blur / dark) -> blurred gray
                           -> checked cells (border margin, no glare halo) -> glare /
                              coverage gates -> per-window anomaly score -> smoothing
-                          -> zones -> verdict + overlay JPEG
+                          -> zones -> verdict (never PASS if a glare core was masked)
+                             + overlay JPEG
 
 Anomaly score of window a (``surface_score_map``, method "pbp"):
 
@@ -38,7 +39,10 @@ Thin, soft defects in high-variance textures (a dried-water ring on brushed meta
 a known weak case.
 
 Glare: ``glare_region`` = ``quality.glare_mask`` cores plus their smooth halo (a steep
-brightness ramp would otherwise be "rare"); such cells are not checked.
+brightness ramp would otherwise be "rare"); such cells are not checked. Colour alone
+cannot tell a highlight from a white defect (label, tape, a bright chip clipped to 255),
+so if a glare core of at least ``glare_blob_min_px`` was masked the verdict is never
+PASS: without zones it is RETAKE (glare) with the hints change_angle and bright_spot.
 
 Speed: the k nearest samples are first searched with the Hellinger affinity (one
 matrix product of square-rooted coefficient vectors), then the ``surface_candidates``
@@ -70,7 +74,7 @@ from . import baselines, quality
 from .align import resize_max_side
 from .config import Params
 from .pbp import NBINS, cell_mask_from_pixel_mask, serialize_signatures, window_signatures
-from .pipeline import HINT_CHANGE_ANGLE, InspectResult, render_overlay, smooth_scores
+from .pipeline import HINT_BRIGHT_SPOT, HINT_CHANGE_ANGLE, InspectResult, render_overlay, smooth_scores
 from .zones import extract_zones
 
 SURFACE_METHODS = ("pbp", "census", "gradient")
@@ -327,6 +331,23 @@ def _gradient_score(gray: np.ndarray, checked: np.ndarray, params: Params) -> np
     return (np.maximum(z, 0.0) / _GRADIENT_SCALE).astype(np.float32)
 
 
+def _glare_core(img: np.ndarray, params: Params) -> np.ndarray:
+    """Undilated highlight cores (uint8 0/1): ``quality.glare_mask`` without thin structures.
+
+    Highlight cores are blobs: an opening drops thin saturated lines (a bright scratch
+    is a defect, not glare).
+    """
+    core = quality.glare_mask(img, dataclasses.replace(params, glare_dilate_px=0)).astype(np.uint8)
+    return cv2.morphologyEx(core, cv2.MORPH_OPEN,
+                            cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (_GLARE_OPEN_PX,) * 2))
+
+
+def _largest_blob(mask: np.ndarray) -> int:
+    """Pixel count of the largest 8-connected blob of a 0/1 mask."""
+    n, _, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), connectivity=8)
+    return int(stats[1:, cv2.CC_STAT_AREA].max()) if n > 1 else 0
+
+
 def glare_region(img: np.ndarray, gray: np.ndarray, params: Params) -> np.ndarray:
     """Specular highlight plus its halo (bool[H, W]).
 
@@ -337,11 +358,11 @@ def glare_region(img: np.ndarray, gray: np.ndarray, params: Params) -> np.ndarra
     above the local surface level (median over ~250 px), connected to a core and within
     ``surface_glare_halo_px``; the union is dilated by ``surface_glare_dilate_px``.
     """
-    # Highlight cores are blobs: an opening drops thin saturated lines (a bright scratch
-    # is a defect, not glare) before the usual glare dilation.
-    core = quality.glare_mask(img, dataclasses.replace(params, glare_dilate_px=0)).astype(np.uint8)
-    core = cv2.morphologyEx(core, cv2.MORPH_OPEN,
-                            cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (_GLARE_OPEN_PX,) * 2))
+    return _glare_region(img, gray, params, _glare_core(img, params))
+
+
+def _glare_region(img: np.ndarray, gray: np.ndarray, params: Params, core: np.ndarray) -> np.ndarray:
+    """`glare_region` from precomputed cores (`_glare_core`)."""
     r0 = int(params.glare_dilate_px)
     if r0 > 0:
         core = cv2.dilate(core, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * r0 + 1,) * 2))
@@ -481,8 +502,10 @@ def scan_surface(image_bgr: np.ndarray, params: Params, method: str = "pbp") -> 
     m = int(params.border_margin_px)
     if m > 0:
         area[:m], area[-m:], area[:, :m], area[:, -m:] = False, False, False, False
-    glare = glare_region(img, g, params) & area
+    core = _glare_core(img, params)
+    glare = _glare_region(img, g, params, core) & area
     glare_frac = float(glare.sum()) / max(1, int(area.sum()))
+    bright = params.glare_blob_min_px > 0 and _largest_blob(core & area) >= params.glare_blob_min_px
     cells_area = cell_mask_from_pixel_mask(area, win, step, frac=1.0)
     cells_glare = cell_mask_from_pixel_mask(glare, win, step, frac=1.0 / (win * win))
     checked = cells_area & ~cells_glare
@@ -508,6 +531,14 @@ def scan_surface(image_bgr: np.ndarray, params: Params, method: str = "pbp") -> 
     lap("zones")
     overlay = _jpeg(render_overlay(img, zones, unchecked_px))
     lap("render")
-    return finish("fail" if zones else "pass", None, zones=zones, cov=cov, changed=changed,
-                  images={"frame": frame_jpeg, "overlay": overlay}, sha=sha,
-                  score=score, checked=checked)
+    if zones:
+        verdict, reason, hints = "fail", None, []
+    elif bright:  # a masked glare core may hide a white defect: never a silent PASS
+        verdict, reason, hints = "retake", "glare", [HINT_CHANGE_ANGLE, HINT_BRIGHT_SPOT]
+    else:
+        verdict, reason, hints = "pass", None, []
+    res = finish(verdict, reason, zones=zones, cov=cov, changed=changed, hints=hints,
+                 images={"frame": frame_jpeg, "overlay": overlay}, sha=sha,
+                 score=score, checked=checked)
+    res.bright_spot = bool(bright)
+    return res
