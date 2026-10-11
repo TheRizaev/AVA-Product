@@ -1,4 +1,4 @@
-"""Tests for dalil.pbp: exact PBP, its invariants, vectorised signatures, distance, speed."""
+"""Tests for ava.pbp: exact PBP, its invariants, vectorised signatures, distance, speed."""
 
 import itertools
 import os
@@ -10,8 +10,8 @@ import cv2
 import numpy as np
 import pytest
 
-from dalil import pbp
-from dalil.config import Params
+from ava import pbp
+from ava.config import Params
 
 P = Params()                                   # win=8, step=4
 P_EXACT = replace(P, eps=0.0, flat_floor=0.0)  # exact PBP, nothing treated as flat
@@ -260,7 +260,7 @@ def test_serialize_deterministic():
     img = rng.uniform(0, 255, (40, 56)).astype(np.float32)
     s1 = pbp.serialize_signatures(pbp.window_signatures(img, P))
     s2 = pbp.serialize_signatures(pbp.window_signatures(img.copy(), P))
-    assert s1 == s2 and s1.startswith(b"DALILPBP")
+    assert s1 == s2 and s1.startswith(b"AVA_PBP1")
     img[10, 10] += 50
     assert pbp.serialize_signatures(pbp.window_signatures(img, P)) != s1
 

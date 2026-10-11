@@ -1,10 +1,10 @@
-"""Tests for dalil.baselines using small local fixtures (no synth, no pbp)."""
+"""Tests for ava.baselines using small local fixtures (no synth, no pbp)."""
 
 import numpy as np
 import pytest
 
-from dalil import baselines
-from dalil.config import Params
+from ava import baselines
+from ava.config import Params
 
 P = Params()  # win=8, step=4
 METHODS = baselines.get_methods(include_pbp=False)

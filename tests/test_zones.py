@@ -1,4 +1,4 @@
-"""Tests for dalil.zones on small hand-made cell grids."""
+"""Tests for ava.zones on small hand-made cell grids."""
 
 from dataclasses import replace
 from types import SimpleNamespace
@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from dalil.config import Params
-from dalil.zones import Zone, coverage, extract_zones
+from ava.config import Params
+from ava.zones import Zone, coverage, extract_zones
 
 GH, GW = 40, 60
 WIN, STEP = 8, 4

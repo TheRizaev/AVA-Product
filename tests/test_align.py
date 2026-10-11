@@ -1,11 +1,11 @@
-"""Tests for dalil.align (procedural fixtures only)."""
+"""Tests for ava.align (procedural fixtures only)."""
 
 import cv2
 import numpy as np
 import pytest
 
-from dalil.align import AlignResult, align, resize_max_side
-from dalil.config import Params
+from ava.align import AlignResult, align, resize_max_side
+from ava.config import Params
 
 
 def textured(seed: int, h: int = 480, w: int = 640) -> np.ndarray:
@@ -244,7 +244,7 @@ def test_smooth_part_moved_on_textured_belt_follows_the_part():
     """A painted (smooth) part moved over a textured belt has fewer ORB matches than
     min_inliers; the similarity search on the outliers must still register the PART
     (eval/benchmark.py CALIB pair that used to be registered on the belt)."""
-    from dalil import synth
+    from ava import synth
 
     rng = np.random.default_rng(np.random.SeedSequence([0, 1, 1, 0, 1, 0, 3]))
     pair = synth.make_station_pair(rng, part_kind="painted", motion="shift")

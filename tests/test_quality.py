@@ -1,11 +1,11 @@
-"""Tests for dalil.quality (procedural fixtures only)."""
+"""Tests for ava.quality (procedural fixtures only)."""
 
 import cv2
 import numpy as np
 import pytest
 
-from dalil.config import Params
-from dalil.quality import blur_score, capture_report, glare_mask, is_too_dark, outline_png
+from ava.config import Params
+from ava.quality import blur_score, capture_report, glare_mask, is_too_dark, outline_png
 
 
 def textured(seed: int = 0, h: int = 360, w: int = 480) -> np.ndarray:

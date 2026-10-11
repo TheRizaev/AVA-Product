@@ -1,4 +1,4 @@
-"""Tests for dalil.change: shift tolerance, lighting robustness, defects, multi-reference."""
+"""Tests for ava.change: shift tolerance, lighting robustness, defects, multi-reference."""
 
 from dataclasses import replace
 
@@ -6,8 +6,8 @@ import cv2
 import numpy as np
 import pytest
 
-from dalil import baselines, change, pbp
-from dalil.config import Params
+from ava import baselines, change, pbp
+from ava.config import Params
 
 P = Params()          # win=8, step=4, tolerance=1
 # A clear change in a raw (unsmoothed) PBP change map. The operating thresholds in Params are

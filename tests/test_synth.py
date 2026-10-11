@@ -1,9 +1,9 @@
-"""Tests for dalil.synth (small image sizes keep them fast)."""
+"""Tests for ava.synth (small image sizes keep them fast)."""
 
 import numpy as np
 import pytest
 
-from dalil import synth
+from ava import synth
 
 H, W = 180, 320
 

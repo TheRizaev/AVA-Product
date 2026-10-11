@@ -5,8 +5,8 @@ import json
 import numpy as np
 import pytest
 
-from dalil.config import Params
-from dalil.zones import Zone
+from ava.config import Params
+from ava.zones import Zone
 from eval import benchmark_surface as bench
 
 
@@ -51,7 +51,7 @@ def test_calibration_rule_is_stable_from_threshold_upwards():
 
 
 def test_params_defaults_are_the_calibrated_thresholds():
-    """dalil.config defaults must be the thresholds frozen by the committed calibration run."""
+    """ava.config defaults must be the thresholds frozen by the committed calibration run."""
     path = bench.ROOT / "eval" / "results" / "surface_calib.json"
     if not path.exists():
         pytest.skip("no committed surface calibration run")
