@@ -11,7 +11,7 @@
     mode_compare: 'Compare with reference',
     mode_surface_short: 'Surface',
     mode_compare_short: 'Compare',
-    mode_hint_surface: 'When to use: paint, plastic, sheet or brushed metal, fabric, mesh — the same texture everywhere.',
+    mode_hint_surface: 'When to use: painted, plastic or smooth metal surfaces with the same texture everywhere. Brushed metal gives more false alarms; fabric and mesh are untested.',
     mode_hint_compare: 'When to use: parts with holes, ribs, logos or unique features — shoot a good part first.',
 
     // examples
@@ -46,6 +46,7 @@
 
     // verdicts
     v_pass: 'PASS — no changes found',
+    v_pass_surface: 'PASS — no defects found',
     v_fail_one: 'FAIL — 1 defect zone',
     v_fail_many: 'FAIL — {n} defect zones',
     v_retake: 'RETAKE — {reason}',
@@ -61,7 +62,8 @@
     rr_unknown: 'the photo is not usable',
     rh_alignment: 'Shoot the part from the same angle and distance as the reference.',
     rh_glare: 'Tilt the phone so the glare leaves the part.',
-    rh_blurry: 'Hold the phone still and tap the screen to focus.',
+    rh_blurry: 'Hold the phone still about 25–30 cm from the part. If it stays blurry, use Gallery to take the photo with the system camera.',
+    rh_bright_spot: 'A bright, overexposed spot could not be checked. Change the angle; if the spot stays, it may be a white label, tape or bare metal — check it by eye.',
     rh_dark: 'Add light or turn on the flashlight.',
     rh_low_coverage_surface: 'Fill the frame with the surface and avoid strong glare.',
     rh_low_coverage_compare: 'The part should fill most of the frame.',
@@ -75,8 +77,8 @@
     zone_name: 'Zone {n}',
     zone_area: '{p} % of the frame',
     zh_water_or_dirt: 'looks like dirt or a drop',
-    zh_something_removed: 'missing feature?',
-    zh_something_added: 'extra material or burr?',
+    zh_something_removed: 'surface looks smoother here',
+    zh_something_added: 'surface looks rougher here',
     meta_ms: '{n} ms',
     meta_coverage: 'checked {n} %',
     meta_sha: 'SHA-256',
@@ -84,9 +86,10 @@
 
     // baseline (plain reference subtraction)
     base_title: 'Plain reference subtraction',
-    base_sub: 'Same aligned photo, per-pixel difference from the reference.',
-    base_mismatch: 'FAIL — almost the whole frame changed',
-    base_mismatch_why: 'This is how plain subtraction reacts to a lighting change.',
+    base_sub: 'Same aligned photo, per-pixel difference from the reference. Its threshold was calibrated by the same rule as AVA’s: few false alarms under normal lighting drift (synthetic benchmark).',
+    base_mismatch: 'FAIL — a large part of the frame changed',
+    base_mismatch_frac: '{p} % of the checked area differs from the reference (the API reports this as RETAKE: mismatch).',
+    base_mismatch_why: 'AVA found no change on the same aligned photo. Plain subtraction also reacts to brightness and lighting changes.',
     base_alt: 'Plain reference subtraction result',
     base_none: 'No plain subtraction result.',
 
@@ -108,14 +111,14 @@
     qr_failed: 'Could not build the QR code.',
 
     // errors
-    err_decode: 'Could not open the photo (JPEG or PNG expected).',
+    err_decode: 'Could not open the photo (JPEG, PNG or WebP expected).',
     err_no_frame: 'The camera is not ready yet — try again.',
     err_network: 'Cannot reach the server. Check your connection.',
     err_timeout: 'The server did not answer in time. Please try again.',
     err_http: 'Server error ({status}).',
     err_bad_response: 'Unexpected response from the server.',
     err_generic: 'Something went wrong.',
-    api_bad_image: 'Could not read the photo (JPEG or PNG expected).',
+    api_bad_image: 'Could not read the photo (JPEG, PNG or WebP expected).',
     api_empty_file: 'The file is empty.',
     api_image_too_small: 'The photo is too small.',
     api_too_large: 'The file is too large (15 MB max).',

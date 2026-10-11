@@ -21,6 +21,7 @@
   const MAX_SIDE = 1600;               // longest side of an uploaded photo, px
   const JPEG_QUALITY = 0.9;
   const REQUEST_TIMEOUT_MS = 120000;
+  const EXAMPLE_TIMEOUT_MS = 20000;  // a stalled example download must not leave the page busy
   const HISTORY_MAX = 10;
   const GHOST_DEFAULT = 40;            // % opacity of the reference over the live camera
   const LS_GHOST = 'ava.ghostOpacity';
@@ -300,14 +301,22 @@
   // ---------------------------------------------------------------------------
 
   async function fetchExample(file) {
-    let res;
+    const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), EXAMPLE_TIMEOUT_MS) : null;
+    let blob;
     try {
-      res = await fetch(EXAMPLES_DIR + file, { cache: 'no-cache', credentials: 'same-origin' });
+      const res = await fetch(EXAMPLES_DIR + file, {
+        cache: 'no-cache', credentials: 'same-origin', signal: ctrl ? ctrl.signal : undefined,
+      });
+      if (!res.ok) throw new ApiError(t('ex_failed'));
+      blob = await res.blob(); // the body can stall too: still under the timer
     } catch (e) {
-      throw new Error(t('err_network'));
+      if (e instanceof ApiError) throw new Error(e.message);
+      throw new Error(t(e && e.name === 'AbortError' ? 'err_timeout' : 'err_network'));
+    } finally {
+      if (timer) clearTimeout(timer);
     }
-    if (!res.ok) throw new Error(t('ex_failed'));
-    const photo = await photoFromFile(await res.blob());
+    const photo = await photoFromFile(blob);
     photo.example = true;
     return photo;
   }
@@ -539,6 +548,7 @@
   function retakeHint(rec, mode) {
     const hints = Array.isArray(rec.hints) ? rec.hints : [];
     let key = hints.indexOf('change_angle') >= 0 ? 'rh_glare' : `rh_${rec.reason}`;
+    if (hints.indexOf('bright_spot') >= 0) key = 'rh_bright_spot';
     if (rec.reason === 'low_coverage') key = `rh_low_coverage_${mode}`;
     const s = t(key);
     return s === key ? null : s;
@@ -554,7 +564,11 @@
     return n === 1 ? t('v_fail_one') : t('v_fail_many', { n });
   }
 
-  /** Baseline display rule: plain subtraction's "mismatch" means it saw almost the whole frame as changed. */
+  /**
+   * Baseline display rule: plain subtraction's "mismatch" (the API answers RETAKE when more than
+   * Params.mismatch_frac of the checked cells changed) is shown as FAIL — a large part of the frame
+   * changed, with the measured fraction.
+   */
   const baselineMismatch = (rec) => !!rec && rec.reason === 'mismatch';
 
   const ICON_FOR = { pass: 'check', fail: 'cross', retake: 'retake' };
@@ -567,10 +581,10 @@
         sub ? el('span', { class: 'verdict-sub' }, sub) : null));
   }
 
-  /** PASS — no changes found / FAIL — N defect zones / RETAKE — reason. */
+  /** PASS — no changes / defects found / FAIL — N defect zones / RETAKE — reason. */
   function verdictBanner(rec, mode, small) {
     const v = verdictOf(rec);
-    if (v === 'pass') return banner(v, t('v_pass'), null, small);
+    if (v === 'pass') return banner(v, t(mode === 'surface' ? 'v_pass_surface' : 'v_pass'), null, small);
     if (v === 'fail') return banner(v, failTitle(zonesOf(rec).length), null, small);
     return banner(v, t('v_retake', { reason: reasonText(rec.reason) }), retakeHint(rec, mode), small);
   }
@@ -694,15 +708,22 @@
       metaLine(rec));
   }
 
+  /** The baseline's "mismatch" banner: the measured changed fraction; the AVA note only if AVA passed. */
+  function mismatchBanner(rec, main) {
+    const p = Math.round(100 * (Number(rec.changed_frac) || 0));
+    const why = main && verdictOf(main) === 'pass' ? ` ${t('base_mismatch_why')}` : '';
+    return banner('fail', t('base_mismatch'), t('base_mismatch_frac', { p }) + why, true);
+  }
+
   /** Plain reference subtraction: pixdiff on the same aligned frame (the key demo moment). */
-  function baselinePanel(rec, overlay) {
+  function baselinePanel(rec, overlay, main) {
     let body;
     if (!rec) {
       body = el('p', { class: 'muted' }, t('base_none'));
     } else {
       const src = imgSrc(overlay);
       body = [
-        baselineMismatch(rec) ? banner('fail', t('base_mismatch'), t('base_mismatch_why'), true) : verdictBanner(rec, 'compare', true),
+        baselineMismatch(rec) ? mismatchBanner(rec, main) : verdictBanner(rec, 'compare', true),
         src ? el('figure', { class: 'fig' }, el('div', { class: 'fig-box' }, el('img', { class: 'fig-img', src, alt: t('base_alt') }))) : null,
       ];
     }
@@ -732,7 +753,7 @@
     replaceContent(dom.result,
       el('div', { class: `result-grid${surface ? ' result-grid-single' : ''}` },
         mainPanel(entry),
-        surface ? null : baselinePanel(entry.base, entry.baseOverlay)),
+        surface ? null : baselinePanel(entry.base, entry.baseOverlay, entry.main)),
       el('div', { class: `result-actions${surface ? ' result-actions-single' : ''}` }, actions));
   }
 
@@ -831,8 +852,33 @@
     dom.camMsg.hidden = !on;
   }
 
+  /**
+   * Fit the reference ghost to the live video's content box (the video is letterboxed with
+   * object-fit: contain) and crop it to that box (object-fit: cover), so it lines up with the stream
+   * even when the reference photo has another aspect ratio (e.g. a 4:3 gallery photo over 16:9 video).
+   */
+  function fitGhost() {
+    const v = dom.camVideo;
+    const g = dom.camGhost;
+    const stage = v.parentElement;
+    if (g.hidden || !v.videoWidth || !v.videoHeight || !stage) {
+      g.style.left = g.style.top = g.style.width = g.style.height = '';
+      return;
+    }
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    const s = Math.min(sw / v.videoWidth, sh / v.videoHeight);
+    const w = v.videoWidth * s;
+    const h = v.videoHeight * s;
+    g.style.left = `${(sw - w) / 2}px`;
+    g.style.top = `${(sh - h) / 2}px`;
+    g.style.width = `${w}px`;
+    g.style.height = `${h}px`;
+  }
+
   function onVideoReady() {
     const v = dom.camVideo;
+    fitGhost();
     if (!cam.stream || !v.videoWidth || v.paused) return;
     setCamMessage(false);
     dom.camTap.hidden = true;
@@ -899,6 +945,7 @@
     } else {
       dom.camGhost.removeAttribute('src');
     }
+    fitGhost();
     dom.camera.hidden = false;
     document.body.classList.add('modal-open');
     dom.camClose.focus();
@@ -949,6 +996,8 @@
 
   dom.camVideo.addEventListener('loadedmetadata', onVideoReady);
   dom.camVideo.addEventListener('playing', onVideoReady);
+  dom.camVideo.addEventListener('resize', fitGhost); // stream resolution changed (rotation)
+  window.addEventListener('resize', () => { if (!dom.camera.hidden) fitGhost(); });
   dom.camShutter.addEventListener('click', shoot);
   dom.camClose.addEventListener('click', closeCamera);
   dom.camTap.addEventListener('click', () => {

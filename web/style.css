@@ -57,7 +57,7 @@
     --primary-ink: #111315;
     --focus: #7aa2ff;
 
-    --pass: #1f9e4e;
+    --pass: #157a3a;            /* white text >= 5:1 (WCAG AA) */
     --fail: #e4223f;
     --retake: #6a7179;
 
@@ -589,7 +589,7 @@ label.btn:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 .cam-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 .cam-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.cam-ghost { pointer-events: none; }
+.cam-ghost { pointer-events: none; object-fit: cover; }  /* box set by app.js fitGhost() */
 .cam-msg {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -629,6 +629,22 @@ label.btn:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
 .shutter:not(:disabled):active span { transform: scale(0.9); }
 .shutter:disabled { opacity: 0.4; cursor: not-allowed; }
 .shutter:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+
+/* Phone held sideways (short landscape screen): the controls move to a right-hand column so the
+   viewfinder keeps most of the height for lining up the reference ghost. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .camera { display: grid; grid-template-columns: minmax(0, 1fr) 200px; grid-template-rows: auto minmax(0, 1fr); }
+  .cam-top { grid-column: 1 / -1; min-height: 44px; padding: 2px 8px 2px 16px; border-bottom-width: 3px; }
+  .cam-title { font-size: 16px; }
+  .cam-icon-btn { width: 44px; height: 44px; }
+  .cam-stage { grid-column: 1; grid-row: 2; }
+  .cam-bottom { grid-column: 2; grid-row: 2; justify-content: center; padding: 8px 12px; }
+  .ghost-row { grid-template-columns: 1fr auto; row-gap: 0; }
+  .ghost-row input[type="range"] { grid-column: 1 / -1; grid-row: 2; }
+  .cam-controls { grid-template-columns: 1fr; justify-items: center; gap: 8px; }
+  .cam-side-btn { justify-self: center; min-height: 48px; }
+  .cam-spacer { display: none; }
+}
 
 /* ------------------------------------------------------------- QR modal */
 

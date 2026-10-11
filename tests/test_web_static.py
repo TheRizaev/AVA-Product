@@ -69,10 +69,11 @@ def test_no_language_toggle():
 
 
 def test_product_name_is_ava_everywhere():
-    # UI files only (web/examples/README.md may name the internal generator module).
+    # UI files only (web/examples/README.md is documentation, not UI).
+    legacy = "da" + "lil"  # old working name, spelled split so this guard does not match itself
     for path in WEB.rglob("*"):
         if path.is_file() and path.suffix in (".html", ".js", ".css", ".svg"):
-            assert "dalil" not in path.read_text(encoding="utf-8", errors="ignore").lower(), path.name
+            assert legacy not in path.read_text(encoding="utf-8", errors="ignore").lower(), path.name
 
 
 def test_no_station_journal_or_viewer_leftovers():
@@ -91,7 +92,7 @@ def test_every_key_used_is_defined():
     used |= {f"mode_{m}_short" for m in modes}
     used |= {f"{p}_{s}" for p in ["slot", "cam_title"] for s in slots} | {f"slot_{s}_sub" for s in slots}
     used |= {f"rr_{r}" for r in ["alignment", "glare", "blurry", "dark", "low_coverage", "mismatch", "unknown"]}
-    used |= {f"rh_low_coverage_{m}" for m in modes}
+    used |= {f"rh_low_coverage_{m}" for m in modes} | {"rh_bright_spot", "v_pass_surface", "base_mismatch_frac"}
     used |= {f"zh_{h}" for h in ["water_or_dirt", "something_removed", "something_added"]}
     used |= {f"cam_fail_{r}" for r in ["denied", "unavailable"]}
     missing = used - _string_keys()
@@ -108,15 +109,21 @@ def test_wording():
     for text in ["Surface photo", "Fill the frame with the surface only", "Check surface", "Reference", "Check",
                  "Compare", "Camera", "Gallery", "Try an example:", "Defect", "No defect", "Brightness change",
                  "Example image (synthetic)",
-                 "PASS — no changes found", "FAIL — {n} defect zones", "RETAKE — {reason}",
+                 "PASS — no changes found", "PASS — no defects found", "FAIL — {n} defect zones",
+                 "RETAKE — {reason}",
                  "could not align — shoot from the same angle", "glare — change the angle by 15–30°",
                  "photo is blurry", "photo is too dark", "different part or part missing",
                  "too little of the image could be checked",
-                 "looks like dirt or a drop", "missing feature?", "extra material or burr?",
-                 "Plain reference subtraction", "FAIL — almost the whole frame changed",
-                 "This is how plain subtraction reacts to a lighting change.",
+                 "looks like dirt or a drop", "surface looks smoother here", "surface looks rougher here",
+                 "Plain reference subtraction", "FAIL — a large part of the frame changed",
                  "New check", "New reference"]:
         assert text in strings, text
+    # The texture-activity hints cannot tell added from removed material (smooth tape on steel
+    # reads as "smoother"); the mismatch rule fires above mismatch_frac (15 %), not "almost all";
+    # the user chooses the mode, AVA never picks it; tap-to-focus does not exist in the camera.
+    for text in ["missing feature?", "extra material or burr?", "almost the whole frame",
+                 "automatically", "tap the screen to focus"]:
+        assert text not in strings + html, text
 
 
 def test_api_matches_spec():
