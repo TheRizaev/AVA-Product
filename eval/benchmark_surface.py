@@ -49,10 +49,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:  # allow `python eval/benchmark_surface.py`
     sys.path.insert(0, str(ROOT))
 
-from dalil import surface, synth  # noqa: E402
-from dalil.config import Params  # noqa: E402
-from dalil.pbp import cell_mask_from_pixel_mask  # noqa: E402
-from dalil.zones import extract_zones  # noqa: E402
+from ava import surface, synth  # noqa: E402
+from ava.config import Params  # noqa: E402
+from ava.pbp import cell_mask_from_pixel_mask  # noqa: E402
+from ava.zones import extract_zones  # noqa: E402
 
 METHODS = tuple(surface.SURFACE_METHODS)          # pbp, census, gradient
 DEFECT_FNS = {
@@ -176,13 +176,16 @@ def sweep_rows(res, truth: Truth, params: Params, grid: np.ndarray) -> np.ndarra
     if res.score is None:  # rejected before scoring (glare / blur / dark / coverage)
         rows[:, 0] = RETAKE
         return rows
+    # No zones => PASS, or RETAKE (glare) if a glare core was masked (scan_surface's rule).
+    empty = RETAKE if res.bright_spot else PASS
+    rows[:, 0] = empty
     top = float(res.score[res.checked].max()) if res.checked.any() else -1.0
     for i, t in enumerate(grid):
-        if t > top:  # no cell reaches t: no zones, PASS (rows stay 0)
+        if t > top:  # no cell reaches t: no zones (rows keep `empty`)
             break
         zones = zones_at(res, params, float(t))
         hit, n_false = truth.match(zones)
-        rows[i] = (FAIL if zones else PASS, len(zones), n_false, int(hit and bool(zones)))
+        rows[i] = (FAIL if zones else empty, len(zones), n_false, int(hit and bool(zones)))
     return rows
 
 
@@ -347,7 +350,8 @@ def summarize(recs: list, method: str, ti: int | None = None) -> dict:
         rt_all += retake
         fz_all += nf
         if retake:
-            reasons[mm["reason"]] = reasons.get(mm["reason"], 0) + 1
+            reason = mm["reason"] or "glare"  # sweep-only retake: a masked glare core (bright spot)
+            reasons[reason] = reasons.get(reason, 0) + 1
         if mm["max_score"] is not None:
             cov.append(mm["coverage"])
         if mm.get("ms_parallel") is not None:
@@ -509,9 +513,9 @@ def git_state() -> str:
     try:
         rev = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
                              text=True, timeout=20).stdout.strip()
-        dirty = subprocess.run(["git", "status", "--porcelain", "--", "dalil", "eval"],
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "ava", "eval"],
                                cwd=ROOT, capture_output=True, text=True, timeout=20).stdout.strip()
-        return (rev or "unknown") + (" + uncommitted changes in dalil/eval" if dirty else "")
+        return (rev or "unknown") + (" + uncommitted changes in ava/eval" if dirty else "")
     except (OSError, subprocess.SubprocessError):
         return "unknown"
 
@@ -561,7 +565,7 @@ def write_report(path: Path, calib: dict, test: dict) -> None:
     g = test["grid"]
     L = [TITLE + "\n"]
     L.append("Every number in this file was produced by `eval/benchmark_surface.py` (raw data in "
-             "`eval/results/surface_*.json`). The photos come from `dalil/synth.py`: procedural close-ups of "
+             "`eval/results/surface_*.json`). The photos come from `ava/synth.py`: procedural close-ups of "
              "painted, plastic, brushed-metal and dark glossy surfaces that fill the whole frame, procedural "
              "defects and procedural shop-floor lighting. They compare the methods under controlled "
              "conditions; they are **not** evidence of accuracy on real parts.\n")
@@ -605,7 +609,7 @@ def write_report(path: Path, calib: dict, test: dict) -> None:
 3. **Calibration (CALIB split only).** Each method's smoothed score map is re-thresholded over a geometric
    grid (0.02–2.5). Per method we take the smallest grid threshold at which the **false-alarm rate** (defect-free
    photos answered FAIL) under **none + monotone** lighting is ≤ {int(FA_TARGET * 100)} %, at that threshold and every
-   larger one. The thresholds are frozen and written to `dalil/config.py`.
+   larger one. The thresholds are frozen and written to `ava/config.py`.
 4. **Test (TEST split, disjoint seeds).** *Recall*: a defect photo is detected if the verdict is FAIL and
    some zone has IoU > {IOU_MIN} with the true defect bbox or covers ≥ {int(COVER_MIN * 100)} % of it (RETAKE counts as
    a miss). *False-alarm rate*: defect-free photos answered FAIL. *False zones / photo*: zones that do not
@@ -735,7 +739,7 @@ def write_report(path: Path, calib: dict, test: dict) -> None:
              "treat the times as indicative. The deployed server CPU will differ.\n")
 
     L.append("## Caveats (read before quoting any number)\n")
-    L.append(f"""- **Synthetic data only.** Surfaces, defects and lighting are procedural (`dalil/synth.py`). Real
+    L.append(f"""- **Synthetic data only.** Surfaces, defects and lighting are procedural (`ava/synth.py`). Real
   scratches, chips, stains and dents look different, and real phone photos add compression, defocus, motion blur
   and perspective that are only partly modelled. The thresholds were calibrated on the same generator, so
   these numbers are an upper-bound-style comparison of methods, not a real-world accuracy claim.

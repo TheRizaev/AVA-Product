@@ -1,5 +1,7 @@
 # Synthetic benchmark — procedurally generated uniform surfaces, NOT real photos
 
+> **Note (added by hand, 2026-10-11):** this report was generated before the "bright spot" rule was added (a large masked glare-like blob now gives RETAKE instead of a silent PASS). Scores and thresholds are unchanged; only photos with a large masked highlight can now end as RETAKE instead of PASS. Re-run `python -m eval.benchmark_surface` to refresh the tables.
+
 Every number in this file was produced by `eval/benchmark_surface.py` (raw data in `eval/results/surface_*.json`). The photos come from `dalil/synth.py`: procedural close-ups of painted, plastic, brushed-metal and dark glossy surfaces that fill the whole frame, procedural defects and procedural shop-floor lighting. They compare the methods under controlled conditions; they are **not** evidence of accuracy on real parts.
 
 ## Run

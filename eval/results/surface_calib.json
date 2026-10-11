@@ -1,6 +1,6 @@
 {
  "command": "python -m eval.benchmark_surface --n 4 --clean-mult 3 --seed 0 --workers 10",
- "date": "2026-10-10 17:58 UTC",
+ "date": "2026-10-10 20:25 UTC",
  "env": {
   "cpu": "13th Gen Intel(R) Core(TM) i5-13450HX",
   "logical_cores": 16,
@@ -8,7 +8,7 @@
   "python": "3.11.9",
   "numpy": "2.2.6",
   "opencv": "4.12.0",
-  "git": "26c853e + uncommitted changes in dalil/eval",
+  "git": "043d4ab + uncommitted changes in ava/eval",
   "workers": 10
  },
  "seed": 0,
@@ -53,7 +53,7 @@
  "target_fa_rate": 0.05,
  "n_photos": 1152,
  "errors": [],
- "wall_s": 285.0690690999618,
+ "wall_s": 580.9131276000408,
  "params": {
   "work_max_side": 1024,
   "blur_sigma": 1.5,
@@ -97,6 +97,7 @@
   "glare_s": 40,
   "glare_dilate_px": 9,
   "max_glare_frac": 0.35,
+  "glare_blob_min_px": 64,
   "min_blur": 30.0,
   "blur_ratio": 0.15,
   "dark_mean": 35.0,
