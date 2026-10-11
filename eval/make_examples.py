@@ -3,7 +3,7 @@
     python -m eval.make_examples            # search seeds, print scores, write the 5 JPEGs
     python -m eval.make_examples --dry-run  # search + print only
 
-Five 1280x720 JPEGs (quality 92), all SYNTHETIC (procedural, dalil.synth; no faces, no plates):
+Five 1280x720 JPEGs (quality 92), all SYNTHETIC (procedural, ava.synth; no faces, no plates):
 
     surface_defect.jpg     Mode 1: uniform surface WITH a clear defect (bright scratch + paint chip)
     surface_ok.jpg         Mode 1: the SAME surface without the defect
@@ -28,9 +28,9 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from dalil import pipeline, surface, synth
-from dalil.config import Params
-from dalil.pbp import cell_mask_from_pixel_mask
+from ava import pipeline, surface, synth
+from ava.config import Params
+from ava.pbp import cell_mask_from_pixel_mask
 
 OUT_DIR = Path(__file__).resolve().parent.parent / "web" / "examples"
 H, W = 720, 1280
