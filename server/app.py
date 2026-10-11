@@ -13,6 +13,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import io
+import os
 import threading
 from collections import OrderedDict
 from contextlib import asynccontextmanager
@@ -38,8 +39,8 @@ MAX_BODY = 2 * MAX_UPLOAD + 64 * 1024  # whole request (compare carries two imag
 MAX_PIXELS = 40_000_000                # decoded image size guard (decompression bombs)
 DECODE_SIDE = 2048                     # JPEGs are decoded at reduced scale down to about this (long side)
 IMAGE_FORMATS = ("JPEG", "PNG", "WEBP")  # decoders reachable from uploads (camera MPO JPEGs open as JPEG)
-CPU_SLOTS = 2                          # concurrent CPU-heavy requests (PBP itself is multi-threaded)
-REF_CACHE_SIZE = 4                     # prepared references kept in memory
+CPU_SLOTS = int(os.environ.get("AVA_CPU_SLOTS", "2"))           # concurrent CPU-heavy requests (PBP itself is multi-threaded)
+REF_CACHE_SIZE = int(os.environ.get("AVA_REF_CACHE", "4"))      # prepared references kept in memory (~75 MB each)
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
 PARAMS = Params()
